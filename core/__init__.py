@@ -1,0 +1,2 @@
+class ChessGame(object):
+    pass
