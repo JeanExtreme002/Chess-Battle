@@ -1,3 +1,4 @@
+from .config import paths, settings
 import pyglet
 
 class Application(pyglet.window.Window):

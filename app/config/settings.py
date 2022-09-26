@@ -1,30 +1,37 @@
 from .paths import paths
 import json
 
+__all__ = ("settings",)
+
 class ApplicationSettings(object):
 
-    __default = {
+    __settings = {
         "title": "Xadrez",
-        "resizable": True,
         "size": (1280, 720),
     }
     
-    def __init__(self, filename):
+    def __init__(self):
         self.__filename = paths.settings_filename
         self.__load_settings()
+
+    def __getattribute__(self, key):
+        return super().__getattribute__(key) if key.startswith("_") else self.__settings[key]
+
+    def __setattribute__(self, key, value):
+        self.__settings[key] = value
+        self.__save_settings()
 
     def __load_settings(self):  
         try:
             file = open(self.__filename)
-            # ...
+            self.__settings.update(json.load(file))
             file.close()
         except:
-            self.__create_default_file()
+            self.__save_settings()
 
-    def __create_default_file(self):
+    def __save_settings(self):
         with open(self.__filename, "w") as file:
-            settings = json.dump(self.__default, file)
-        # ...
+            json.dump(self.__settings, file)
 
 
 settings = ApplicationSettings()
