@@ -1,3 +1,4 @@
+import random
 import os
 
 __all__ = ("paths",)
@@ -25,5 +26,20 @@ class Paths(object):
         raise AttributeError("'{}' object has no attribute '{}'".format(
             self.__class__.__name__, key
         ))
+
+    def __get_random_file(self, path, *extensions):
+        filenames = []
+        
+        for filename in os.listdir(path):
+            if not "." in filename: continue
+            
+            if "." + filename.split(".")[-1] in extensions:
+                filenames.append(filename)
+                
+        return os.path.join(path, random.choice(filenames))
+
+    def get_random_image(self, *folders):
+       path = os.path.join(self.image_path, *folders)
+       return self.__get_random_file(path, ".png", ".jpg", ".jpeg")
 
 paths = Paths()
