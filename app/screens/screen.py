@@ -6,6 +6,7 @@ from pyglet import gl
 gl.glEnable(gl.GL_TEXTURE_2D)
 gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
 
+
 class Screen(ABC):
     """
     Classe para gerar telas.
@@ -42,7 +43,7 @@ class Screen(ABC):
     def get_application(self):
         return self.__application
 
-    def get_position_by_percent(self, x, y):
+    def get_pixels_by_percent(self, x, y):
         width = self.width / 100 * x
         height = self.height / 100 * y
         return int(width), int(height)

@@ -38,6 +38,9 @@ class Paths(object):
                 
         return os.path.join(path, random.choice(filenames))
 
+    def get_image(self, *paths):
+        return os.path.join(self.image_path, *paths)
+
     def get_random_image(self, *folders):
        path = os.path.join(self.image_path, *folders)
        return self.__get_random_file(path, ".png", ".jpg", ".jpeg")
