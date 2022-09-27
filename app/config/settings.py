@@ -1,4 +1,5 @@
 from .paths import paths
+from socket import gethostname, gethostbyname
 import json
 
 __all__ = ("settings",)
@@ -8,6 +9,7 @@ class ApplicationSettings(object):
     __settings = {
         "title": "Xadrez",
         "size": (1280, 720),
+        "address": (gethostbyname(gethostname()), 5000)
     }
     
     def __init__(self):
@@ -26,7 +28,7 @@ class ApplicationSettings(object):
             file = open(self.__filename)
             self.__settings.update(json.load(file))
             file.close()
-        except:
+        finally:
             self.__save_settings()
 
     def __save_settings(self):
