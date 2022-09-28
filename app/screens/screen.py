@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from pyglet import image
 from pyglet import gl
+from pyglet import shapes
+from pyglet import sprite
 
 # Configuração para habilitar o redimensionamento de imagens.
 gl.glEnable(gl.GL_TEXTURE_2D)
@@ -22,6 +24,18 @@ class Screen(ABC):
     @property
     def height(self):
         return self.__application.height
+
+    def __get_true_y_position(self, y):
+        return self.height - y
+
+    def create_rectangle(self, x, y, width, height, **kwargs):
+        y = self.__get_true_y_position(y)
+        height *= -1
+        return shapes.Rectangle(x, y, width, height, **kwargs)
+
+    def create_sprite(self, img, x, y, **kwargs):
+        y = self.__get_true_y_position(y)
+        return sprite.Sprite(img, x, y, **kwargs)
 
     def load_image(self, filename, size = None, save = True):
 

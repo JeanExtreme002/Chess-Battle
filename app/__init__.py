@@ -20,7 +20,10 @@ class Application(window.Window):
         self.__current_screen = self.__home_screen
 
     def __initialize_screens(self):
-        self.__home_screen = HomeScreen(self)
+        self.__home_screen = HomeScreen(self, self.__on_play)
+
+    def __on_play(self):
+        pass
 
     def on_draw(self):
         self.clear()
