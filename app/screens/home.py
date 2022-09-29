@@ -11,7 +11,7 @@ class HomeScreen(Screen):
         batch = graphics.Batch()
 
         # Obtém tamanho e posição da imagem background.
-        background_x, background_y = self.get_pixels_by_percent(25, 0)
+        background_x, background_y = self.get_pixels_by_percent(30, 0)
         background_width = self.width - background_x
         background_height = self.height
 
@@ -36,6 +36,12 @@ class HomeScreen(Screen):
         # Carrega a imagem de background.
         background_filename = application.paths.get_random_image("home", "background")
         background_image = self.load_image(background_filename, (background_width, background_height))
+
+        background_sprite = self.create_sprite(
+            background_image, batch = batch,
+            x = background_x+600,
+            y = background_y
+        )
 
         # Aplica todos os desenhos na tela.
         sidebar_image.blit(0, 0)

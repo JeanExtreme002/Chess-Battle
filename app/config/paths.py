@@ -15,6 +15,8 @@ class Paths(object):
     database_path = os.path.join(data_path, "database")
     settings_filename = os.path.join(data_path, "settings.json")
 
+    __image_extensions = (".png", ".jpg", ".jpeg")
+
     def __init__(self):
         for key, value in self.__class__.__dict__.items():
             if key.endswith("path"): self.__initialize_directory(value)
@@ -27,22 +29,18 @@ class Paths(object):
             self.__class__.__name__, key
         ))
 
-    def __get_random_file(self, path, *extensions):
-        filenames = []
-        
-        for filename in os.listdir(path):
-            if not "." in filename: continue
-            
-            if "." + filename.split(".")[-1] in extensions:
-                filenames.append(filename)
-                
-        return os.path.join(path, random.choice(filenames))
+    def get_image(self, *path):
+        return os.path.join(self.image_path, *path)
 
-    def get_image(self, *paths):
-        return os.path.join(self.image_path, *paths)
+    def get_image_list(self, *folders):
+        path = os.path.join(self.image_path, *folders)
+
+        for filename in os.listdir(path):
+            if "." + filename.split(".")[-1] in self.__image_extensions:
+                yield os.path.join(path, filename)
 
     def get_random_image(self, *folders):
-       path = os.path.join(self.image_path, *folders)
-       return self.__get_random_file(path, ".png", ".jpg", ".jpeg")
+       filenames = list(self.get_image_list(*folders))
+       return random.choice(filenames)
 
 paths = Paths()
