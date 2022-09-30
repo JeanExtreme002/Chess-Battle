@@ -101,15 +101,9 @@ class HomeScreen(Screen):
         self.__batch = batch
 
     def __check_buttons(self, x, y):
-        button_1 = False
-        button_2 = False
-        button_3 = False
-        
-        if self.__button_1.check(x, y): button_1 = True
-        elif self.__button_2.check(x, y): button_2 = True
-        elif self.__button_3.check(x, y): button_3 = True
-
-        return button_1, button_2, button_3
+        if self.__button_1.check(x, y): return True, False, False
+        elif self.__button_2.check(x, y): return False, True, False
+        elif self.__button_3.check(x, y): return False, False, True
 
     def on_mouse_motion(self, *args):
         x, y = super().on_mouse_motion(*args)[0: 2]
