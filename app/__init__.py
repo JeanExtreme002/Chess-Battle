@@ -27,7 +27,10 @@ class Application(window.Window):
 
     def on_draw(self):
         self.clear()
-        self.__current_screen.draw()
+        self.__current_screen.on_draw()
+
+    def on_mouse_motion(self, *args):
+        self.__current_screen.on_mouse_motion(*args)
 
     def run(self):
         app.run()

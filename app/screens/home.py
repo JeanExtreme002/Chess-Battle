@@ -5,8 +5,9 @@ class HomeScreen(Screen):
     def __init__(self, application, on_play):
         super().__init__(application)
         self.__on_play = on_play
-         
-    def draw(self):
+        self.__build()
+
+    def __build(self):
         application = self.get_application()
         batch = graphics.Batch()
 
@@ -33,7 +34,9 @@ class HomeScreen(Screen):
         play_button_x = int(sidebar_width * 0.5 - play_button_width * 0.5)
         play_button_spacing = play_button_height * 0.2
         first_play_button_y = int(self.height * 0.45)
-
+        
+        print(">", play_button_x,first_play_button_y,play_button_width,play_button_height)
+        
         # Carrega a imagem da barra lateral.
         sidebar_filename = application.paths.get_image("home", "sidebar.png")
         sidebar_image = self.load_image(sidebar_filename, (sidebar_width, sidebar_height))
@@ -72,7 +75,27 @@ class HomeScreen(Screen):
         background_filename = application.paths.get_random_image("home", "background")
         background_image = self.load_image(background_filename, (background_width, background_height))
 
-        # Aplica todos os desenhos na tela.
-        background_image.blit(background_x, background_y)
-        sidebar_image.blit(0, 0)
-        batch.draw()
+        # Instancia as imagens desenhadas no batch (para o garbage collector não apagá-las antes de desenhar)
+        # e a posição do background, que será necessária para desenhar posteriormente.
+        self.__background_x, self.__background_y = background_x, background_y
+        self.__background_image = background_image
+        
+        self.__sidebar_image = sidebar_image
+        
+        self.__screen_objects = [
+            logo_sprite,
+            button_1_sprite,
+            button_2_sprite,
+            button_3_sprite
+        ]
+        
+        self.__button_1_filename = button_1_filename
+        self.__batch = batch
+
+    def on_mouse_move(self, x, y):
+        print(x, y)
+         
+    def on_draw(self):
+        self.__background_image.blit(self.__background_x, self.__background_y)
+        self.__sidebar_image.blit(0, 0)
+        self.__batch.draw()
