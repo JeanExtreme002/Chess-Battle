@@ -1,44 +1,27 @@
-class Button(object):
-    def __init__(self, screen, batch, x, y, size, images):
-        self.__screen = screen
-        self.__batch = batch
-        self.__images = images
+from .widget import Widget
 
+class Button(Widget):
+    def __init__(self, screen, batch, x, y, size, images):
+        super().__init__(screen, batch, x, y, size)
+        
         self.__activated = False
         self.__previous_status = False
+        self.__images = images
 
-        self.__position = (x, y)
-        self.set_size(size)
+        self.__load_images()
+        self.__create_sprite()
 
     def __load_images(self):
-        image_1 = self.__screen.load_image(self.__images[0], self.__size)
-        image_2 = self.__screen.load_image(self.__images[1], self.__size)
+        image_1 = self.screen.load_image(self.__images[0], (self.width, self.height))
+        image_2 = self.screen.load_image(self.__images[1], (self.width, self.height))
         
         self.__loaded_images = [image_1, image_2]
 
     def __create_sprite(self):
-        self.__sprite = self.__screen.create_sprite(
+        self.__sprite = self.screen.create_sprite(
             self.__loaded_images[int(self.__activated)],
-            batch = self.__batch,
-            x = self.__position[0],
-            y = self.__position[1]
+            batch = self.batch, x = self.x, y = self.y
         )
-
-    @property
-    def x(self):
-        return self.__position[0]
-
-    @property
-    def y(self):
-        return self.__position[1]
-
-    @property
-    def width(self):
-        return self.__size[0]
-
-    @property
-    def height(self):
-        return self.__size[1]
 
     def check(self, *cursor_pos):
         in_x = self.x <= cursor_pos[0] <= (self.x + self.width)
@@ -51,8 +34,3 @@ class Button(object):
             self.__create_sprite()
 
         return self.__activated
-
-    def set_size(self, size):
-        self.__size = size
-        self.__load_images()
-        self.__create_sprite()
