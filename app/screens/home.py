@@ -1,4 +1,5 @@
 from .screen import Screen
+from .util.button import Button
 from pyglet import graphics
 
 class HomeScreen(Screen):
@@ -25,7 +26,7 @@ class HomeScreen(Screen):
         logo_height = int(logo_width * 0.65)
         
         logo_x = int(sidebar_width * 0.5 - logo_width * 0.5)
-        logo_y = int(self.height * 0.25)
+        logo_y = int(self.height * 0.03)
 
         # Obtém o tamanho e posição dos botões de jogar.
         play_button_width = int(sidebar_width * 0.60)
@@ -33,9 +34,7 @@ class HomeScreen(Screen):
         
         play_button_x = int(sidebar_width * 0.5 - play_button_width * 0.5)
         play_button_spacing = play_button_height * 0.2
-        first_play_button_y = int(self.height * 0.45)
-        
-        print(">", play_button_x,first_play_button_y,play_button_width,play_button_height)
+        first_play_button_y = int(self.height * 0.2)
         
         # Carrega a imagem da barra lateral.
         sidebar_filename = application.paths.get_image("home", "sidebar.png")
@@ -48,27 +47,28 @@ class HomeScreen(Screen):
 
         # Carrega a imagem dos botões de jogar.
         button_1_filename = application.paths.get_image("home", "buttons", "play_local.png")
-        button_1_image = self.load_image(button_1_filename, (play_button_width, play_button_height))
-        
         button_2_filename = application.paths.get_image("home", "buttons", "play_as_host.png")
-        button_2_image = self.load_image(button_2_filename, (play_button_width, play_button_height))
-
         button_3_filename = application.paths.get_image("home", "buttons", "play_as_client.png")
-        button_3_image = self.load_image(button_3_filename, (play_button_width, play_button_height))
 
-        button_1_sprite = self.create_sprite(
-            button_1_image, batch = batch,
-            x = play_button_x, y = first_play_button_y
+        button_1 = Button(
+            self, batch, play_button_x,
+            first_play_button_y,
+            (play_button_width, play_button_height),
+            (button_1_filename, button_1_filename)
         )
-        
-        button_2_sprite = self.create_sprite(
-            button_2_image, batch = batch,
-            x = play_button_x, y = first_play_button_y + (play_button_height * 0.5 + play_button_spacing) * 1
+
+        button_2 = Button(
+            self, batch, play_button_x,
+            first_play_button_y + (play_button_height * 0.5 + play_button_spacing) * 1,
+            (play_button_width, play_button_height),
+            (button_2_filename, button_2_filename)
         )
-        
-        button_3_sprite = self.create_sprite(
-            button_3_image, batch = batch,
-            x = play_button_x, y = first_play_button_y + (play_button_height * 0.5 + play_button_spacing) * 2
+
+        button_3 = Button(
+            self, batch, play_button_x,
+            first_play_button_y + (play_button_height * 0.5 + play_button_spacing) * 2,
+            (play_button_width, play_button_height),
+            (button_3_filename, button_3_filename)
         )
 
         # Carrega a imagem de background.
@@ -82,18 +82,15 @@ class HomeScreen(Screen):
         
         self.__sidebar_image = sidebar_image
         
-        self.__screen_objects = [
-            logo_sprite,
-            button_1_sprite,
-            button_2_sprite,
-            button_3_sprite
-        ]
+        self.__logo_sprite = logo_sprite
+        self.__button_1 = button_1
+        self.__button_2 = button_2
+        self.__button_3 = button_3
         
-        self.__button_1_filename = button_1_filename
         self.__batch = batch
 
     def on_mouse_move(self, x, y):
-        print(x, y)
+        print(x, y, self.__button_1.check(x, y))
          
     def on_draw(self):
         self.__background_image.blit(self.__background_x, self.__background_y)

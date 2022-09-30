@@ -26,20 +26,27 @@ class Screen(ABC):
     def height(self):
         return self.__application.height
 
-    def __get_true_y_position(self, y):
-        return self.height - y
+    def __get_true_y_position(self, y, height = 0):
+        return self.height - y - height
 
     def create_text(self, string, x, y, **kwargs):
-        return text.Label(string, x = x, y = y, **kargs)
+        return text.Label(string, x = x, y = y, **kwargs)
 
     def create_rectangle(self, x, y, width, height, **kwargs):
-        y = self.__get_true_y_position(y)
+        y = self.__get_true_y_position(y, height)
         height *= -1
-        return shapes.Rectangle(x, y, width, height, **kwargs)
+
+        shape = shapes.Rectangle(
+            x = x, y = y,
+            width = width,
+            height = height,
+            **kwargs
+        )
+        return shape
 
     def create_sprite(self, img, x, y, **kwargs):
-        y = self.__get_true_y_position(y)
-        return sprite.Sprite(img, x, y, **kwargs)
+        y = self.__get_true_y_position(y, img.height)
+        return sprite.Sprite(img, x = x, y = y, **kwargs)
 
     def load_image(self, filename, size = None, save = True):
 
