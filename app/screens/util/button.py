@@ -23,6 +23,9 @@ class Button(Widget):
             batch = self.batch, x = self.x, y = self.y
         )
 
+    def __delete_sprite(self):
+        self.__sprite.delete()
+
     def check(self, *cursor_pos):
         in_x = self.x <= cursor_pos[0] <= (self.x + self.width)
         in_y = self.y <= cursor_pos[1] <= (self.y + self.height)
@@ -31,6 +34,7 @@ class Button(Widget):
 
         if self.__previous_status != self.__activated:
             self.__previous_status = self.__activated
+            self.__delete_sprite()
             self.__create_sprite()
 
         return self.__activated

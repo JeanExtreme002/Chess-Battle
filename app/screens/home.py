@@ -1,6 +1,8 @@
 from .screen import Screen
 from .util.button import Button
+from .util.slide import Slide
 from pyglet import graphics
+from pyglet.window import mouse
 
 class HomeScreen(Screen):
     def __init__(self, application, on_play):
@@ -77,17 +79,21 @@ class HomeScreen(Screen):
         )
 
         # Carrega a imagem de background.
-        background_filename = application.paths.get_random_image("home", "background")
-        background_image = self.load_image(background_filename, (background_width, background_height))
+        background_filenames = application.paths.get_image_list("home", "background")
+        
+        background = Slide(
+            self, batch, background_x, background_y,
+            (background_width, background_height),
+            background_filenames
+        )   
 
         # Instancia as imagens desenhadas no batch (para o garbage collector não apagá-las antes de desenhar)
         # e a posição do background, que será necessária para desenhar posteriormente.
-        self.__background_x, self.__background_y = background_x, background_y
-        self.__background_image = background_image
-        
         self.__sidebar_image = sidebar_image
+        self.__background = background
         
         self.__logo_sprite = logo_sprite
+        
         self.__button_1 = button_1
         self.__button_2 = button_2
         self.__button_3 = button_3
@@ -110,7 +116,9 @@ class HomeScreen(Screen):
         self.__check_buttons(x, y)
 
     def on_mouse_release(self, *args):
-        x, y, button = super().on_mouse_release(*args)[0: 3]
+        x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
+        if mouse_button != mouse.LEFT: return
+            
         button_1, button_2, button_3 = self.__check_buttons(x, y)
 
         if button_1: self.__on_play(1)
@@ -118,6 +126,6 @@ class HomeScreen(Screen):
         elif button_3: self.__on_play(3)
          
     def on_draw(self):
-        self.__background_image.blit(self.__background_x, self.__background_y)
+        self.__background.next()
         self.__sidebar_image.blit(0, 0)
         self.__batch.draw()
