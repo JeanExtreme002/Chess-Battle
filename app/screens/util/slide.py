@@ -4,6 +4,7 @@ class Slide(Widget):
     def __init__(self, screen, batch, x, y, size, images):
         super().__init__(screen, batch, x, y, size)
 
+        self.__max_opacity = 200
         self.__opacity = 70
         self.__direction = 1
         self.__velocity = 0.6
@@ -33,21 +34,21 @@ class Slide(Widget):
         self.__sprite.delete()
 
     def set_velocity(self, velocity):
-        if 0 > velocity > 100:
-            raise ValueError("Velocity must be a value between 0 and 100")
+        if 0 > velocity > self.__max_opacity:
+            raise ValueError("Velocity must be a value between 0 and {}".format(self.__max_opacity))
         self.__velocity = velocity
 
     def next(self):
 
         # Após chegar na opacidade máxima, ele mantém a mesma por um certo período de tempo.
-        if self.__opacity == 100 and self.__waited < self.__show_waiting:
+        if self.__opacity == self.__max_opacity and self.__waited < self.__show_waiting:
             self.__waited += 1
         else:
             self.__waited = 0
             self.__opacity += self.__velocity * self.__direction
 
         # A opacidade deve estar entre zero e cem.
-        if self.__opacity > 100: self.__opacity = 100
+        if self.__opacity > self.__max_opacity: self.__opacity = self.__max_opacity
         elif self.__opacity < 0: self.__opacity = 0
 
         # Verifica se a troca de imagem deve ser realizada.
@@ -59,7 +60,7 @@ class Slide(Widget):
             self.__create_sprite()
 
         # Verifica se já chegou no pico.
-        elif self.__opacity == 100 and self.__direction > 0:
+        elif self.__opacity == self.__max_opacity and self.__direction > 0:
             self.__direction *= -1
 
         self.__sprite.opacity = self.__opacity
