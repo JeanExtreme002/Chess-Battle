@@ -105,6 +105,8 @@ class HomeScreen(Screen):
         elif self.__button_2.check(x, y): return False, True, False
         elif self.__button_3.check(x, y): return False, False, True
 
+        return False, False, False
+
     def on_mouse_motion(self, *args):
         x, y = super().on_mouse_motion(*args)[0: 2]
         self.__check_buttons(x, y)
@@ -119,7 +121,7 @@ class HomeScreen(Screen):
         elif button_2: self.__on_play(2)
         elif button_3: self.__on_play(3)
          
-    def on_draw(self):
-        self.__background.next()
+    def on_draw(self, by_scheduler = False):
+        if by_scheduler: self.__background.next()
         self.__sidebar_image.blit(0, 0)
         self.__batch.draw()

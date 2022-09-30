@@ -80,4 +80,4 @@ class Screen(ABC):
         return x, self.__get_true_y_position(y), button, modifiers
 
     @abstractmethod
-    def on_draw(self): pass
+    def on_draw(self, by_scheduler = False): pass

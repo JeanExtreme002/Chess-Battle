@@ -6,10 +6,10 @@ class Slide(Widget):
 
         self.__opacity = 70
         self.__direction = 1
-        self.__velocity = 0.5
+        self.__velocity = 0.6
         self.__index = 0
         
-        self.__show_waiting = 500
+        self.__show_waiting = screen.get_application().get_fps() * 5
         self.__waited = 0
 
         self.__images = images
