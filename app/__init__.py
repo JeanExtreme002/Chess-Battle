@@ -22,8 +22,8 @@ class Application(window.Window):
     def __initialize_screens(self):
         self.__home_screen = HomeScreen(self, self.__on_play)
 
-    def __on_play(self):
-        pass
+    def __on_play(self, selection):
+        print("Inciando jogo. Selecionada a opção:", selection)
 
     def on_draw(self):
         self.clear()
@@ -31,6 +31,9 @@ class Application(window.Window):
 
     def on_mouse_motion(self, *args):
         self.__current_screen.on_mouse_motion(*args)
+
+    def on_mouse_release(self, *args):
+        self.__current_screen.on_mouse_release(*args)
 
     def run(self):
         app.run()

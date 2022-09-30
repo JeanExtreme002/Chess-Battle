@@ -73,10 +73,11 @@ class Screen(ABC):
         height = self.height / 100 * y
         return int(width), int(height)
 
-    def on_mouse_motion(self, x, y, dx, dy):
-        self.on_mouse_move(x, self.__get_true_y_position(y))
+    def on_mouse_motion(self, x, y, *args):
+        return x, self.__get_true_y_position(y), *args
 
-    def on_mouse_move(self, x, y): pass
+    def on_mouse_release(self, x, y, button, modifiers):
+        return x, self.__get_true_y_position(y), button, modifiers
 
     @abstractmethod
     def on_draw(self): pass

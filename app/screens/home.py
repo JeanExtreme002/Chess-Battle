@@ -30,11 +30,11 @@ class HomeScreen(Screen):
 
         # Obtém o tamanho e posição dos botões de jogar.
         play_button_width = int(sidebar_width * 0.60)
-        play_button_height = int(play_button_width * 0.75)
+        play_button_height = int(play_button_width * 0.39)
         
         play_button_x = int(sidebar_width * 0.5 - play_button_width * 0.5)
         play_button_spacing = play_button_height * 0.2
-        first_play_button_y = int(self.height * 0.2)
+        first_play_button_y = int(self.height * 0.3)
         
         # Carrega a imagem da barra lateral.
         sidebar_filename = application.paths.get_image("home", "sidebar.png")
@@ -47,28 +47,33 @@ class HomeScreen(Screen):
 
         # Carrega a imagem dos botões de jogar.
         button_1_filename = application.paths.get_image("home", "buttons", "play_local.png")
+        activated_button_1_filename = application.paths.get_image("home", "buttons", "activated_play_local.png")
+        
         button_2_filename = application.paths.get_image("home", "buttons", "play_as_host.png")
+        activated_button_2_filename = application.paths.get_image("home", "buttons", "activated_play_as_host.png")
+        
         button_3_filename = application.paths.get_image("home", "buttons", "play_as_client.png")
+        activated_button_3_filename = application.paths.get_image("home", "buttons", "activated_play_as_client.png")
 
         button_1 = Button(
             self, batch, play_button_x,
             first_play_button_y,
             (play_button_width, play_button_height),
-            (button_1_filename, button_1_filename)
+            (button_1_filename, activated_button_1_filename)
         )
 
         button_2 = Button(
             self, batch, play_button_x,
-            first_play_button_y + (play_button_height * 0.5 + play_button_spacing) * 1,
+            first_play_button_y + (play_button_height + play_button_spacing) * 1,
             (play_button_width, play_button_height),
-            (button_2_filename, button_2_filename)
+            (button_2_filename, activated_button_2_filename)
         )
 
         button_3 = Button(
             self, batch, play_button_x,
-            first_play_button_y + (play_button_height * 0.5 + play_button_spacing) * 2,
+            first_play_button_y + (play_button_height + play_button_spacing) * 2,
             (play_button_width, play_button_height),
-            (button_3_filename, button_3_filename)
+            (button_3_filename, activated_button_3_filename)
         )
 
         # Carrega a imagem de background.
@@ -89,8 +94,28 @@ class HomeScreen(Screen):
         
         self.__batch = batch
 
-    def on_mouse_move(self, x, y):
-        print(x, y, self.__button_1.check(x, y))
+    def __check_buttons(self, x, y):
+        button_1 = False
+        button_2 = False
+        button_3 = False
+        
+        if self.__button_1.check(x, y): button_1 = True
+        elif self.__button_2.check(x, y): button_2 = True
+        elif self.__button_3.check(x, y): button_3 = True
+
+        return button_1, button_2, button_3
+
+    def on_mouse_motion(self, *args):
+        x, y = super().on_mouse_motion(*args)[0: 2]
+        self.__check_buttons(x, y)
+
+    def on_mouse_release(self, *args):
+        x, y, button = super().on_mouse_release(*args)[0: 3]
+        button_1, button_2, button_3 = self.__check_buttons(x, y)
+
+        if button_1: self.__on_play(1)
+        elif button_2: self.__on_play(2)
+        elif button_3: self.__on_play(3)
          
     def on_draw(self):
         self.__background_image.blit(self.__background_x, self.__background_y)
