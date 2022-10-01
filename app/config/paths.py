@@ -32,10 +32,12 @@ class Paths(object):
 
     def __get_file_list(self, base, extensions, *folders):
         path = os.path.join(base, *folders)
-
+        filenames = []
+        
         for filename in os.listdir(path):
             if "." + filename.split(".")[-1] in extensions:
-                yield os.path.join(path, filename)
+                filenames.append(os.path.join(path, filename))
+        return filenames
     
     def get_image(self, *path):
         return self.__get_file(self.image_path, *path)
@@ -43,13 +45,17 @@ class Paths(object):
     def get_sound(self, *path):
         return self.__get_file(self.sound_path, *path)
 
-    def get_image_list(self, *folders):
-        for file in self.__get_file_list(self.image_path, self.__image_extensions, *folders):
-            yield file
+    def get_image_list(self, *folders, shuffle = False):
+        images = self.__get_file_list(self.image_path, self.__image_extensions, *folders)
 
-    def get_sound_list(self, *folders):
-        for file in self.__get_file_list(self.sound_path, self.__sound_extensions, *folders):
-            yield file
+        if shuffle: random.shuffle(images)
+        return images
+
+    def get_sound_list(self, *folders, shuffle = False):
+        sounds = self.__get_file_list(self.sound_path, self.__sound_extensions, *folders)
+            
+        if shuffle: random.shuffle(sounds)
+        return sounds
 
     def get_random_image(self, *folders):
        filenames = list(self.get_image_list(*folders))

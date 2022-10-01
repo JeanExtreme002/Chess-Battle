@@ -25,10 +25,10 @@ class HomeScreen(Screen):
 
         # Obtém tamanho e posição da logo.
         logo_width = int(sidebar_width * 0.70)
-        logo_height = int(logo_width * 0.65)
+        logo_height = int(logo_width * 0.77)
         
         logo_x = int(sidebar_width * 0.5 - logo_width * 0.5)
-        logo_y = int(self.height * 0.03)
+        logo_y = int(self.height * 0.02)
 
         # Obtém o tamanho e posição dos botões de jogar.
         play_button_width = int(sidebar_width * 0.60)
@@ -36,7 +36,7 @@ class HomeScreen(Screen):
         
         play_button_x = int(sidebar_width * 0.5 - play_button_width * 0.5)
         play_button_spacing = play_button_height * 0.2
-        first_play_button_y = int(self.height * 0.3)
+        first_play_button_y = int(self.height * 0.35)
         
         # Carrega a imagem da barra lateral.
         sidebar_filename = application.paths.get_image("home", "sidebar.png")
@@ -79,7 +79,7 @@ class HomeScreen(Screen):
         )
 
         # Carrega a imagem de background.
-        background_filenames = application.paths.get_image_list("home", "background")
+        background_filenames = application.paths.get_image_list("home", "background", shuffle = True)
         
         background = Slide(
             self, batch, background_x, background_y,
