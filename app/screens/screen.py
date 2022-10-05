@@ -26,6 +26,10 @@ class Screen(ABC):
     def height(self):
         return self.__application.height
 
+    @property
+    def sound_player(self):
+        return self.__application.get_sound_player()
+
     def __get_true_y_position(self, y, height = 0):
         return self.height - y - height
 
@@ -33,7 +37,7 @@ class Screen(ABC):
         return text.Label(string, x = x, y = y, **kwargs)
 
     def create_rectangle(self, x, y, width, height, **kwargs):
-        y = self.__get_true_y_position(y, height)
+        y = self.__get_true_y_position(y)
         height *= -1
 
         shape = shapes.Rectangle(

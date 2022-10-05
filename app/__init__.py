@@ -1,5 +1,6 @@
 from .config import paths, settings
-from .screens import HomeScreen
+from .screens import BoardScreen, HomeScreen
+from .sound import SoundPlayer
 from pyglet import app
 from pyglet import clock
 from pyglet import window
@@ -16,8 +17,10 @@ class Application(window.Window):
             height = settings.size[1],
             resizable = False
         )
-        
+
         self.paths = paths
+        
+        self.__sound_player = SoundPlayer()
 
         self.__initialize_screens()
         self.__current_screen = self.__home_screen
@@ -25,12 +28,24 @@ class Application(window.Window):
 
     def __initialize_screens(self):
         self.__home_screen = HomeScreen(self, self.__on_play)
+        self.__board_screen = BoardScreen(self, None, None)
 
     def __on_play(self, selection):
         print("Inciando jogo. Selecionada a opção:", selection)
+        
+        if selection == 1:
+            self.__board_screen.set_mode(self.__board_screen.LOCAL_MODE)
+        else:
+            self.__board_screen.set_mode(self.__board_screen.ONLINE_MODE)
+            
+        self.__current_screen = self.__board_screen
+            
 
     def get_fps(self):
         return self.__FRAMES_PER_SECOND
+
+    def get_sound_player(self):
+        return self.__sound_player
 
     def on_draw(self, interval = None):
         self.clear()

@@ -1,7 +1,8 @@
+from .config import paths
 import pyglet
 
 ####################################################################
-class Audio():
+class SoundPlayer():
     
     def __init__(self):
         self.__player = pyglet.media.Player()
@@ -16,7 +17,7 @@ class Audio():
     
     def play_music(self):
         
-        musicPath = r"C:\Users\ti-20\Downloads\music_1.mp3"
+        musicPath = paths.get_random_sound("music")
         self.__play_sound(musicPath)
         
 
