@@ -36,13 +36,18 @@ class BoardScreen(Screen):
         square_size = board_size / 8
 
         # Obtém a posição do tabuleiro.
-        board_x = int(self.width / 2 - board_size / 2)
         board_y = (self.height - board_size) // 2
+        board_x = board_y
 
         # Cria o plano de fundo.
         background_filename = application.paths.get_image("board", "background.png")
-        background_image = self.load_image(background_filename, (self.width, self.height))
-        #self.__background = self.create_sprite(background_image, batch = self.__batch, x = 0, y = 0)
+        self.__background_image = self.load_image(background_filename, (self.width, self.height))
+
+        # Cria a borda do tabuleiro.
+        self.__board_border = self.create_rectangle(
+            board_x - 2, board_y - 2, board_size + 4, board_size + 4,
+            batch = self.__batch, color = (0, 0, 0)
+        )
 
         # Cria os quadrados do tabuleiro.
         for row in range(8):
@@ -82,4 +87,5 @@ class BoardScreen(Screen):
         if mouse_button != mouse.LEFT: return
 
     def on_draw(self, by_scheduler = False):
+        self.__background_image.blit(0, 0)
         self.__batch.draw()
