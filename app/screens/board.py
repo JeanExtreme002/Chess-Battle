@@ -28,7 +28,7 @@ class BoardScreen(Screen):
         self.__square_shapes = []
 
         # Obtém o tamanho do tabuleiro, que deve ser divisível por 8.
-        board_size = int(self.get_pixels_by_percent(0, 80)[1])
+        board_size = int(self.get_pixels_by_percent(0, 90)[1])
 
         while board_size % 8 != 0:
             board_size -= 1
@@ -39,9 +39,26 @@ class BoardScreen(Screen):
         board_y = (self.height - board_size) // 2
         board_x = board_y
 
+        # Obtém o tamanho e a posição do placar e seus elementos.
+        score_board_x = board_size + board_x
+        score_board_width = (self.width - score_board_x)
+        
+        player_indicator_size = score_board_width * 0.2
+        player_indicator_x = score_board_x + score_board_width // 2 - player_indicator_size // 2
+        player_indicator_y = board_y
+
         # Cria o plano de fundo.
         background_filename = application.paths.get_image("board", "background.png")
         self.__background_image = self.load_image(background_filename, (self.width, self.height))
+
+        # Cria imagem para indicar a posição dos jogadores no placar.
+        player_indicator_filename = application.paths.get_image("board", "players.png")
+        player_indicator_image = self.load_image(player_indicator_filename, (player_indicator_size , player_indicator_size))
+
+        self.__player_indicator_sprite = self.create_sprite(
+            player_indicator_image, batch = self.__batch,
+            x = player_indicator_x, y = player_indicator_y
+        )
 
         # Cria a borda do tabuleiro.
         self.__board_border = self.create_rectangle(
