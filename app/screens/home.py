@@ -165,11 +165,11 @@ class HomeScreen(Screen):
         if mouse_button != mouse.LEFT: return
             
         button_1, button_2, button_3 = self.__check_buttons(x, y)
-        
+
         if not self.__message is None:
             self.__message = None
             return
-
+        
         if button_1: self.__on_play(1)
         elif button_2: self.__on_play(2)
         elif button_3: self.__on_play(3)

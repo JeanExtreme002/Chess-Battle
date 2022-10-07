@@ -10,7 +10,7 @@ class Paths(object):
 
     data_path = "data"
     database_path = os.path.join(data_path, "database")
-    settings_filename = os.path.join(data_path, "settings.json")
+    settings_filename = os.path.join(data_path, "settings.usercfg")
 
     __image_extensions = (".png", ".jpg", ".jpeg")
     __sound_extensions = (".mp3",)
