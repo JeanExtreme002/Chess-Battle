@@ -9,7 +9,7 @@ class Rook(Piece):
     def movement(self):
         pass
 
-    def legal_moves(self, target, situation):
+    def legal_moves(self, situation):
         pass
 
     def move(self, target, situation):
