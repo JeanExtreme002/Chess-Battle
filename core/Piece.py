@@ -1,75 +1,89 @@
 from abc import ABC, abstractmethod
-from Color import *
+from Color import Color
 
 
 class Piece(ABC):
-    def __init__(self, color, x, y):
+    def __init__(self, color: Color, x: int, y: int):
         self._color = color
         self._color_complex = None
         self.x = x
         self.y = y
         self._list_moves = []
-        self._situation = [[]]
-        self.has_moved = 0
+        self._has_moved = False
 
     @property
-    def row_boundary(self):
-        # checks if the piece is on the border of the board
+    def in_row_boundary(self) -> bool:
+        """Checks if the piece is on the top or bottom edge of the board"""
         if self.y == 7 or self.y == 0:
             return True
         return False
 
     @property
-    def column_boundary(self):
-        # checks if the piece is on the border of the board
+    def in_column_boundary(self) -> bool:
+        """Checks if the piece is on the left or right edge of the board"""
         if self.x == 7 or self.x == 0:
             return True
         return False
 
     @property
-    def situation(self):
-        return self._situation
-
-    @property
-    def color(self):
+    def color(self) -> Color:
         return self._color
 
     @property
-    def color_complex(self):
+    def color_complex(self) -> Color:
         """Returns the color of the square"""
         if self.x + self.y in Color.Dark.value:
             self._color_complex = Color.Dark
         else:
             self._color_complex = Color.Light
-        return self.color_complex
+        return self._color_complex
 
-    def _update_position(self, target):
+    @property
+    def has_moved(self) -> bool:
+        return self._has_moved
+
+    def _update_position(self, target: list[int, int]) -> None:
+        """Moves a piece to a target"""
         self.x = target[0]
         self.y = target[1]
 
-    def _update_situation(self, target, situation):
-        situation[self.x][self.y] = 0
+    def update_situation(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+        """Updates the board situation after a move"""
+        situation[self.x][self.y] = None
         self._update_position(target)
         situation[self.x][self.y] = self
         return situation
 
-    @abstractmethod
+    @staticmethod
+    def is_defended(target: list[int, int], situation: list[[]]) -> bool:
+        """Checks if the square is defended by a piece"""
+        try:
+            for row in range(8):
+                for piece in situation[row]:
+                    if piece is not None and\
+                            target in piece.legal_moves(situation):
+                        return True
+            return False
+        except IndexError as e:
+            print("Ops!", e, "Occurred")
+
     @property
+    @abstractmethod
     def movement(self):
         """Returns the lists of potential moves in any given position"""
         return
 
     @abstractmethod
-    def legal_moves(self, target, situation):
+    def legal_moves(self, situation: list[[]]):
         """Restricts the list of movements to only legal moves.
-        Receives the target square and the situation of the board,
-        a matrix with all the instances in the game right now."""
-        pass
+        Receives the situation of the board, a matrix with all the instances in the game right now.
+        Returns the legal moves"""
+        return
 
     @abstractmethod
-    def move(self, target, situation):
+    def move(self, target: list[int, int], situation: list[[]]):
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
         Returns the new updated situation if the move was possible"""
-        pass
+        return
