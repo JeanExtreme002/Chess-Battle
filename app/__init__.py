@@ -36,7 +36,7 @@ class Application(window.Window):
 
     def __on_play(self, selection):     
         if selection >= 2:
-            self.__current_screen.set_message("Modo online indisponível no momento.")
+            self.__current_screen.set_message("Modo online indisponível no momento", "(ಥ﹏ಥ)")
         else:
             self.__board_screen.set_mode(self.__board_screen.LOCAL_MODE)
             self.__current_screen = self.__board_screen   

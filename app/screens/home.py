@@ -1,6 +1,7 @@
 from .screen import Screen
 from .util.button import Button
 from .util.slide import Slide
+from .util.message_box import MessageBox
 from pyglet import graphics
 from pyglet.window import mouse
 
@@ -46,8 +47,6 @@ class HomeScreen(Screen):
         message_box_height = message_box_width * 0.7
         message_box_x = int(self.width / 2 - message_box_width / 2)
         message_box_y = int(self.height / 2 - message_box_height / 2)
-        message_box_text_x = self.width // 2
-        message_box_text_y = self.height // 2
         
         # Carrega a imagem da barra lateral.
         sidebar_filename = application.paths.get_image("home", "sidebar.png")
@@ -98,31 +97,12 @@ class HomeScreen(Screen):
             background_filenames
         )
 
-        # Carrega a imagem de caixa de texto para inserir mensagens.
+        # Cria uma caixa de mensagens para inserir futuras mensagens.
         message_box_filename = application.paths.get_image("home", "message_box.png")
-        message_box_image = self.load_image(message_box_filename, (message_box_width, message_box_height))
 
-        message_box_shadow_group = graphics.OrderedGroup(0)
-        message_box_shadow = self.create_rectangle(
-            0, 0, self.width, self.height,
-            batch = message_box_batch,
-            group = message_box_shadow_group,
-            color = (0, 0, 0)
-        )
-        message_box_shadow.opacity = 150
-
-        message_box_group = graphics.OrderedGroup(1)
-        message_box_sprite = self.create_sprite(
-            message_box_image,
-            batch = message_box_batch,
-            group = message_box_group,
-            x = message_box_x,
-            y = message_box_y
-        )
-
-        message_box_text = self.create_text(
-            str(), x = message_box_text_x, y = message_box_text_y, color = (0, 0, 0, 255),
-            anchor_x = "center", anchor_y = "center", font_size = int(self.width * 0.012)
+        message_box = MessageBox(
+            self, message_box_batch, message_box_x, message_box_y,
+            (message_box_width, message_box_height), message_box_filename
         )
 
         # Instancia as imagens desenhadas no batch (para o garbage collector não apagá-las antes de desenhar)
@@ -131,19 +111,13 @@ class HomeScreen(Screen):
         self.__background = background
         
         self.__logo_sprite = logo_sprite
+        self.__message_box = message_box
         
         self.__button_1 = button_1
         self.__button_2 = button_2
         self.__button_3 = button_3
         
         self.__batch = batch
-        
-        self.__message_box_group = message_box_group
-        self.__message_box_shadow_group = message_box_shadow_group
-        self.__message_box_shadow = message_box_shadow
-        self.__message_box_sprite = message_box_sprite
-        self.__message_box_text = message_box_text
-        self.__message_box_batch = message_box_batch
 
     def __check_buttons(self, x, y):
         if self.__button_1.check(x, y): return True, False, False
@@ -152,9 +126,12 @@ class HomeScreen(Screen):
 
         return False, False, False
 
-    def set_message(self, message = None):
-        self.__message = message
-        self.__message_box_text.text = message
+    def set_message(self, *message):
+        self.__message_box.set_message(
+            self.width // 2, self.height // 2,
+            *message, font_size = int(self.width * 0.012),
+            line_spacing = int(self.width * 0.025)
+        )
 
     def on_mouse_motion(self, *args):
         x, y = super().on_mouse_motion(*args)[0: 2]
@@ -166,9 +143,8 @@ class HomeScreen(Screen):
             
         button_1, button_2, button_3 = self.__check_buttons(x, y)
 
-        if not self.__message is None:
-            self.__message = None
-            return
+        if self.__message_box.has_message():
+            return self.__message_box.delete_message()
         
         if button_1: self.__on_play(1)
         elif button_2: self.__on_play(2)
@@ -178,7 +154,4 @@ class HomeScreen(Screen):
         if by_scheduler: self.__background.next()
         self.__sidebar_image.blit(0, 0)
         self.__batch.draw()
-
-        if not self.__message is None:
-            self.__message_box_batch.draw()
-            self.__message_box_text.draw()
+        self.__message_box.draw()
