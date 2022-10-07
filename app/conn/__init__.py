@@ -7,7 +7,7 @@ class Connection(object):
         self.__socket = None
         self.__connection = None
         
-        self.__address = address
+        self.__address = tuple(address)
         self.__hosting = host
 
     def __send_data(self, string):

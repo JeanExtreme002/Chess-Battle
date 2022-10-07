@@ -34,6 +34,7 @@ class Screen(ABC):
         return self.height - y - height
 
     def create_text(self, string, x, y, **kwargs):
+        y = self.__get_true_y_position(y)
         return text.Label(string, x = x, y = y, **kwargs)
 
     def create_rectangle(self, x, y, width, height, **kwargs):
