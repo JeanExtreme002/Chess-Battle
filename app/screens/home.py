@@ -8,11 +8,14 @@ class HomeScreen(Screen):
     def __init__(self, application, on_play):
         super().__init__(application)
         self.__on_play = on_play
+        self.__message = None
         self.__build()
 
     def __build(self):
         application = self.get_application()
         batch = graphics.Batch()
+        
+        message_box_batch = graphics.Batch()
 
         # Obtém tamanho e posição da imagem background.
         background_x, background_y = self.get_pixels_by_percent(30, 0)
@@ -37,6 +40,14 @@ class HomeScreen(Screen):
         play_button_x = int(sidebar_width * 0.5 - play_button_width * 0.5)
         play_button_spacing = play_button_height * 0.2
         first_play_button_y = int(self.height * 0.35)
+
+        # Obtém o tamanho e a posição da caixa de mensagem.
+        message_box_width = self.width * 0.45
+        message_box_height = message_box_width * 0.7
+        message_box_x = int(self.width / 2 - message_box_width / 2)
+        message_box_y = int(self.height / 2 - message_box_height / 2)
+        message_box_text_x = self.width // 2
+        message_box_text_y = self.height // 2
         
         # Carrega a imagem da barra lateral.
         sidebar_filename = application.paths.get_image("home", "sidebar.png")
@@ -85,7 +96,34 @@ class HomeScreen(Screen):
             self, batch, background_x, background_y,
             (background_width, background_height),
             background_filenames
-        )   
+        )
+
+        # Carrega a imagem de caixa de texto para inserir mensagens.
+        message_box_filename = application.paths.get_image("home", "message_box.png")
+        message_box_image = self.load_image(message_box_filename, (message_box_width, message_box_height))
+
+        message_box_shadow_group = graphics.OrderedGroup(0)
+        message_box_shadow = self.create_rectangle(
+            0, 0, self.width, self.height,
+            batch = message_box_batch,
+            group = message_box_shadow_group,
+            color = (0, 0, 0)
+        )
+        message_box_shadow.opacity = 150
+
+        message_box_group = graphics.OrderedGroup(1)
+        message_box_sprite = self.create_sprite(
+            message_box_image,
+            batch = message_box_batch,
+            group = message_box_group,
+            x = message_box_x,
+            y = message_box_y
+        )
+
+        message_box_text = self.create_text(
+            str(), x = message_box_text_x, y = message_box_text_y, color = (0, 0, 0, 255),
+            anchor_x = "center", anchor_y = "center", font_size = int(self.width * 0.012)
+        )
 
         # Instancia as imagens desenhadas no batch (para o garbage collector não apagá-las antes de desenhar)
         # e a posição do background, que será necessária para desenhar posteriormente.
@@ -99,6 +137,13 @@ class HomeScreen(Screen):
         self.__button_3 = button_3
         
         self.__batch = batch
+        
+        self.__message_box_group = message_box_group
+        self.__message_box_shadow_group = message_box_shadow_group
+        self.__message_box_shadow = message_box_shadow
+        self.__message_box_sprite = message_box_sprite
+        self.__message_box_text = message_box_text
+        self.__message_box_batch = message_box_batch
 
     def __check_buttons(self, x, y):
         if self.__button_1.check(x, y): return True, False, False
@@ -106,6 +151,10 @@ class HomeScreen(Screen):
         elif self.__button_3.check(x, y): return False, False, True
 
         return False, False, False
+
+    def set_message(self, message = None):
+        self.__message = message
+        self.__message_box_text.text = message
 
     def on_mouse_motion(self, *args):
         x, y = super().on_mouse_motion(*args)[0: 2]
@@ -116,6 +165,10 @@ class HomeScreen(Screen):
         if mouse_button != mouse.LEFT: return
             
         button_1, button_2, button_3 = self.__check_buttons(x, y)
+        
+        if not self.__message is None:
+            self.__message = None
+            return
 
         if button_1: self.__on_play(1)
         elif button_2: self.__on_play(2)
@@ -125,3 +178,7 @@ class HomeScreen(Screen):
         if by_scheduler: self.__background.next()
         self.__sidebar_image.blit(0, 0)
         self.__batch.draw()
+
+        if not self.__message is None:
+            self.__message_box_batch.draw()
+            self.__message_box_text.draw()

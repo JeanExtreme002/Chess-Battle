@@ -4,10 +4,10 @@ class Slide(Widget):
     def __init__(self, screen, batch, x, y, size, images):
         super().__init__(screen, batch, x, y, size)
 
-        self.__max_opacity = 200
+        self.__max_opacity = 255
         self.__opacity = 70
         self.__direction = 1
-        self.__velocity = 1
+        self.__velocity = 1.2
         self.__index = 0
         
         self.__show_waiting = screen.get_application().get_fps() * 5
