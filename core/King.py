@@ -61,7 +61,8 @@ class King(Piece):
                 psb_moves.append([self.x - 2, self.y])
             # checking if the square is defended
             for move in psb_moves:
-                if self.is_defended(move, situation):
+                if self.is_defended(move, situation) or (situation[move[0]][move[1]] is not None and
+                                                         situation[move[0]][move[1]].color == self.color):
                     psb_moves.remove(move)
         except IndexError as e:
             print("Ops!", e, "Occurred")

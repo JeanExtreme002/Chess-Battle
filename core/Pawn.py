@@ -60,7 +60,8 @@ class Pawn(Piece):
                     psb_moves.remove(move)
             # checking if there is something to be capture
             for move in psb_captures:
-                if situation[move[0]][move[1]] is None and not self.en_passant:
+                if (situation[move[0]][move[1]] is None and not self.en_passant) or \
+                        (situation[move[0]][move[1]].color == self.color):
                     psb_captures.remove(move)
         except IndexError as e:
             print("Ops!", e, "Occurred")
