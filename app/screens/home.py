@@ -158,7 +158,7 @@ class HomeScreen(Screen):
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
         if mouse_button != mouse.LEFT: return
             
-        button_1, button_2, button_3 = self.__check_buttons(x, y)
+        button_1, button_2, button_3, settings_button = self.__check_buttons(x, y)
 
         if self.__message_box.has_message():
             return self.__message_box.delete_message()
