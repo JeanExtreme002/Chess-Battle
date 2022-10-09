@@ -42,6 +42,13 @@ class HomeScreen(Screen):
         play_button_spacing = play_button_height * 0.2
         first_play_button_y = int(self.height * 0.35)
 
+        # Obtém o tamanho e posição do botão de configuração.
+        settings_button_width = int(sidebar_width * 0.18)
+        settings_button_height = int(settings_button_width * 0.75)
+
+        settings_button_x = int(sidebar_width - (sidebar_width - play_button_width) / 2 - settings_button_width)
+        settings_button_y = int(sidebar_height * 0.9 - settings_button_height)
+
         # Obtém o tamanho e a posição da caixa de mensagem.
         message_box_width = self.width * 0.45
         message_box_height = message_box_width * 0.7
@@ -67,6 +74,9 @@ class HomeScreen(Screen):
         button_3_filename = application.paths.get_image("home", "buttons", "play_as_client.png")
         activated_button_3_filename = application.paths.get_image("home", "buttons", "activated_play_as_client.png")
 
+        settings_button_filename = application.paths.get_image("home", "buttons", "settings.png")
+        activated_settings_button_filename = application.paths.get_image("home", "buttons", "activated_settings.png")
+
         button_1 = Button(
             self, batch, play_button_x,
             first_play_button_y,
@@ -86,6 +96,12 @@ class HomeScreen(Screen):
             first_play_button_y + (play_button_height + play_button_spacing) * 2,
             (play_button_width, play_button_height),
             (button_3_filename, activated_button_3_filename)
+        )
+
+        settings_button = Button(
+            self, batch, settings_button_x, settings_button_y,
+            (settings_button_width, settings_button_height),
+            (settings_button_filename, activated_settings_button_filename)
         )
 
         # Carrega a imagem de background.
@@ -116,15 +132,16 @@ class HomeScreen(Screen):
         self.__button_1 = button_1
         self.__button_2 = button_2
         self.__button_3 = button_3
+        self.__settings_button = settings_button
         
         self.__batch = batch
 
     def __check_buttons(self, x, y):
-        if self.__button_1.check(x, y): return True, False, False
-        elif self.__button_2.check(x, y): return False, True, False
-        elif self.__button_3.check(x, y): return False, False, True
-
-        return False, False, False
+        if self.__button_1.check(x, y): return True, False, False, False
+        elif self.__button_2.check(x, y): return False, True, False, False
+        elif self.__button_3.check(x, y): return False, False, True, False
+        elif self.__settings_button.check(x, y): return False, False, False, True
+        return False, False, False, False
 
     def set_message(self, *message):
         self.__message_box.set_message(
