@@ -1,9 +1,10 @@
 from .screen import Screen
 from .util.button import Button
+from .util.confirmation_box import ConfirmationBox
 from .util.slide import Slide
 from .util.message_box import MessageBox
 from pyglet import graphics
-from pyglet.window import mouse
+from pyglet.window import mouse, key
 
 class HomeScreen(Screen):
     def __init__(self, application, on_play):
@@ -135,12 +136,27 @@ class HomeScreen(Screen):
             background_filenames
         )
 
-        # Cria uma caixa de mensagens para inserir futuras mensagens.
+        # Cria uma caixa de mensagens e uma caixa de confirmação.
         message_box_filename = application.paths.get_image("home", "message_box.png")
+
+        cancel_button_filename = application.paths.get_image("general", "buttons", "cancel.png")
+        activated_cancel_button_filename = application.paths.get_image("general", "buttons", "cancel.png")
+        
+        confirm_button_filename = application.paths.get_image("general", "buttons", "confirm.png")
+        activated_confirm_button_filename = application.paths.get_image("general", "buttons", "confirm.png")
 
         message_box = MessageBox(
             self, message_box_batch, message_box_x, message_box_y,
             (message_box_width, message_box_height), message_box_filename
+        )
+
+        confirmation_box = ConfirmationBox(
+            self, message_box_batch, message_box_x, message_box_y,
+            (message_box_width, message_box_height), message_box_filename,
+            button_images = (
+                (cancel_button_filename, activated_cancel_button_filename),
+                (confirm_button_filename, activated_confirm_button_filename)
+            )
         )
 
         # Instancia as imagens desenhadas no batch (para o garbage collector não apagá-las antes de desenhar)
@@ -150,6 +166,7 @@ class HomeScreen(Screen):
         
         self.__logo_sprite = logo_sprite
         self.__message_box = message_box
+        self.__confirmation_box = confirmation_box
         
         self.__play_button_1 = play_button_1
         self.__play_button_2 = play_button_2
@@ -175,16 +192,31 @@ class HomeScreen(Screen):
         elif self.__settings_button.check(x, y): return False, False, False, False, False, True
         return False, False, False, False, False, False
 
-    def set_message(self, *message):
-        self.__message_box.set_message(
+    def __set_dialog_box_message(self, widget, *message):
+        widget.set_message(
             self.width // 2, self.height // 2,
             *message, font_size = int(self.width * 0.012),
             line_spacing = int(self.width * 0.025)
         )
 
+    def set_message(self, *message):
+        self.__set_dialog_box_message(self.__message_box, *message)
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == key.ESCAPE:
+            message = self.__message_box.has_message()
+            message = message or self.__confirmation_box.has_message()
+            
+            if not message:
+                self.__set_dialog_box_message(self.__confirmation_box, "Você realmente deseja sair?")
+        return True
+
     def on_mouse_motion(self, *args):
         x, y = super().on_mouse_motion(*args)[0: 2]
         self.__check_buttons(x, y)
+
+        if self.__confirmation_box.has_message():
+            self.__confirmation_box.check(x, y)
 
     def on_mouse_release(self, *args):
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
@@ -195,7 +227,15 @@ class HomeScreen(Screen):
         # Qualquer ação será realizada somente se não houver mensagens sendo mostrada na tela.
         if self.__message_box.has_message():
             return self.__message_box.delete_message()
-        
+
+        if self.__confirmation_box.has_message():
+            cancel, confirm = self.__confirmation_box.check(x, y)
+
+            if confirm: self.get_application().close()
+            elif cancel: self.__confirmation_box.delete_message()
+            return
+
+        # Verifica se algum botão de jogar foi apertado.
         if play_button_1: self.__on_play(1)
         elif play_button_2: self.__on_play(2)
         elif play_button_3: self.__on_play(3)
@@ -204,4 +244,6 @@ class HomeScreen(Screen):
         if by_scheduler: self.__background.next()
         self.__sidebar_image.blit(0, 0)
         self.__batch.draw()
+
+        self.__confirmation_box.draw()
         self.__message_box.draw()

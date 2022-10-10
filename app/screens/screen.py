@@ -84,5 +84,8 @@ class Screen(ABC):
     def on_mouse_release(self, x, y, button, modifiers):
         return x, self.__get_true_y_position(y), button, modifiers
 
+    def on_key_press(self, symbol, modifiers):
+        return True
+
     @abstractmethod
     def on_draw(self, by_scheduler = False): pass

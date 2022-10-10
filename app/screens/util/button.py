@@ -1,12 +1,13 @@
 from .widget import Widget
 
 class Button(Widget):
-    def __init__(self, screen, batch, x, y, size, images):
+    def __init__(self, screen, batch, x, y, size, images, group = None):
         super().__init__(screen, batch, x, y, size)
         
         self.__activated = False
         self.__previous_status = False
         self.__images = images
+        self.__group = group
 
         self.__load_images()
         self.__create_sprite()
@@ -20,7 +21,8 @@ class Button(Widget):
     def __create_sprite(self):
         self.__sprite = self.screen.create_sprite(
             self.__loaded_images[int(self.__activated)],
-            batch = self.batch, x = self.x, y = self.y
+            batch = self.batch, x = self.x, y = self.y,
+            group = self.__group
         )
 
     def __delete_sprite(self):

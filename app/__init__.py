@@ -51,6 +51,9 @@ class Application(window.Window):
         self.clear()
         self.__current_screen.on_draw(not interval is None)
 
+    def on_key_press(self, *args):
+        self.__current_screen.on_key_press(*args)
+
     def on_mouse_motion(self, *args):
         self.__current_screen.on_mouse_motion(*args)
 
