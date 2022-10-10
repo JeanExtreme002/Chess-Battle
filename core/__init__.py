@@ -1,15 +1,15 @@
+from Player import Player
 from typing import Union
+from Piece import Piece
 from enum import Enum
 
-class ChessPiece:
-    '''Classe feita apenas para compatibilidade das "type hints". Ela será removida assim que a classe Piece estiver pronta.'''
-    pass
-
 class ChessGame:
-    def __init__(self, database_path: str):
-        pass
+    def __init__(self, white_player: Player, black_player: Player, database_path: str):
+        self.database_path = database_path
+        self.white_player = white_player
+        self.black_player = black_player
 
-    def new_game(self, timeout: bool, first_player:Union[bool, int, Enum]):
+    def new_game(self, first_player:Enum, timeout=None):
         pass
 
     def load_game(self, match:int, round:int):
@@ -18,13 +18,13 @@ class ChessGame:
     def get_history(self) -> list:
         pass
 
-    def get_player(self) -> Union[Enum, bool, int]:
+    def get_player(self) -> Enum:
         pass
 
     def get_time(self) -> str:
         pass
 
-    def get_piece(self, x:int, y:int) -> Union[Enum, ChessPiece]:
+    def get_piece(self, x:int, y:int) -> Union[Enum, Piece]:
         pass
 
     def get_status(self) -> Enum:
