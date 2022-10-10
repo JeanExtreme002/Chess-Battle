@@ -18,6 +18,7 @@ class HomeScreen(Screen):
         batch = graphics.Batch()
         
         message_box_batch = graphics.Batch()
+        confirmation_box_batch = graphics.Batch()
 
         # Obtém tamanho e posição da imagem background.
         background_x, background_y = self.get_pixels_by_percent(30, 0)
@@ -137,7 +138,7 @@ class HomeScreen(Screen):
         )
 
         # Cria uma caixa de mensagens e uma caixa de confirmação.
-        message_box_filename = application.paths.get_image("home", "message_box.png")
+        message_box_filename = application.paths.get_image("general", "message_box.png")
 
         cancel_button_filename = application.paths.get_image("general", "buttons", "cancel.png")
         activated_cancel_button_filename = application.paths.get_image("general", "buttons", "activated_cancel.png")
@@ -151,7 +152,7 @@ class HomeScreen(Screen):
         )
 
         confirmation_box = ConfirmationBox(
-            self, message_box_batch, message_box_x, message_box_y,
+            self, confirmation_box_batch, message_box_x, message_box_y,
             (message_box_width, message_box_height), message_box_filename,
             button_images = (
                 (cancel_button_filename, activated_cancel_button_filename),
