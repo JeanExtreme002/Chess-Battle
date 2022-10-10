@@ -140,10 +140,10 @@ class HomeScreen(Screen):
         message_box_filename = application.paths.get_image("home", "message_box.png")
 
         cancel_button_filename = application.paths.get_image("general", "buttons", "cancel.png")
-        activated_cancel_button_filename = application.paths.get_image("general", "buttons", "cancel.png")
+        activated_cancel_button_filename = application.paths.get_image("general", "buttons", "activated_cancel.png")
         
         confirm_button_filename = application.paths.get_image("general", "buttons", "confirm.png")
-        activated_confirm_button_filename = application.paths.get_image("general", "buttons", "confirm.png")
+        activated_confirm_button_filename = application.paths.get_image("general", "buttons", "activated_confirm.png")
 
         message_box = MessageBox(
             self, message_box_batch, message_box_x, message_box_y,
