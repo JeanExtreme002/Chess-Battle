@@ -15,16 +15,16 @@ class ConfirmationBox(MessageBox):
         button_height = button_width * 0.75
 
         self.__cancel_button = Button(
-            self.screen, self.batch, self.x + self.width * 0.2,
-            self.y + self.height - button_height - self.width * 0.15,
+            self.screen, self.batch, self.x + self.width * 0.27,
+            self.y + self.height - button_height - self.width * 0.18,
             (button_width, button_height),
             (self.__button_images[0][0], self.__button_images[0][1]),
             group = self.__button_group
         )
 
         self.__confirm_button = Button(
-            self.screen, self.batch, self.x + self.width * 0.8 - button_width,
-            self.y + self.height - button_height - self.width * 0.15,
+            self.screen, self.batch, self.x + self.width * 0.73 - button_width,
+            self.y + self.height - button_height - self.width * 0.18,
             (button_width, button_height),
             (self.__button_images[1][0], self.__button_images[1][1]),
             group = self.__button_group

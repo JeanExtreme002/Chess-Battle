@@ -206,10 +206,13 @@ class HomeScreen(Screen):
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             message = self.__message_box.has_message()
-            message = message or self.__confirmation_box.has_message()
+            confirmation = self.__confirmation_box.has_message()
             
-            if not message:
+            if not (message or confirmation):
                 self.__set_dialog_box_message(self.__confirmation_box, "Você realmente deseja sair?")
+            if message:
+                self.__message_box.delete_message()
+                
         return True
 
     def on_mouse_motion(self, *args):
