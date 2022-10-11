@@ -13,26 +13,20 @@ class SoundPlayer():
         self.__player.queue(mediaLoad_music)
         self.__player.play()
         
-       
-    
     def play_music(self):
         
         musicPath = paths.get_random_sound("music")
         self.__play_sound(musicPath)
         
-
-    
     def stop_music(self):
-        self.__player.next_source()
-    
-    
-    def play_movement_sound(self):
+        self.__player.pause()
+        self.__player.delete()
         
+        
+    def play_movement_sound(self):
        
         musicPath = paths.get_random_sound("effects","movement")
         self.__play_sound(musicPath)
-        
-        
     
     def play_victory_sound(self):
         
@@ -40,6 +34,6 @@ class SoundPlayer():
         musicPath = paths.get_random_sound("effects","victory")
         self.__play_sound(musicPath)
         
+    def playing_music(self):
 
-
-
+        return self.__player.playing
