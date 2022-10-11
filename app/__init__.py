@@ -25,12 +25,12 @@ class Application(window.Window):
         self.__sound_player = SoundPlayer()
 
         self.__initialize_screens()
-        self.__current_screen = self.__home_screen
         clock.schedule_interval(self.on_draw, 1 / self.get_fps())
 
     def __initialize_screens(self):
         self.__home_screen = HomeScreen(self, self.__on_play)
         self.__board_screen = BoardScreen(self, None, None)
+        self.__current_screen = self.__home_screen
 
     def __start_connection(self, host_mode): pass
 
@@ -39,7 +39,10 @@ class Application(window.Window):
             self.__current_screen.set_message("Modo online indisponível no momento", "(ಥ﹏ಥ)")
         else:
             self.__board_screen.set_mode(self.__board_screen.LOCAL_MODE)
-            self.__current_screen = self.__board_screen   
+            self.__current_screen = self.__board_screen
+
+    def go_back(self):
+        self.__current_screen = self.__home_screen
 
     def get_fps(self):
         return self.__FRAMES_PER_SECOND

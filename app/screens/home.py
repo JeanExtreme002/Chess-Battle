@@ -212,7 +212,6 @@ class HomeScreen(Screen):
                 self.__set_dialog_box_message(self.__confirmation_box, "Você realmente deseja sair?")
             if message:
                 self.__message_box.delete_message()
-                
         return True
 
     def on_mouse_motion(self, *args):
