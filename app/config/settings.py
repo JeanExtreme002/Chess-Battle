@@ -32,7 +32,8 @@ class ApplicationSettings(object):
         "address": (gethostbyname(gethostname()), 5000)
     }
 
-    __SECRET_KEY = int(gethostbyname(gethostname())[:3] + gethostbyname(gethostname())[-1])
+    #__SECRET_KEY = int(gethostbyname(gethostname())[:3] + gethostbyname(gethostname())[-1]) 
+    __SECRET_KEY = int(gethostbyname(gethostname()).replace('.', '')[:3] + gethostbyname(gethostname())[-1])
     
     def __init__(self):
         self.__filename = paths.settings_filename
