@@ -29,7 +29,7 @@ class SoundPlayer():
     def play_movement_sound(self):
         
        
-        musicPath =r"C:\Users\ti-20\Downloads\sounds_effects_movement_moving_1.mp3"
+        musicPath = paths.get_random_sound("effects","movement")
         self.__play_sound(musicPath)
         
         
@@ -37,16 +37,9 @@ class SoundPlayer():
     def play_victory_sound(self):
         
       
-        musicPath = r"C:\Users\ti-20\Downloads\sounds_effects_victory_victory_2.mp3"
+        musicPath = paths.get_random_sound("effects","victory")
         self.__play_sound(musicPath)
         
 
 
 
-
-
-
-
-
-        
-        
