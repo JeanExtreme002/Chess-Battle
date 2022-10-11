@@ -5,12 +5,11 @@ from typing import Optional
 
 
 class Pawn(Piece):
-    def __init__(self, color: Color, x: int, y: int):
-        super(Pawn, self).__init__(color, x, y)
+    def __init__(self, color: Color, x: int, y: int,id):
+        super(Pawn, self).__init__(color, x, y,id)
         self._has_moved2 = False
         self._en_passant_enable = False
         self._captures = []
-
     @property
     def has_moved2(self) -> bool:
         return self._has_moved2
