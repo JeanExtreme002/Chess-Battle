@@ -2,14 +2,17 @@ from Piece import Piece
 from PromotionRoles import PromotionRoles
 from Color import Color
 from typing import Optional
+from Pieces_type import Piece_type
 
 
 class Pawn(Piece):
-    def __init__(self, color: Color, x: int, y: int,id):
-        super(Pawn, self).__init__(color, x, y,id)
+    def __init__(self, color: Color, x: int, y: int):
+        super(Pawn, self).__init__(color, x, y)
         self._has_moved2 = False
         self._en_passant_enable = False
         self._captures = []
+        self.__id = Piece_type.PAWN.value + color.value
+
     @property
     def has_moved2(self) -> bool:
         return self._has_moved2

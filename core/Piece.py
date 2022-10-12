@@ -3,17 +3,19 @@ from Color import Color
 
 
 class Piece(ABC):
-    def __init__(self, color: Color, x: int, y: int,r_id):
+    def __init__(self, color: Color, x: int, y: int, r_id):
         self._color = color
         self._color_complex = None
         self.x = x
         self.y = y
         self._list_moves = []
         self._has_moved = False
-        self.__id = r_id 
+        self.__id = r_id
+
     @property
     def r_id(self):
         return self.__id
+
     @property
     def in_row_boundary(self) -> bool:
         """Checks if the piece is on the top or bottom edge of the board"""

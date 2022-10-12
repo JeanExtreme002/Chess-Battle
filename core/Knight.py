@@ -1,16 +1,52 @@
 from Piece import Piece
 from Color import Color
+from Pieces_type import Piece_type
 
 
 class Knight(Piece):
-    def __init__(self, color, x, y):
-        super(Knight, self).__init__(color, x, y)
+    def __init__(self, color: Color, x: int, y: int):
+        super(Knight, self).__init__(color, x, y, id)
+        self.__id = Piece_type.KNIGHT.value + color.value
+
     @property
-    def movement(self):
-        pass
+    def movement(self) -> list:
+        """Returns the lists of potential moves in any given position"""
+        self._list_moves.clear()
+        directions = [(-2, -1), (2, -1), (-2, 1), (2, 1), (-1, -2), (1, -2), (-1, 2), (1, 2)]
+        # checking each direction
+        for side in directions:
+            x, y = self.x, self.y
+            x += side[0]
+            y += side[1]
+            in_board_boundary = 0 <= x < 8 and 0 <= y < 8
+            if in_board_boundary:
+                self._list_moves.append([x, y])
+        return self._list_moves.copy()
 
-    def legal_moves(self, situation: list[[]]):
-        pass
+    def legal_moves(self, situation: list[[]]) -> list:
+        """Restricts the list of movements to only legal moves.
+        Receives the target square and the situation of the board,
+        a matrix with all the instances in the game right now.
+        Returns the legal moves"""
+        psb_moves = self.movement
+        try:
+            for move in psb_moves:
+                if situation[move[0]][move[1]] is not None and (
+                        situation[move[0]][move[1]].color == self.color):
+                    psb_moves.remove(move)
+        except IndexError as e:
+            print("Ops!", e, "Occurred")
+        finally:
+            return psb_moves
 
-    def move(self, target: list[int, int], situation: list[[]]):
-        pass
+    def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+        """Executes the move of the piece.
+        Receives the target square and the situation of the board,
+        a matrix with all the instances in the game right now.
+        Returns the new updated situation if the move was possible"""
+        psb_moves = self.legal_moves(situation)
+        # checking if the move is possible
+        if target not in psb_moves:
+            return situation
+        new_situation = self.update_situation(target, situation)
+        return new_situation
