@@ -16,7 +16,7 @@ class SettingsScreen(Screen):
         confirmation_box_batch = graphics.Batch()
 
         # Obtém o tamanho e a posição dos labels.
-        label_width = self.width * 0.35
+        label_width = self.width * 0.25
         label_height = label_width * 0.41
         label_x = int(self.width / 2 - label_width / 2)
         first_label_y = self.height * 0.1
