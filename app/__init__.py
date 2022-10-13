@@ -12,9 +12,9 @@ class Application(window.Window):
 
     __FRAMES_PER_SECOND = 60
     
-    def __init__(self):
+    def __init__(self, title):
         super().__init__(
-            caption = settings.title,
+            caption = title,
             width = settings.size[0],
             height = settings.size[1],
             resizable = False

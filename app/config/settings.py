@@ -27,7 +27,6 @@ class Crypt(object):
 class ApplicationSettings(object):
 
     __settings = {
-        "title": "Xadrez",
         "size": (1280, 720),
         "address": (gethostbyname(gethostname()), 5000)
     }

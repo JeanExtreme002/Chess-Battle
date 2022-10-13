@@ -14,9 +14,15 @@ class BoardScreen(Screen):
     def __init__(self, application):
         super().__init__(application)
 
-        self.__mode = self.LOCAL_MODE
+        self.__mode = None
         self.__game = None
-        
+        self.__player_input = None
+        self.__player_output = None
+
+        self.__piece_shapes = [[None,] for i in range(8)]
+        self.__moving = False
+        self.__from_position = tuple()
+
         self.__build()
         
     def __build(self):
@@ -24,8 +30,6 @@ class BoardScreen(Screen):
         
         self.__batch = graphics.Batch()
         confirmation_box_batch = graphics.Batch()
-        
-        self.__square_shapes = []
 
         # Obtém o tamanho do tabuleiro, que deve ser divisível por 8.
         board_size = int(self.get_pixels_by_percent(0, 90)[1])
@@ -54,6 +58,9 @@ class BoardScreen(Screen):
         message_box_x = int(self.width / 2 - message_box_width / 2)
         message_box_y = int(self.height / 2 - message_box_height / 2)
 
+        # Inicializa as imagens de peças.
+        self.__load_piece_images(square_size)
+
         # Cria o plano de fundo.
         background_filename = application.paths.get_image("board", "background.png")
         self.__background_image = self.load_image(background_filename, (self.width, self.height))
@@ -74,6 +81,8 @@ class BoardScreen(Screen):
         )
 
         # Cria os quadrados do tabuleiro.
+        self.__square_shapes = []
+        
         for row in range(8):
             for column in range(8):
                 x = board_x + square_size * column
@@ -112,6 +121,22 @@ class BoardScreen(Screen):
         self.__board_size = board_size
         self.__square_size = square_size
 
+    def __load_piece_images(self, size):
+        application = self.get_application()
+        
+        piece_names = ["king", "queen", "bishop", "knight", "pawn", "rook"]
+
+        self.__piece_images = {
+            "black": dict(),
+            "white": dict()
+        }
+
+        for color in self.__piece_images.keys():
+            for name in piece_names:
+                piece_filename = application.paths.get_image("board", "pieces", "{}_{}.png".format(color, name))
+                piece_image = self.load_image(piece_filename, (size, size))
+                self.__piece_images[color][name] = piece_image
+
     def __check_mouse_on_board(self, x, y):
         if not self.__is_mouse_on_board(x, y): return
         
@@ -146,7 +171,7 @@ class BoardScreen(Screen):
         return self.__ONLINE_MODE
 
     def set_game(self, game, mode, input_func = None, output_func = None):
-        self.sound_player.stop_sound()
+        self.sound_player.play_start_sound()
         
         self.__game = game
         self.__mode = mode
