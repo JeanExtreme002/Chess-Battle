@@ -17,7 +17,6 @@ class BoardScreen(Screen):
         self.__mode = self.LOCAL_MODE
         self.__game = None
         
-        self.sound_player.stop_sound()
         self.__build()
         
     def __build(self):
@@ -147,6 +146,8 @@ class BoardScreen(Screen):
         return self.__ONLINE_MODE
 
     def set_game(self, game, mode, input_func = None, output_func = None):
+        self.sound_player.stop_sound()
+        
         self.__game = game
         self.__mode = mode
         self.__player_input = input_func

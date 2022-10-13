@@ -20,6 +20,7 @@ class SoundPlayer():
         self.__play_sound(musicPath)
         
     def stop_sound(self):
+        print("chamou")
         self.__player.pause()
         self.__player.delete()
         
