@@ -7,9 +7,8 @@ from pyglet import graphics
 from pyglet.window import mouse, key
 
 class HomeScreen(Screen):
-    def __init__(self, application, on_play):
+    def __init__(self, application):
         super().__init__(application)
-        self.__on_play = on_play
         self.__message = None
         self.__build()
 
@@ -203,6 +202,22 @@ class HomeScreen(Screen):
     def set_message(self, *message):
         self.__set_dialog_box_message(self.__message_box, *message)
 
+    def set_achivements_function(self, func):
+        if not callable(func): raise TypeError("Func must be callable")
+        self.__achivements_func = func
+
+    def set_history_function(self, func):
+        if not callable(func): raise TypeError("Func must be callable")
+        self.__history_function = func
+
+    def set_play_function(self, func):
+        if not callable(func): raise TypeError("Func must be callable")
+        self.__play_function = func
+
+    def set_settings_function(self, func):
+        if not callable(func): raise TypeError("Func must be callable")
+        self.__settings_function = func
+
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             message = self.__message_box.has_message()
@@ -239,9 +254,10 @@ class HomeScreen(Screen):
             return
 
         # Verifica se algum botão de jogar foi apertado.
-        if play_button_1: self.__on_play(1)
-        elif play_button_2: self.__on_play(2)
-        elif play_button_3: self.__on_play(3)
+        if play_button_1: self.__play_function(1)
+        elif play_button_2: self.__play_function(2)
+        elif play_button_3: self.__play_function(3)
+        elif settings: self.__settings_function()
          
     def on_draw(self, by_scheduler = False):
         if by_scheduler: self.__background.next()

@@ -1,6 +1,6 @@
 from .config import paths, settings
 from .conn import Connection
-from .screens import BoardScreen, HomeScreen
+from .screens import BoardScreen, HomeScreen, SettingsScreen
 from .sound import SoundPlayer
 from pyglet import app
 from pyglet import clock
@@ -28,11 +28,18 @@ class Application(window.Window):
         clock.schedule_interval(self.on_draw, 1 / self.get_fps())
 
     def __initialize_screens(self):
-        self.__home_screen = HomeScreen(self, self.__on_play)
+        self.__home_screen = HomeScreen(self)
+        self.__home_screen.set_play_function(self.__on_play)
+        self.__home_screen.set_settings_function(self.__on_config)
+        
         self.__board_screen = BoardScreen(self)
+        self.__settings_screen = SettingsScreen(self)
         self.__current_screen = self.__home_screen
 
     def __start_connection(self, host_mode): pass
+
+    def __on_config(self):
+        self.__current_screen = self.__settings_screen
 
     def __on_play(self, selection):     
         if selection >= 2:
