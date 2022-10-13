@@ -15,6 +15,12 @@ class SettingsScreen(Screen):
         self.__batch = graphics.Batch()
         confirmation_box_batch = graphics.Batch()
 
+        # Obtém o tamanho e a posição dos labels.
+        label_width = self.width * 0.35
+        label_height = label_width * 0.41
+        label_x = int(self.width / 2 - label_width / 2)
+        first_label_y = self.height * 0.1
+
         # Obtém o tamanho e a posição da caixa de mensagem.
         message_box_width = self.width * 0.45
         message_box_height = message_box_width * 0.7
@@ -24,6 +30,19 @@ class SettingsScreen(Screen):
         # Cria o plano de fundo.
         background_filename = application.paths.get_image("settings", "background.png")
         self.__background_image = self.load_image(background_filename, (self.width, self.height))
+
+        # Cria a imagens de label.
+        label_filename = application.paths.get_image("settings", "label.png")
+        label_image = self.load_image(label_filename, (label_width, label_height))
+
+        self.__labels = []
+
+        for index in range(2):
+            label = self.create_sprite(
+                label_image, batch = self.__batch,
+                x = label_x, y = first_label_y + (label_height + label_height * 0.1) * index
+            )
+            self.__labels.append(label)
                 
         # Cria uma caixa de mensagens e uma caixa de confirmação.
         message_box_filename = application.paths.get_image("general", "message_box.png")
@@ -53,7 +72,7 @@ class SettingsScreen(Screen):
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             if not self.__confirmation_box.has_message():
-                self.__set_dialog_box_message(self.__confirmation_box, "Salvar as alterações?")     
+                self.__set_dialog_box_message(self.__confirmation_box, "Deseja sair sem salvar as alterações?")     
         return True
 
     def on_mouse_motion(self, *args):
