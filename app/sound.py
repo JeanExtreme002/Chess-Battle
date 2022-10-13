@@ -20,8 +20,8 @@ class SoundPlayer():
         self.__play_sound(musicPath)
         
     def stop_sound(self):
-        self.__player.pause()
-        self.__player.delete()
+        while self.is_playing():
+            self.__player.next_source()
         
         
     def play_movement_sound(self):
