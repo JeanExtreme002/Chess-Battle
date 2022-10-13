@@ -16,24 +16,26 @@ class SoundPlayer():
     def play_music(self):
         
         musicPath = paths.get_random_sound("music")
+        self.stop_sound()
         self.__play_sound(musicPath)
         
-    def stop_music(self):
+    def stop_sound(self):
         self.__player.pause()
         self.__player.delete()
         
         
     def play_movement_sound(self):
        
-        musicPath = paths.get_random_sound("effects","movement")
+        musicPath = paths.get_random_sound("effects", "movement")
+        self.stop_sound()
         self.__play_sound(musicPath)
     
     def play_victory_sound(self):
-        
       
-        musicPath = paths.get_random_sound("effects","victory")
+        musicPath = paths.get_random_sound("effects", "victory")
+        self.stop_sound()
         self.__play_sound(musicPath)
         
-    def playing_music(self):
+    def is_playing(self):
 
         return self.__player.playing

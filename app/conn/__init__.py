@@ -16,6 +16,7 @@ class Connection(object):
 
     def connect(self):
         self.__socket = socket(AF_INET, SOCK_STREAM)
+        self.__socket.settimeout(0.1)
         
         if self.__hosting:
             self.__socket.bind(self.__address)

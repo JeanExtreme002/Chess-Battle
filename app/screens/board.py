@@ -11,17 +11,14 @@ class BoardScreen(Screen):
     __WHITE_COLOR = (255, 255, 255)
     __BLACK_COLOR = (0, 0, 0)
     
-    def __init__(self, application, player_input, player_output):
+    def __init__(self, application):
         super().__init__(application)
-
-        self.player_input = player_input
-        self.player_output = player_output
 
         self.__mode = self.LOCAL_MODE
         self.__game = None
+        
+        self.sound_player.stop_sound()
         self.__build()
-
-        self.sound_player.play_music()
         
     def __build(self):
         application = self.get_application()
@@ -111,6 +108,29 @@ class BoardScreen(Screen):
             )
         )
 
+        # Instancia a posição e tamanho do tabuleiro, para serem utilizados posteriormente.
+        self.__board_pos = board_x, (board_y)
+        self.__board_size = board_size
+        self.__square_size = square_size
+
+    def __check_mouse_on_board(self, x, y):
+        if not self.__is_mouse_on_board(x, y): return
+        
+        step = self.__square_size
+        
+        for index_x in range(8):
+            for index_y in range(8):
+                pos_x = self.__board_pos[0] + self.__square_size * index_x
+                pos_y = self.__board_pos[1] + self.__square_size * index_y
+
+                if pos_x <= x <= pos_x + step and pos_y <= y <= pos_y + step:
+                    return index_y, index_x
+
+    def __is_mouse_on_board(self, x, y):
+        on_x = self.__board_pos[0] <= x <= self.__board_pos[0] + self.__board_size
+        on_y = self.__board_pos[1] <= y <= self.__board_pos[1] + self.__board_size
+        return on_x and on_y
+
     def __set_dialog_box_message(self, widget, *message):
         widget.set_message(
             self.width // 2, self.height // 2,
@@ -126,11 +146,11 @@ class BoardScreen(Screen):
     def ONLINE_MODE(self):
         return self.__ONLINE_MODE
 
-    def set_mode(self, mode):
-        self.__mode = mode
-
-    def set_game(self, game):
+    def set_game(self, game, mode, input_func = None, output_func = None):
         self.__game = game
+        self.__mode = mode
+        self.__player_input = input_func
+        self.__player_output = output_func
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
@@ -156,6 +176,8 @@ class BoardScreen(Screen):
             self.__confirmation_box.delete_message()
             
             if confirm: self.get_application().go_back()
+
+        coords = self.__check_mouse_on_board(x, y)
 
     def on_draw(self, by_scheduler = False):
         self.__background_image.blit(0, 0)

@@ -245,6 +245,10 @@ class HomeScreen(Screen):
          
     def on_draw(self, by_scheduler = False):
         if by_scheduler: self.__background.next()
+
+        if not self.sound_player.is_playing():
+            self.sound_player.play_music()
+        
         self.__sidebar_image.blit(0, 0)
         self.__batch.draw()
 
