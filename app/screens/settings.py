@@ -198,6 +198,7 @@ class SettingsScreen(Screen):
 
         elif self.__sound_button.check(x, y):
             self.__muted = not self.__muted
+            self.__changed = True
             self.__update_labels()
 
         # Aplica as alterações.
