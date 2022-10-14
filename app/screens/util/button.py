@@ -6,11 +6,10 @@ class Button(Widget):
         
         self.__activated = False
         self.__previous_status = False
-        self.__images = images
         self.__group = group
-
-        self.__load_images()
-        self.__create_sprite()
+        
+        self.__sprite = None
+        self.change_image(images)
 
     def __load_images(self):
         image_1 = self.screen.load_image(self.__images[0], (self.width, self.height))
@@ -26,7 +25,13 @@ class Button(Widget):
         )
 
     def __delete_sprite(self):
-        self.__sprite.delete()
+        if self.__sprite is not None: self.__sprite.delete()
+
+    def change_image(self, images):
+        self.__images = images
+        self.__load_images()
+        self.__delete_sprite()
+        self.__create_sprite()
 
     def check(self, *cursor_pos):
         in_x = self.x <= cursor_pos[0] <= (self.x + self.width)

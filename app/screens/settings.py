@@ -32,11 +32,17 @@ class SettingsScreen(Screen):
         label_x = self.width / 2 - label_width / 2
         first_label_y = self.height * 0.1
 
+        # Obtém o tamanho e a posição do botão de ativar/desativar sons.
+        sound_button_height = label_height * 0.5
+        sound_button_width = sound_button_height
+        sound_button_x = label_x + label_width * 1.1
+        sound_button_y = first_label_y + (label_height + label_height * 0.2) + sound_button_height * 0.5
+
         # Obtém o tamanho e a posição do botão de aplicar alterações.
-        button_width = self.width * 0.2
-        button_height = button_width * 0.39
-        button_x = self.width / 2 - button_width / 2
-        button_y = self.height * 0.8 - label_height
+        apply_button_width = self.width * 0.2
+        apply_button_height = apply_button_width * 0.39
+        apply_button_x = self.width / 2 - apply_button_width / 2
+        apply_button_y = self.height * 0.8 - apply_button_height
         
         # Obtém o tamanho e a posição da caixa de mensagem.
         message_box_width = self.width * 0.45
@@ -68,14 +74,26 @@ class SettingsScreen(Screen):
             )
             self.__labels.append((label, text))
 
-        # Cria botão para aplicar as configurações
-        button_filename = application.paths.get_image("settings", "apply_button.png")
-        activated_button_filename = application.paths.get_image("settings", "activated_apply_button.png")
+        # Cria botão para ativar e desativar os sons do jogo.
+        self.__mute_button_filename = application.paths.get_image("settings", "buttons", "mute.png")
+        self.__activated_mute_button_filename = application.paths.get_image("settings", "buttons", "activated_mute.png")
+        self.__dismute_button_filename = application.paths.get_image("settings", "buttons", "dismute.png")
+        self.__activated_dismute_button_filename = application.paths.get_image("settings", "buttons", "activated_dismute.png")
+        
+        self.__sound_button = Button(
+            self, self.__batch, sound_button_x, sound_button_y,
+            (sound_button_width, sound_button_height),
+            (self.__mute_button_filename, self.__activated_mute_button_filename)
+        )    
+
+        # Cria botão para aplicar as configurações.
+        apply_button_filename = application.paths.get_image("settings", "buttons", "apply.png")
+        activated_apply_button_filename = application.paths.get_image("settings", "buttons", "activated_apply.png")
         
         self.__apply_button = Button(
-            self, self.__batch, button_x, button_y,
-            (button_width, button_height),
-            (button_filename, activated_button_filename)
+            self, self.__batch, apply_button_x, apply_button_y,
+            (apply_button_width, apply_button_height),
+            (apply_button_filename, activated_apply_button_filename)
         )
                 
         # Cria uma caixa de mensagens e uma caixa de confirmação.
@@ -106,8 +124,9 @@ class SettingsScreen(Screen):
             self.__resolution_index = len(self.__resolutions) // 2
 
         self.__volume = self.sound_player.get_volume()
+        self.__muted = self.sound_player.is_muted()
         self.__changed = False
-        self.__update_label_texts()
+        self.__update_labels()
 
     def __set_dialog_box_message(self, widget, *message):
         widget.set_message(
@@ -116,9 +135,15 @@ class SettingsScreen(Screen):
             line_spacing = int(self.width * 0.025)
         )
 
-    def __update_label_texts(self):
+    def __update_labels(self):
         self.__labels[0][1].text = "{}x{}".format(*self.__resolutions[self.__resolution_index])
         self.__labels[1][1].text = "Volume: {}%".format(int(self.__volume))
+
+        if self.__muted:
+            images = [self.__dismute_button_filename, self.__activated_dismute_button_filename]
+        else:
+            images = [self.__mute_button_filename, self.__activated_mute_button_filename]
+        self.__sound_button.change_image(images)
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
@@ -135,6 +160,7 @@ class SettingsScreen(Screen):
             self.__confirmation_box.check(x, y)
 
         self.__apply_button.check(x, y)
+        self.__sound_button.check(x, y)
 
         for label, text in self.__labels:
             if label.check(x, y):
@@ -157,20 +183,28 @@ class SettingsScreen(Screen):
                 self.__load_current_settings()
                 self.get_application().go_back()
 
+        # Verifica se alguma das configurações foi alterada.
         if self.__labels[0][0].check(x, y):
             self.__resolution_index += 1
             self.__resolution_index %= len(self.__resolutions)
             self.__changed = True
-            self.__update_label_texts()
+            self.__update_labels()
             
         elif self.__labels[1][0].check(x, y):
             self.__volume += 10
             self.__volume %= 110
             self.__changed = True
-            self.__update_label_texts()
+            self.__update_labels()
 
+        elif self.__sound_button.check(x, y):
+            self.__muted = not self.__muted
+            self.__update_labels()
+
+        # Aplica as alterações.
         elif self.__apply_button.check(x, y):
             self.sound_player.set_volume(self.__volume)
+            self.sound_player.set_mute(self.__muted)
+            
             self.__changed = False
             self.get_application().resize(*self.__resolutions[self.__resolution_index])
             self.get_application().go_back()
