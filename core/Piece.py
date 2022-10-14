@@ -3,15 +3,14 @@ from Color import Color
 
 
 class Piece(ABC):
-    def __init__(self, color: Color, x: int, y: int, r_id):
+    def __init__(self, color, x, y):
         self._color = color
         self._color_complex = None
         self.x = x
         self.y = y
         self._list_moves = []
         self._has_moved = False
-        self.__id = r_id
-
+        self.__id=0
     @property
     def r_id(self):
         return self.__id
@@ -31,11 +30,11 @@ class Piece(ABC):
         return False
 
     @property
-    def color(self) -> Color:
+    def color(self):
         return self._color
 
     @property
-    def color_complex(self) -> Color:
+    def color_complex(self):
         """Returns the color of the square"""
         if self.x + self.y in Color.Dark.value:
             self._color_complex = Color.Dark
@@ -44,15 +43,15 @@ class Piece(ABC):
         return self._color_complex
 
     @property
-    def has_moved(self) -> bool:
+    def has_moved(self):
         return self._has_moved
 
-    def _update_position(self, target: list[int, int]) -> None:
+    def _update_position(self, target):
         """Moves a piece to a target"""
         self.x = target[0]
         self.y = target[1]
 
-    def update_situation(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+    def update_situation(self, target, situation):
         """Updates the board situation after a move"""
         situation[self.x][self.y] = None
         self._update_position(target)
@@ -60,7 +59,7 @@ class Piece(ABC):
         return situation
 
     @staticmethod
-    def is_defended(target: list[int, int], situation: list[[]]) -> bool:
+    def is_defended(target, situation):
         """Checks if the square is defended by a piece"""
         try:
             for row in range(8):
@@ -79,14 +78,14 @@ class Piece(ABC):
         return
 
     @abstractmethod
-    def legal_moves(self, situation: list[[]]):
+    def legal_moves(self, situation):
         """Restricts the list of movements to only legal moves.
         Receives the situation of the board, a matrix with all the instances in the game right now.
         Returns the legal moves"""
         return
 
     @abstractmethod
-    def move(self, target: list[int, int], situation: list[[]]):
+    def move(self, target, situation):
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.

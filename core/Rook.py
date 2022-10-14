@@ -3,12 +3,14 @@ from Pieces_type import Piece_type
 
 
 class Rook(Piece):
-    def __init__(self, color: Color, x: int, y: int, r_id):
-        super(Rook, self).__init__(color, x, y, r_id)
-        self.__id = Piece_type.ROOK.value + color.value
-
+    def __init__(self, color, x, y):
+        super(Rook, self).__init__(color, x, y)
+        self.__id = Piece_type.ROOK.value + color
     @property
-    def movement(self) -> list:
+    def r_id(self):
+        return self.__id
+    @property
+    def movement(self):
         """Returns the lists of potential moves in any given position"""
         self._list_moves.clear()
         for square in range(8):
@@ -19,7 +21,7 @@ class Rook(Piece):
                 self._list_moves.append([self.x, square])
         return self._list_moves.copy()
 
-    def legal_moves(self, situation: list[[]]) -> list:
+    def legal_moves(self, situation):
         """Restricts the list of movements to only legal moves.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
@@ -48,7 +50,7 @@ class Rook(Piece):
         finally:
             return psb_moves
 
-    def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+    def move(self, target, situation) :
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
