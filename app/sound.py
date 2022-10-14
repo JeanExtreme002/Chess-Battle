@@ -5,8 +5,10 @@ import random
 ####################################################################
 class SoundPlayer():
     
-    def __init__(self):
+    def __init__(self, volume = 100, mute = False):
         self.__player = pyglet.media.Player()
+        self.set_volume(volume)
+        self.set_mute(mute)
 
         self.__loaded_sounds = {
             "effects": {
@@ -29,13 +31,31 @@ class SoundPlayer():
         self.stop_sound()
         self.__player.queue(sound)
         self.__player.play()
+
+    def is_muted(self):
+        return self.__muted
         
     def play_music(self):
         
         sound = random.choice(self.__loaded_sounds["music"])
         self.__play_sound(sound)
+
+    def get_volume(self):
+
+        return self.__volume
+
+    def set_mute(self, boolean):
+        self.__muted = boolean
+        
+        if boolean: self.__player.volume = 0
+        else: self.__player.volume = self.__volume / 100
+        
+    def set_volume(self, value):
+        self.__volume = value
+        self.__player.volume = self.__volume / 100
         
     def stop_sound(self):
+        
         while self.is_playing():
             self.__player.next_source()
         

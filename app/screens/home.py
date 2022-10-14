@@ -179,18 +179,13 @@ class HomeScreen(Screen):
         self.__batch = batch
 
     def __check_buttons(self, x, y):
-        # A princípio pode parecer exagerado definir múltiplas condicionais,
-        # ao invés de simplesmente retornar em uma única linha o retorno de cada função,
-        # no entanto, cada verificação abaixo, repetidas várias vezes, acaba sendo muito
-        # custoso. Só é necessário verificar uma vez. Dessa forma, o programa fica mais
-        # otimizado e a animação da tela, consequentemente, fica mais fluída.
-        if self.__play_button_1.check(x, y): return True, False, False, False, False, False
-        elif self.__play_button_2.check(x, y): return False, True, False, False, False, False
-        elif self.__play_button_3.check(x, y): return False, False, True, False, False, False
-        elif self.__history_button.check(x, y): return False, False, False, True, False, False
-        elif self.__achivements_button.check(x, y): return False, False, False, False, True, False
-        elif self.__settings_button.check(x, y): return False, False, False, False, False, True
-        return False, False, False, False, False, False
+        play_1 = self.__play_button_1.check(x, y)
+        play_2 = self.__play_button_2.check(x, y)
+        play_3 = self.__play_button_3.check(x, y)
+        history = self.__history_button.check(x, y)
+        achivements = self.__achivements_button.check(x, y)
+        settings = self.__settings_button.check(x, y)
+        return play_1, play_2, play_3, history, achivements, settings
 
     def __set_dialog_box_message(self, widget, *message):
         widget.set_message(

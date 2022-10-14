@@ -22,9 +22,10 @@ class Application(window.Window):
 
         self.paths = paths
         
-        self.__sound_player = SoundPlayer()
+        self.__sound_player = SoundPlayer(settings.volume, settings.muted)
 
         self.__initialize_screens()
+        self.__current_screen = self.__home_screen
         clock.schedule_interval(self.on_draw, 1 / self.get_fps())
 
     def __initialize_screens(self):
@@ -34,7 +35,6 @@ class Application(window.Window):
         
         self.__board_screen = BoardScreen(self)
         self.__settings_screen = SettingsScreen(self)
-        self.__current_screen = self.__home_screen
 
     def __start_connection(self, host_mode): pass
 
@@ -49,6 +49,11 @@ class Application(window.Window):
             self.__current_screen = self.__board_screen
 
     def go_back(self):
+        
+        if isinstance(self.__current_screen, SettingsScreen):
+            settings.volume = self.__sound_player.get_volume()
+            settings.muted = self.__sound_player.is_muted()
+            
         self.__current_screen = self.__home_screen
 
     def get_fps(self):
@@ -69,6 +74,12 @@ class Application(window.Window):
 
     def on_mouse_release(self, *args):
         self.__current_screen.on_mouse_release(*args)
+
+    def resize(self, width, height):
+        settings.size = [width, height]
+        self.width = width
+        self.height = height
+        self.__initialize_screens()
 
     def run(self):
         app.run()

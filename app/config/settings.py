@@ -28,6 +28,8 @@ class ApplicationSettings(object):
 
     __settings = {
         "size": (1280, 720),
+        "volume": 100,
+        "muted": False,
         "address": (gethostbyname(gethostname()), 5000)
     }
 
@@ -40,7 +42,10 @@ class ApplicationSettings(object):
     def __getattribute__(self, key):
         return super().__getattribute__(key) if key.startswith("_") else self.__settings[key]
 
-    def __setattribute__(self, key, value):
+    def __setattr__(self, key, value):
+        if key.startswith("_"):
+            return super().__setattr__(key, value)
+
         self.__settings[key] = value
         self.__save_settings()
 
@@ -49,7 +54,7 @@ class ApplicationSettings(object):
             file = open(self.__filename, encoding = "UTF-8")
             self.__settings.update(json.loads(Crypt.decrypt(file.read(), self.__SECRET_KEY)))
             file.close()
-            
+
         except Exception as error:
             pass
         
@@ -60,6 +65,5 @@ class ApplicationSettings(object):
         with open(self.__filename, "w", encoding = "UTF-8") as file:
             string = json.dumps(self.__settings)
             file.write(Crypt.encrypt(string, self.__SECRET_KEY))
-
-
+        
 settings = ApplicationSettings()
