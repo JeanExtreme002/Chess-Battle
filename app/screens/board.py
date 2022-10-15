@@ -19,9 +19,9 @@ class BoardScreen(Screen):
         self.__player_input = None
         self.__player_output = None
 
-        self.__piece_shapes = [[None,] for i in range(8)]
         self.__moving = False
         self.__from_position = tuple()
+        self.__piece_sprites = [[None,] * 8 for i in range(8)] 
 
         self.__build()
         
@@ -29,6 +29,7 @@ class BoardScreen(Screen):
         application = self.get_application()
         
         self.__batch = graphics.Batch()
+        self.__piece_batch = graphics.Batch()
         confirmation_box_batch = graphics.Batch()
 
         # Obtém o tamanho do tabuleiro, que deve ser divisível por 8.
@@ -80,8 +81,9 @@ class BoardScreen(Screen):
             batch = self.__batch, color = (0, 0, 0)
         )
 
-        # Cria os quadrados do tabuleiro.
+        # Cria os quadrados do tabuleiro e as peças.
         self.__square_shapes = []
+        self.__piece_buttons = []
         
         for row in range(8):
             for column in range(8):
@@ -117,25 +119,9 @@ class BoardScreen(Screen):
         )
 
         # Instancia a posição e tamanho do tabuleiro, para serem utilizados posteriormente.
-        self.__board_pos = board_x, (board_y)
+        self.__board_pos = board_x, board_y
         self.__board_size = board_size
         self.__square_size = square_size
-
-    def __load_piece_images(self, size):
-        application = self.get_application()
-        
-        piece_names = ["king", "queen", "bishop", "knight", "pawn", "rook"]
-
-        self.__piece_images = {
-            "black": dict(),
-            "white": dict()
-        }
-
-        for color in self.__piece_images.keys():
-            for name in piece_names:
-                piece_filename = application.paths.get_image("board", "pieces", "{}_{}.png".format(color, name))
-                piece_image = self.load_image(piece_filename, (size, size))
-                self.__piece_images[color][name] = piece_image
 
     def __check_mouse_on_board(self, x, y):
         if not self.__is_mouse_on_board(x, y): return
@@ -150,10 +136,49 @@ class BoardScreen(Screen):
                 if pos_x <= x <= pos_x + step and pos_y <= y <= pos_y + step:
                     return index_y, index_x
 
+    def __create_piece_sprites(self):
+        for row in range(8):
+            for column in range(8):      
+                sprite = self.__piece_sprites[row][column]
+
+                if sprite: sprite.delete()
+                self.__piece_sprites[row][column] = None
+
+                piece = self.__game.get_piece(row + 1, column + 1)
+                if not piece: continue
+                print(row, column, piece)
+                color = "white" if piece.color.value == 0 else "black"
+                image = self.__piece_images[color][piece.name]
+
+                x = self.__board_pos[0] + self.__square_size * column
+                y = self.__board_pos[1] + self.__square_size * row
+
+                sprite = self.create_sprite(
+                    image, batch = self.__piece_batch,
+                    x = x, y = y
+                )
+                self.__piece_sprites[row][column] = sprite
+
     def __is_mouse_on_board(self, x, y):
         on_x = self.__board_pos[0] <= x <= self.__board_pos[0] + self.__board_size
         on_y = self.__board_pos[1] <= y <= self.__board_pos[1] + self.__board_size
         return on_x and on_y
+
+    def __load_piece_images(self, size):
+        application = self.get_application()
+
+        piece_names = ["king", "queen", "bishop", "knight", "pawn", "rook"]
+        
+        self.__piece_images = {
+            "black": dict(),
+            "white": dict()
+        }
+
+        for color in self.__piece_images.keys():
+            for name in piece_names:
+                piece_filename = application.paths.get_image("board", "pieces", "{}_{}.png".format(color, name))
+                piece_image = self.load_image(piece_filename, (size, size))
+                self.__piece_images[color][name] = piece_image
 
     def __set_dialog_box_message(self, widget, *message):
         widget.set_message(
@@ -177,6 +202,8 @@ class BoardScreen(Screen):
         self.__mode = mode
         self.__player_input = input_func
         self.__player_output = output_func
+
+        self.__create_piece_sprites()
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.ESCAPE:
@@ -208,4 +235,5 @@ class BoardScreen(Screen):
     def on_draw(self, by_scheduler = False):
         self.__background_image.blit(0, 0)
         self.__batch.draw()
+        self.__piece_batch.draw()
         self.__confirmation_box.draw()

@@ -45,7 +45,7 @@ class Board():
             self.add_piece(p)
 
     def add_piece(self, piece):
-        self.pecas[piece.x][piece.y] = piece.r_id
+        self.pecas[piece.x][piece.y] = piece
 
     def imprimir(self):
         # for i in self.pecas:
