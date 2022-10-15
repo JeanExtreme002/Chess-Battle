@@ -12,6 +12,7 @@ class Piece(ABC):
         self._list_moves = []
         self._has_moved = False
         piece = type(self).__name__.upper()
+        self.name = piece.lower()
         self.__id = Piece_type[piece].value + color.value
 
     @property
