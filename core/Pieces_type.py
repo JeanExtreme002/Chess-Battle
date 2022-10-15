@@ -2,9 +2,9 @@ from enum import Enum
 
 
 class Piece_type(Enum):
-    ROOK = 0
-    BISHOP = 2
-    KNIGHT = 4
-    QUEEN = 6
-    KING = 8 
-    PAWN = 10 
+    ROOK = 2
+    BISHOP = 4
+    KNIGHT = 6
+    QUEEN = 8
+    KING = 10
+    PAWN = 20

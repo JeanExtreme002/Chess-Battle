@@ -1,12 +1,10 @@
 from Piece import Piece
 from Color import Color
-from Pieces_type import Piece_type
 
 
 class Knight(Piece):
     def __init__(self, color: Color, x: int, y: int):
-        super(Knight, self).__init__(color, x, y, id)
-        self.__id = Piece_type.KNIGHT.value + color.value
+        super(Knight, self).__init__(color, x, y)
 
     @property
     def movement(self) -> list:
