@@ -32,15 +32,12 @@ class Screen(ABC):
     def sound_player(self):
         return self.__application.get_sound_player()
 
-    def __get_true_y_position(self, y, height = 0):
-        return self.height - y - height
-
     def create_text(self, string, x, y, **kwargs):
-        y = self.__get_true_y_position(y)
+        y = self.get_true_y_position(y)
         return text.Label(string, x = x, y = y, **kwargs)
 
     def create_rectangle(self, x, y, width, height, **kwargs):
-        y = self.__get_true_y_position(y)
+        y = self.get_true_y_position(y)
         height *= -1
 
         shape = shapes.Rectangle(
@@ -52,7 +49,7 @@ class Screen(ABC):
         return shape
 
     def create_sprite(self, img, x, y, **kwargs):
-        y = self.__get_true_y_position(y, img.height)
+        y = self.get_true_y_position(y, img.height)
         return sprite.Sprite(img, x = x, y = y, **kwargs)
 
     def load_image(self, filename, size = None, save = True):
@@ -80,11 +77,14 @@ class Screen(ABC):
         height = self.height / 100 * y
         return int(width), int(height)
 
+    def get_true_y_position(self, y, height = 0):
+        return self.height - y - height
+
     def on_mouse_motion(self, x, y, *args):
-        return x, self.__get_true_y_position(y), *args
+        return x, self.get_true_y_position(y), *args
 
     def on_mouse_release(self, x, y, button, modifiers):
-        return x, self.__get_true_y_position(y), button, modifiers
+        return x, self.get_true_y_position(y), button, modifiers
 
     def on_key_press(self, symbol, modifiers):
         return True

@@ -9,7 +9,7 @@ class BoardScreen(Screen):
     __ONLINE_MODE = 1
 
     __WHITE_COLOR = (255, 255, 255)
-    __BLACK_COLOR = (40, 40, 40)
+    __BLACK_COLOR = (50, 50, 50)
     
     def __init__(self, application):
         super().__init__(application)
@@ -20,7 +20,11 @@ class BoardScreen(Screen):
         self.__player_output = None
 
         self.__moving = False
-        self.__from_position = tuple()
+        
+        self.__selected_piece = None
+        self.__selected_piece_index = None
+        self.__selected_piece_position = None
+        
         self.__piece_sprites = [[None,] * 8 for i in range(8)] 
 
         self.__build()
@@ -30,6 +34,8 @@ class BoardScreen(Screen):
         
         self.__batch = graphics.Batch()
         self.__piece_batch = graphics.Batch()
+        self.__selected_piece_batch = graphics.Batch()
+        
         confirmation_box_batch = graphics.Batch()
 
         # Obtém o tamanho do tabuleiro, que deve ser divisível por 8.
@@ -180,12 +186,34 @@ class BoardScreen(Screen):
                 piece_image = self.load_image(piece_filename, (size, size))
                 self.__piece_images[color][name] = piece_image
 
+    def __select_piece(self, sprite, row, column):
+        self.__moving = True
+        
+        sprite.batch = self.__selected_piece_batch
+        
+        self.__selected_piece = sprite
+        self.__selected_piece_index = (row, column)
+        self.__selected_piece_position = (sprite.x, sprite.y)
+
     def __set_dialog_box_message(self, widget, *message):
         widget.set_message(
             self.width // 2, self.height // 2,
             *message, font_size = int(self.width * 0.012),
             line_spacing = int(self.width * 0.025)
         )
+
+    def __stop_moving(self):
+        self.__moving = False
+
+        if not self.__selected_piece: return
+
+        self.__selected_piece.batch = self.__piece_batch
+        self.__selected_piece.x = self.__selected_piece_position[0]
+        self.__selected_piece.y = self.__selected_piece_position[1]
+        
+        self.__selected_piece = None
+        self.__selected_piece_index = None
+        self.__selected_piece_position = None
         
     @property
     def LOCAL_MODE(self):
@@ -206,6 +234,8 @@ class BoardScreen(Screen):
         self.__create_piece_sprites()
 
     def on_key_press(self, symbol, modifiers):
+        self.__stop_moving()
+        
         if symbol == key.ESCAPE:
             if not self.__confirmation_box.has_message():
                 self.__set_dialog_box_message(self.__confirmation_box, "Realmente deseja abandonar o jogo?")     
@@ -216,6 +246,11 @@ class BoardScreen(Screen):
         
         if self.__confirmation_box.has_message():
             self.__confirmation_box.check(x, y)
+
+        if self.__moving:
+            piece = self.__selected_piece
+            piece.x = x - piece.width // 2
+            piece.y = self.get_true_y_position(y - piece.height // 2, piece.height)
 
     def on_mouse_release(self, *args):
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
@@ -231,9 +266,23 @@ class BoardScreen(Screen):
             if confirm: self.get_application().go_back()
 
         coords = self.__check_mouse_on_board(x, y)
+        if not coords: return
+
+        row, column = coords
+
+        # Seleciona uma peça do tabuleiro.
+        if not self.__moving:
+            sprite = self.__piece_sprites[row][column]
+            if sprite: self.__select_piece(sprite, row, column)
+
+        # Para de mover a peça.  
+        elif (row, column) == self.__selected_piece_index:
+            self.__stop_moving()
+
 
     def on_draw(self, by_scheduler = False):
         self.__background_image.blit(0, 0)
         self.__batch.draw()
         self.__piece_batch.draw()
+        self.__selected_piece_batch.draw()
         self.__confirmation_box.draw()
