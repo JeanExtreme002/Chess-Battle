@@ -1,4 +1,4 @@
-from Piece import *
+from .Piece import *
 
 
 class Rook(Piece):

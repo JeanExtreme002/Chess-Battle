@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from Color import Color
-from Pieces_type import Piece_type
+from .Color import Color
+from .Pieces_type import Piece_type
 
 
 class Piece(ABC):

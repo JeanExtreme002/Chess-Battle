@@ -1,6 +1,6 @@
-from Piece import Piece
-from PromotionRoles import PromotionRoles
-from Color import Color
+from .Piece import Piece
+from .PromotionRoles import PromotionRoles
+from .Color import Color
 from typing import Optional
 
 

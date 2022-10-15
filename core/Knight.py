@@ -1,5 +1,5 @@
-from Piece import Piece
-from Color import Color
+from .Piece import Piece
+from .Color import Color
 
 
 class Knight(Piece):

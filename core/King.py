@@ -1,7 +1,7 @@
-from Piece import Piece
-from Rook import Rook
-from Color import Color
-from Pieces_type import Piece_type
+from .Piece import Piece
+from .Rook import Rook
+from .Color import Color
+from .Pieces_type import Piece_type
 
 
 class King(Piece):
