@@ -30,18 +30,26 @@ class Application(window.Window):
 
     def __initialize_screens(self):
         self.__home_screen = HomeScreen(self)
-        self.__home_screen.set_play_function(self.__on_play)
-        self.__home_screen.set_settings_function(self.__on_config)
+        self.__home_screen.set_play_function(self.__start_game)
+        self.__home_screen.set_settings_function(self.__show_settings_screen)
+        self.__home_screen.set_history_function(self.__show_history_screen)
+        self.__home_screen.set_achivements_function(self.__show_achivements_screen)
         
         self.__board_screen = BoardScreen(self)
         self.__settings_screen = SettingsScreen(self)
 
     def __start_connection(self, host_mode): pass
 
-    def __on_config(self):
+    def __show_settings_screen(self):
         self.__current_screen = self.__settings_screen
 
-    def __on_play(self, selection):     
+    def __show_history_screen(self):
+        self.__current_screen.set_message("Histórico indisponível no momento", "(ಥ﹏ಥ)")
+
+    def __show_achivements_screen(self):
+        self.__current_screen.set_message("Troféus indisponíveis no momento", "(ಥ﹏ಥ)")
+
+    def __start_game(self, selection):     
         if selection >= 2:
             self.__current_screen.set_message("Modo online indisponível no momento", "(ಥ﹏ಥ)")
         else:

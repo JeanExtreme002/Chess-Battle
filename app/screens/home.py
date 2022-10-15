@@ -199,7 +199,7 @@ class HomeScreen(Screen):
 
     def set_achivements_function(self, func):
         if not callable(func): raise TypeError("Func must be callable")
-        self.__achivements_func = func
+        self.__achivements_function = func
 
     def set_history_function(self, func):
         if not callable(func): raise TypeError("Func must be callable")
@@ -253,6 +253,8 @@ class HomeScreen(Screen):
         elif play_button_2: self.__play_function(2)
         elif play_button_3: self.__play_function(3)
         elif settings: self.__settings_function()
+        elif history: self.__history_function()
+        elif achivements: self.__achivements_function()
          
     def on_draw(self, by_scheduler = False):
         if by_scheduler: self.__background.next()
