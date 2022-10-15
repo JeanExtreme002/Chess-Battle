@@ -2,12 +2,15 @@ from Player import Player
 from typing import Union
 from Piece import Piece
 from enum import Enum
-
+from teste import Board
 class ChessGame:
+    
     def __init__(self, database_path: str):
         self.database_path = database_path
         self.__white_player = Player("white")
         self.__black_player = Player("black")
+        self.piece = None
+        self.tabuleiro = None
 
     @property
     def white_player(self):
@@ -21,7 +24,7 @@ class ChessGame:
         if first_player == None:
             first_player = self.__white_player
         self.__white_player.played = True #Assumimos que o método get_player será chamado após o 1º jogador fazer um movimento
-
+        self.tabuleiro = Board()
     def load_game(self, match:int, round:int): #Esperando database ficar pronto (ou quase isso)...
         return NotImplemented
 
@@ -38,10 +41,11 @@ class ChessGame:
         return NotImplemented
 
     def get_piece(self, x:int, y:int) -> Union[Enum, Piece]:
-        pass
+        self.piece = self.tabuleiro[x][y]
 
     def get_status(self) -> Enum:
         pass
 
     def play(self, from_:tuple[int, int], to:tuple[int, int]) -> bool:
+        self.piece.move()
         pass

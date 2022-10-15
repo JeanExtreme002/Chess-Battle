@@ -5,14 +5,16 @@ from Pieces_type import Piece_type
 
 
 class King(Piece):
-    def __init__(self, color: Color, x: int, y: int):
+    def __init__(self, color,x,y):
         super(King, self).__init__(color, x, y)
         self.is_checked = False
         self.is_mated = False
-        self.__id = Piece_type.KING.value + color.value
-
+        self.__id = Piece_type.KING.value + color
     @property
-    def movement(self) -> list:
+    def r_id(self):
+        return self.__id
+    @property
+    def movement(self):
         """Returns the lists of potential moves in any given position"""
         self._list_moves.clear()
         for square in range(self.x - 1, self.x + 2):
@@ -24,27 +26,27 @@ class King(Piece):
                 self._list_moves.append([square, self.y])
         return self._list_moves.copy()
 
-    def _free_spaces(self, situation: list[[]], rook: Rook) -> bool:
-        """Private auxiliary function to check if the squares between the king and rook are free"""
-        free = True
-        if rook.x == 7:
-            for square in range(self.x + 1, rook.x):
-                if situation[square][self.y] is not None:
-                    free = False
-        elif rook.x == 0:
-            for square in range(rook.x, self.x):
-                if situation[square][self.y] is not None:
-                    free = False
-        if free:
-            return True
-        return False
+    # def _free_spaces(self, situation, rook):
+    #     """Private auxiliary function to check if the squares between the king and rook are free"""
+    #     free = True
+    #     if rook.x == 7:
+    #         for square in range(self.x + 1, rook.x):
+    #             if situation[square][self.y] is not None:
+    #                 free = False
+    #     elif rook.x == 0:
+    #         for square in range(rook.x, self.x):
+    #             if situation[square][self.y] is not None:
+    #                 free = False
+    #     if free:
+    #         return True
+    #     return False
 
-    def castle(self, situation: list[[]], rook: Rook) -> bool:
-        """Checks if castle is possible"""
-        if not self.has_moved and not rook.has_moved and not self.is_checked:
-            return self._free_spaces(situation, rook)
+    # def castle(self, situation,rook):
+    #     """Checks if castle is possible"""
+    #     if not self.has_moved and not rook.has_moved and not self.is_checked:
+    #         return self._free_spaces(situation, rook)
 
-    def legal_moves(self, situation: list[[]]) -> list:
+    def legal_moves(self, situation):
         """Restricts the list of movements to only legal moves.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
@@ -71,7 +73,7 @@ class King(Piece):
         finally:
             return psb_moves
 
-    def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+    def move(self, target,situation):
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
