@@ -1,16 +1,18 @@
 from abc import ABC, abstractmethod
 from Color import Color
+from Pieces_type import Piece_type
 
 
 class Piece(ABC):
-    def __init__(self, color: Color, x: int, y: int, r_id):
+    def __init__(self, color: Color, x: int, y: int):
         self._color = color
         self._color_complex = None
         self.x = x
         self.y = y
         self._list_moves = []
         self._has_moved = False
-        self.__id = r_id
+        piece = type(self).__name__.upper()
+        self.__id = Piece_type[piece].value + color.value
 
     @property
     def r_id(self):

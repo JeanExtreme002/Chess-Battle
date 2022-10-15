@@ -1,11 +1,9 @@
 from Piece import *
-from Pieces_type import Piece_type
 
 
 class Rook(Piece):
-    def __init__(self, color: Color, x: int, y: int, r_id):
-        super(Rook, self).__init__(color, x, y, r_id)
-        self.__id = Piece_type.ROOK.value + color.value
+    def __init__(self, color: Color, x: int, y: int):
+        super(Rook, self).__init__(color, x, y)
 
     @property
     def movement(self) -> list:
