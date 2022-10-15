@@ -47,12 +47,13 @@ class ChessGame:
     def get_piece(self, x:int, y:int) -> Piece: #1 ≤ x, y ≤ 8
         x -= 1
         y -= 1
-        piece = self.__board.pecas[x][y]
+        try:
+            piece = self.__board.pecas[x][y]
 
-        if piece == 0:
+        except KeyError:
             return
 
-        if (self.__black_player.played and (not piece.r_id%2)) or (self.__white_player.played and piece.r_id%2):
+        if piece == 0:
             return
 
         return piece
@@ -60,5 +61,15 @@ class ChessGame:
     def get_status(self) -> Enum:
         pass
 
-    def play(self, from_:tuple[int, int], to:tuple[int, int]) -> bool:
-        pass
+    def play(self, piece:Piece, to:tuple[int, int]) -> bool:
+        if (self.__black_player.played and (not piece.r_id%2)) or (self.__white_player.played and piece.r_id%2):
+            #Se não é a vez da cor jogar...
+            return False
+
+        if not (list(to) in piece.legal_moves(self.__board.pecas)):
+            #Se o movimento não é legal...
+            return False
+
+        piece.move(to, self.__board.pecas)
+
+        return True
