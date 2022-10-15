@@ -9,7 +9,7 @@ class BoardScreen(Screen):
     __ONLINE_MODE = 1
 
     __WHITE_COLOR = (255, 255, 255)
-    __BLACK_COLOR = (0, 0, 0)
+    __BLACK_COLOR = (40, 40, 40)
     
     def __init__(self, application):
         super().__init__(application)
@@ -146,7 +146,7 @@ class BoardScreen(Screen):
 
                 piece = self.__game.get_piece(row + 1, column + 1)
                 if not piece: continue
-                print(row, column, piece)
+
                 color = "white" if piece.color.value == 0 else "black"
                 image = self.__piece_images[color][piece.name]
 
