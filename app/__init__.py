@@ -12,7 +12,7 @@ class Application(window.Window):
 
     __FRAMES_PER_SECOND = 60
     
-    def __init__(self, title):
+    def __init__(self, title, chess_game):
         super().__init__(
             caption = title,
             width = settings.size[0],
@@ -21,7 +21,8 @@ class Application(window.Window):
         )
 
         self.paths = paths
-        
+
+        self.__chess_game = chess_game
         self.__sound_player = SoundPlayer(settings.volume, settings.muted)
 
         self.__initialize_screens()
@@ -53,7 +54,7 @@ class Application(window.Window):
         if selection >= 2:
             self.__current_screen.set_message("Modo online indisponível no momento", "(ಥ﹏ಥ)")
         else:
-            self.__board_screen.set_game(None, self.__board_screen.LOCAL_MODE)
+            self.__board_screen.set_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
             self.__current_screen = self.__board_screen
 
     def go_back(self):
