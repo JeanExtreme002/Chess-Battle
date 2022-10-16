@@ -22,14 +22,18 @@ class BoardScreen(Screen):
         self.__player_input = None
         self.__player_output = None
 
-        self.__moving = False
+        self.__moving_by_mouse = False
+        self.__moving_by_keyboard = False
         
         self.__selected_piece = None
+        self.__selected_piece_shadow = None
         self.__selected_piece_index = None
         self.__selected_piece_position = None
         
         self.__piece_sprites = [[None,] * 8 for i in range(8)]
         self.__destroyed_piece_sprites = {"white": list(), "black": list()}
+
+        self.__key_input_buffer = [None, None]
 
         self.__build()
         
@@ -174,6 +178,28 @@ class BoardScreen(Screen):
             for sprite in sprite_list: sprite.delete()
             self.__destroyed_piece_sprites[color] = []
 
+    def __deselect_piece(self):
+        """
+        Desseleciona a peça, antes selecionada pelo teclado ou mouse. Caso
+        a mesma tenha sido selecionada pelo mouse, ela voltará à posição original.
+        """
+        self.__moving_by_mouse = False
+        self.__moving_by_keyboard = False
+        self.__key_input_buffer = [None, None]
+
+        if self.__selected_piece:
+            self.__selected_piece.batch = self.__piece_batch
+            self.__selected_piece.x = self.__selected_piece_position[0]
+            self.__selected_piece.y = self.__selected_piece_position[1]
+
+        if self.__selected_piece_shadow:
+            self.__selected_piece_shadow.delete()
+            
+        self.__selected_piece = None
+        self.__selected_piece_shadow = None
+        self.__selected_piece_index = None
+        self.__selected_piece_position = None
+
     def __get_coord_on_board(self, x, y):
         """
         Retorna a posição da casa do tabuleiro
@@ -257,7 +283,7 @@ class BoardScreen(Screen):
         selected_piece = self.__game.get_piece(old_row, old_column)
         dest_piece = self.__game.get_piece(row, column)
 
-        self.__stop_moving()
+        self.__deselect_piece()
 
         # Impede que uma peça destrua outra peça da mesma cor.
         if dest_piece and dest_piece.color == selected_piece.color:
@@ -278,20 +304,57 @@ class BoardScreen(Screen):
             # Atualiza o tabuleiro na tela.
             self.__update_piece_sprites()
 
-    def __select_piece(self, row, column):
+    def __select_piece(self, row, column, piece_on = False):
         """
-        Define uma peça a ser selecionada, para que a mesma
-        possa ser movida livremente com o cursor.
+        Seleciona uma peça do tabuleiro.
         """
-        self.__moving = True
+        piece = self.__game.get_piece(row, column)
+        player_color = self.__game.get_player().color
 
+        # Verifica se a seleção é uma peça pertencente ao jogador da rodada.
+        if not piece or piece.color != player_color: return self.__deselect_piece()
+        
         sprite = self.__piece_sprites[row][column]
-        sprite.batch = self.__selected_piece_batch
+
+        # Troca o batch para que a peça fique na
+        # frente de qualquer objeto da tela.
+        if piece_on: sprite.batch = self.__selected_piece_batch
         
         self.__selected_piece = sprite
         self.__selected_piece_index = (row, column)
         self.__selected_piece_position = (sprite.x, sprite.y)
 
+    def __select_piece_by_keyboard(self, row, column):
+        """
+        Define uma peça a ser selecionada, para que a mesma
+        possa ser movida através do teclado.
+        """
+        self.__deselect_piece()
+        self.__moving_by_keyboard = True
+
+        self.__key_input_buffer = [None, None]
+
+        # Cria uma sombra para identificar a peça selecionada.
+        x, y = self.__get_piece_image_pos(column, row)
+        
+        self.__selected_piece_shadow = self.create_rectangle(
+            x, y, self.__square_size, self.__square_size,
+            batch = self.__selected_piece_batch, color = (0, 0, 0)
+        )
+        self.__selected_piece_shadow.opacity = 50
+
+        # Seleciona a peça.
+        self.__select_piece(row, column)
+
+    def __select_piece_by_mouse(self, row, column):
+        """
+        Define uma peça a ser selecionada, para que a mesma
+        possa ser movida livremente com o cursor.
+        """
+        self.__deselect_piece()
+        self.__moving_by_mouse = True
+        self.__select_piece(row, column, True)
+        
     def __set_dialog_box_message(self, widget, *message):
         """
         Define uma mensagem a ser mostrada em
@@ -302,22 +365,6 @@ class BoardScreen(Screen):
             *message, font_size = int(self.width * 0.012),
             line_spacing = int(self.width * 0.025)
         )
-
-    def __stop_moving(self):
-        """
-        Interrompe o movimento da peça selecionada, fazendo-a
-        voltar à sua posição original no tabuleiro.
-        """
-        self.__moving = False
-
-        if self.__selected_piece:
-            self.__selected_piece.batch = self.__piece_batch
-            self.__selected_piece.x = self.__selected_piece_position[0]
-            self.__selected_piece.y = self.__selected_piece_position[1]
-        
-        self.__selected_piece = None
-        self.__selected_piece_index = None
-        self.__selected_piece_position = None
 
     def __update_piece_sprites(self):
         """
@@ -385,13 +432,35 @@ class BoardScreen(Screen):
         """
         Evento de tecla pressionada.
         """
-        self.__stop_moving()
+        piece_selected = self.__moving_by_keyboard or self.__moving_by_mouse
 
         # Caso o ESC seja apertado, significa que o usuário deseja sair
         # desta tela. Nesse caso, uma mensagem de confirmação deverá aparecer.
         if symbol == key.ESCAPE:
             if not self.__confirmation_box.has_message():
-                self.__set_dialog_box_message(self.__confirmation_box, "Realmente deseja abandonar o jogo?")     
+                self.__deselect_piece()
+                self.__set_dialog_box_message(self.__confirmation_box, "Realmente deseja abandonar o jogo?")
+
+        # Verifica se o usuário selecionou uma coluna
+        if key.A <= symbol <= key.H and self.__key_input_buffer[1] is None:
+            self.__key_input_buffer[1] = symbol - key.A
+
+        # Verifica se o usuário selecionou uma linha.
+        elif key._1 <= symbol <= key._9 and not self.__key_input_buffer[1] is None:
+            self.__key_input_buffer[0] = 7 - (symbol - key._1)
+
+        # Se não, apaga os registros de teclas anteriores.
+        else: self.__deselect_piece()
+
+        # Se a coluna e linha foram selecionadas, uma ação sob o tabuleiro será realizada.
+        if all([not position is None for position in self.__key_input_buffer]):
+            
+            # Move a peça selecionada.
+            if self.__moving_by_keyboard: self.__move_piece(*self.__key_input_buffer)
+
+            # Seleciona uma peça a ser movida.
+            else: self.__select_piece_by_keyboard(*self.__key_input_buffer)
+            
         return True
 
     def on_mouse_motion(self, *args):
@@ -404,7 +473,7 @@ class BoardScreen(Screen):
             self.__confirmation_box.check(x, y)
 
         # Atualiza a posição da imagem da peça selecionada.
-        if self.__moving:
+        if self.__moving_by_mouse:
             piece = self.__selected_piece
             piece.x = x - piece.width // 2
             piece.y = self.get_true_y_position(y - piece.height // 2, piece.height)
@@ -433,19 +502,13 @@ class BoardScreen(Screen):
         row, column = coords
     
         # Seleciona uma peça do tabuleiro.
-        if not self.__moving:
-            piece = self.__game.get_piece(row, column)
-            player_color = self.__game.get_player().color
-
-            # Verifica se a peça pertence ao jogador da rodada.
-            if not piece or piece.color != player_color: return
-            
-            self.__select_piece(row, column)
+        if not self.__moving_by_mouse: 
+            self.__select_piece_by_mouse(row, column)
 
         # Caso a coordenada seja igual à coordenada da peça selecionada,
         # o seu movimento será interrompido.  
         elif (row, column) == self.__selected_piece_index:
-            self.__stop_moving()
+            self.__deselect_piece()
 
         # Move a peça de uma casa à outra.
         else: self.__move_piece(row, column)
