@@ -191,11 +191,12 @@ class BoardScreen(Screen):
         old_row, old_column = self.__selected_piece_index
         selected_piece = self.__game.get_piece(old_row, old_column)
         print('move', selected_piece, row, column, self.__game.get_piece(row, column))
+
+        self.__stop_moving()
+        
         if self.__game.play(selected_piece, (row, column)):
             print('foi')
             self.__update_piece_sprites()
-            
-        self.__stop_moving()
 
     def __select_piece(self, sprite, row, column):
         self.__moving = True
