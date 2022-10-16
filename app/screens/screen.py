@@ -86,11 +86,15 @@ class Screen(ABC):
         Carrega uma imagem.
         """
         # Carrega a imagem.
-        if not filename in Screen._images:
+        if not filename in Screen._images or not size in Screen._images[filename]:
             img = image.load(filename)
-            if save: Screen._images[filename] = img
+
+            # Salva a imagem, caso solicitado.
+            if save:
+                Screen._images[filename] = dict()
+                Screen._images[filename][size] = img
         else:
-            img = Screen._images[filename]
+            img = Screen._images[filename][size]
 
         # Redefine o seu tamanho, caso solicitado, alterando a sua escala.
         if size:

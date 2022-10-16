@@ -226,7 +226,7 @@ class BoardScreen(Screen):
         for color in self.__destroyed_piece_images.keys():
             for name in piece_names:
                 piece_filename = application.paths.get_image("board", "pieces", "{}_{}.png".format(color, name))
-                piece_image = self.load_image(piece_filename, (size, size), save = False)
+                piece_image = self.load_image(piece_filename, (size, size))
                 self.__destroyed_piece_images[color][name] = piece_image
 
     def __load_piece_images(self, size):
@@ -246,7 +246,7 @@ class BoardScreen(Screen):
         for color in self.__piece_images.keys():
             for name in piece_names:
                 piece_filename = application.paths.get_image("board", "pieces", "{}_{}.png".format(color, name))
-                piece_image = self.load_image(piece_filename, (size, size), save = False)
+                piece_image = self.load_image(piece_filename, (size, size))
                 self.__piece_images[color][name] = piece_image
 
     def __move_piece(self, row, column):
