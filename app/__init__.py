@@ -48,7 +48,7 @@ class Application(window.Window):
         self.__current_screen.set_message("Histórico indisponível no momento", "(ಥ﹏ಥ)")
 
     def __show_achivements_screen(self):
-        self.__current_screen.set_message("Troféus indisponíveis no momento", "(ಥ﹏ಥ)")
+        self.__current_screen.set_message("Conquistas indisponíveis no momento", "(ಥ﹏ಥ)")
 
     def __start_game(self, selection):     
         if selection >= 2:
