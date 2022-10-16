@@ -259,6 +259,10 @@ class BoardScreen(Screen):
 
         self.__stop_moving()
 
+        # Impede que uma peça destrua outra peça da mesma cor.
+        if dest_piece and dest_piece.color == selected_piece.color:
+            return
+
         # Se a jogada ocorreu com sucesso, o tabuleiro é completamente atualizado.
         if self.__game.play(selected_piece, (row, column)):
             
