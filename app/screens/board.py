@@ -233,7 +233,7 @@ class BoardScreen(Screen):
     def ONLINE_MODE(self):
         return self.__ONLINE_MODE
 
-    def set_game(self, game, mode, input_func = None, output_func = None):
+    def set_new_game(self, game, mode, input_func = None, output_func = None):
         self.sound_player.play_start_sound()
         
         self.__game = game

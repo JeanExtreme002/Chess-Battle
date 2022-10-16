@@ -54,7 +54,7 @@ class Application(window.Window):
         if selection >= 2:
             self.__current_screen.set_message("Modo online indisponível no momento", "(ಥ﹏ಥ)")
         else:
-            self.__board_screen.set_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
+            self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
             self.__current_screen = self.__board_screen
 
     def go_back(self):
