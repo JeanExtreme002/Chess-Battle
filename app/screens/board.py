@@ -136,6 +136,9 @@ class BoardScreen(Screen):
         )
 
     def __add_destroyed_piece(self, piece):
+        """
+        Registra a dada peça destruída e cria sua imagem no placar.
+        """
         color = "white" if piece.color.value == 0 else "black"
         image = self.__destroyed_piece_images[color][piece.name]
 
@@ -161,6 +164,15 @@ class BoardScreen(Screen):
             x = x, y = y
         )
         sprite_list.append(sprite)
+
+    def __delete_destroyed_pieces(self):
+        """
+        Apaga o registro das peças destruídas,
+        junto com suas imagens criadas.
+        """
+        for color, sprite_list in self.__destroyed_piece_sprites.items():
+            for sprite in sprite_list: sprite.delete()
+            self.__destroyed_piece_sprites[color] = []
 
     def __get_coord_on_board(self, x, y):
         """
@@ -352,6 +364,7 @@ class BoardScreen(Screen):
         self.__player_input = input_func
         self.__player_output = output_func
 
+        self.__delete_destroyed_pieces()
         self.__update_piece_sprites()
 
     def on_draw(self, by_scheduler = False):
