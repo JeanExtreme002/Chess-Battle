@@ -3,13 +3,14 @@ from typing import Union
 from .Piece import Piece
 from enum import Enum
 from .teste import Board
+from .Color import Color
 
 class ChessGame:
     def __init__(self, database_path: str):
         self.database_path = database_path
-        self.__white_player = Player("white")
-        self.__black_player = Player("black")
-        self.__black_player.played = True
+        self.__white_player = Player(Color.White)
+        self.__black_player = Player(Color.Black)
+        self.__current_player = self.__white_player
         self.__board = Board()
 
     @property
@@ -35,18 +36,19 @@ class ChessGame:
     def get_history(self) -> list: #Mesma coisa do de cima...
         return NotImplemented
 
-    def get_player(self) -> Player:
+    def __change_player(self):
         self.__white_player.played = not self.__white_player.played
         self.__black_player.played = not self.__black_player.played
 
-        return self.__white_player or self.__black_player
+        self.__current_player =  self.__white_player or self.__black_player
+
+    def get_player(self) -> Player:
+        return self.__current_player
 
     def get_time(self) -> str: #Esperando implementarem o tempo...
         return NotImplemented
 
-    def get_piece(self, x:int, y:int) -> Piece: #1 ≤ x, y ≤ 8
-        x -= 1
-        y -= 1
+    def get_piece(self, x:int, y:int) -> Piece: #0 ≤ x, y ≤ 7
         try:
             piece = self.__board.pecas[x][y]
 
@@ -71,5 +73,6 @@ class ChessGame:
             return False
 
         piece.move(to, self.__board.pecas)
+        self.__change_player()
 
         return True

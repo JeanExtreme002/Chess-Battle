@@ -1,7 +1,9 @@
+from .Color import Color
+
 class Player:
-    def __init__(self, color): #color = "black" ou color = "white"
-        if not color in ("black", "white"):
-            raise ValueError("\"color\" must be \"black\" or \"white\".")
+    def __init__(self, color):
+        if not color in (Color.Black, Color.White):
+            raise ValueError("\"color\" must be a core.Color.Color object.")
 
         self.color = color
         self.__played = False
