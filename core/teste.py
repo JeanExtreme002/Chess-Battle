@@ -17,7 +17,7 @@ class Board():
             self.pecas[1][i] = wp
 
         for i in range(8):       
-            bp = Pawn(Color.Black,i,1)
+            bp = Pawn(Color.Black,i,6)
             self.pecas[6][i] = bp
 
         wr0 = Rook(Color.White,0,0)
