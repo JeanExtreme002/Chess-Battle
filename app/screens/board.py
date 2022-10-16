@@ -28,7 +28,8 @@ class BoardScreen(Screen):
         self.__selected_piece_index = None
         self.__selected_piece_position = None
         
-        self.__piece_sprites = [[None,] * 8 for i in range(8)] 
+        self.__piece_sprites = [[None,] * 8 for i in range(8)]
+        self.__destroyed_piece_sprites = {"white": list(), "black": list()}
 
         self.__build()
         
@@ -52,6 +53,7 @@ class BoardScreen(Screen):
             self.__board_size -= 1
         
         self.__square_size = self.__board_size // 8
+        self.__destroyed_piece_size = self.__square_size * 0.5
 
         # Obtém a posição do tabuleiro.
         self.__board_y = (self.height - self.__board_size) / 2
@@ -61,10 +63,10 @@ class BoardScreen(Screen):
         score_board_area_x = self.__board_size + self.__board_x
         score_board_area_width = (self.width - score_board_area_x)
         
-        score_board_height = self.height - (self.__board_y * 2)
-        score_board_width = score_board_height * 0.7
-        score_board_x = score_board_area_x + score_board_area_width / 2 - score_board_width / 2
-        score_board_y = self.__board_y
+        self.__score_board_height = self.height - (self.__board_y * 2)
+        self.__score_board_width = self.__score_board_height * 0.7
+        self.__score_board_x = score_board_area_x + score_board_area_width / 2 - self.__score_board_width / 2
+        self.__score_board_y = self.__board_y
 
         # Obtém o tamanho e a posição da caixa de mensagem.
         message_box_width = self.width * 0.45
@@ -74,6 +76,7 @@ class BoardScreen(Screen):
 
         # Inicializa as imagens de peças.
         self.__load_piece_images(self.__square_size)
+        self.__load_destroyed_piece_images(self.__destroyed_piece_size)
 
         # Cria o plano de fundo.
         background_filename = application.paths.get_image("board", "background.png")
@@ -81,11 +84,11 @@ class BoardScreen(Screen):
 
         # Cria a imagem do placar.
         score_board_filename = application.paths.get_image("board", "score_board.png")
-        score_board_image = self.load_image(score_board_filename, (score_board_width, score_board_height))
+        score_board_image = self.load_image(score_board_filename, (self.__score_board_width, self.__score_board_height))
 
         self.__score_board_sprite = self.create_sprite(
             score_board_image, batch = self.__batch,
-            x = score_board_x, y = score_board_y
+            x = self.__score_board_x, y = self.__score_board_y
         )  
 
         # Cria a borda do tabuleiro.
@@ -132,6 +135,33 @@ class BoardScreen(Screen):
             )
         )
 
+    def __add_destroyed_piece(self, piece):
+        color = "white" if piece.color.value == 0 else "black"
+        image = self.__destroyed_piece_images[color][piece.name]
+
+        sprite_list = self.__destroyed_piece_sprites[color]
+        index = len(sprite_list)
+
+        spacing_x = self.__destroyed_piece_size * 1.5
+        spacing_y = self.__destroyed_piece_size * 1.1
+
+        # Calcula a posição da peça destruída.
+        if color == "white":
+            x = self.__score_board_x + self.__score_board_width * 0.4 - self.__destroyed_piece_size
+            x -= spacing_x if index >= 8 else 0
+        else:
+            x = self.__score_board_x + self.__score_board_width * 0.6
+            x += spacing_x if index >= 8 else 0
+
+        y = self.__score_board_y + self.__score_board_height * 0.3 + spacing_y * (index % 8)
+
+        # Cria a imagem, adicionado-a à lista.
+        sprite = self.create_sprite(
+            image, batch = self.__piece_batch,
+            x = x, y = y
+        )
+        sprite_list.append(sprite)
+
     def __get_coord_on_board(self, x, y):
         """
         Retorna a posição da casa do tabuleiro
@@ -167,6 +197,26 @@ class BoardScreen(Screen):
         on_y = self.__board_y <= y <= self.__board_y + self.__board_size
         return on_x and on_y
 
+    def __load_destroyed_piece_images(self, size):
+        """
+        Carrega as imagens das peças do jogo,
+        salvando-as em um dicionário.
+        """
+        application = self.get_application()
+
+        piece_names = ["king", "queen", "bishop", "knight", "pawn", "rook"]
+        
+        self.__destroyed_piece_images = {
+            "black": dict(),
+            "white": dict()
+        }
+
+        for color in self.__destroyed_piece_images.keys():
+            for name in piece_names:
+                piece_filename = application.paths.get_image("board", "pieces", "{}_{}.png".format(color, name))
+                piece_image = self.load_image(piece_filename, (size, size), save = False)
+                self.__destroyed_piece_images[color][name] = piece_image
+
     def __load_piece_images(self, size):
         """
         Carrega as imagens das peças do jogo,
@@ -184,7 +234,7 @@ class BoardScreen(Screen):
         for color in self.__piece_images.keys():
             for name in piece_names:
                 piece_filename = application.paths.get_image("board", "pieces", "{}_{}.png".format(color, name))
-                piece_image = self.load_image(piece_filename, (size, size))
+                piece_image = self.load_image(piece_filename, (size, size), save = False)
                 self.__piece_images[color][name] = piece_image
 
     def __move_piece(self, row, column):
@@ -201,9 +251,13 @@ class BoardScreen(Screen):
         if self.__game.play(selected_piece, (row, column)):
             
             # Se havia peça na posição de destino, o som a ser reproduzido
-            # será de ataque. Caso contrário, será de movimento.
-            if dest_piece: self.sound_player.play_attacking_sound()
-            else: self.sound_player.play_movement_sound()
+            # será o de ataque, além de que a peça será registrada como
+            # destruída. Caso contrário, será de movimento.
+            if dest_piece:
+                self.__add_destroyed_piece(dest_piece)
+                self.sound_player.play_attacking_sound()
+            else:
+                self.sound_player.play_movement_sound()
 
             # Atualiza o tabuleiro na tela.
             self.__update_piece_sprites()
