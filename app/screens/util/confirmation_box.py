@@ -3,6 +3,9 @@ from .button import Button
 from pyglet.graphics import OrderedGroup
 
 class ConfirmationBox(MessageBox):
+    """
+    Classe para criar um popup de confirmação na tela.
+    """
     def __init__(self, screen, batch, x, y, size, image, button_images):
         super().__init__(screen, batch, x, y, size, image)
 
@@ -10,10 +13,15 @@ class ConfirmationBox(MessageBox):
         self.__build()
 
     def __build(self):
+        """
+        Método para criar todas as imagens e objetos
+        gráficos necessários para desenhar o widget.
+        """
         self.__button_group = OrderedGroup(3)
         button_width = self.width * 0.1
         button_height = button_width * 0.75
 
+        # Cria botão de cancelamento.
         self.__cancel_button = Button(
             self.screen, self.batch, self.x + self.width * 0.27,
             self.y + self.height - button_height - self.width * 0.18,
@@ -22,6 +30,7 @@ class ConfirmationBox(MessageBox):
             group = self.__button_group
         )
 
+        # Cria botão de confirmação.
         self.__confirm_button = Button(
             self.screen, self.batch, self.x + self.width * 0.73 - button_width,
             self.y + self.height - button_height - self.width * 0.18,
@@ -31,6 +40,10 @@ class ConfirmationBox(MessageBox):
         )
 
     def check(self, x, y):
+        """
+        Verifica se o cursor do mouse se
+        encontra na posição dos botões.
+        """
         if self.__cancel_button.check(x, y): return True, False
         elif self.__confirm_button.check(x, y): return False, True
         return False, False

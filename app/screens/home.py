@@ -3,10 +3,13 @@ from .util.button import Button
 from .util.confirmation_box import ConfirmationBox
 from .util.slide import Slide
 from .util.message_box import MessageBox
-from pyglet import graphics
 from pyglet.window import mouse, key
 
 class HomeScreen(Screen):
+    """
+    Classe para criar uma tela de menu principal.
+    """
+    
     def __init__(self, application):
         super().__init__(application)
         self.__message = None
@@ -14,13 +17,13 @@ class HomeScreen(Screen):
 
     def __build(self):
         application = self.get_application()
-        batch = graphics.Batch()
+        batch = self.create_batch()
         
-        message_box_batch = graphics.Batch()
-        confirmation_box_batch = graphics.Batch()
+        message_box_batch = self.create_batch()
+        confirmation_box_batch = self.create_batch()
 
         # Obtém tamanho e posição da imagem background.
-        background_x, background_y = self.get_pixels_by_percent(30, 0)
+        background_x, background_y = self.width * 0.3, 0
         background_width = self.width - background_x
         background_height = self.height
 
@@ -29,33 +32,33 @@ class HomeScreen(Screen):
         sidebar_height = self.height
 
         # Obtém tamanho e posição da logo.
-        logo_width = int(sidebar_width * 0.70)
-        logo_height = int(logo_width * 0.77)
+        logo_width = sidebar_width * 0.70
+        logo_height = logo_width * 0.77
         
-        logo_x = int(sidebar_width * 0.5 - logo_width * 0.5)
-        logo_y = int(self.height * 0.02)
+        logo_x = sidebar_width * 0.5 - logo_width * 0.5
+        logo_y = self.height * 0.02
 
         # Obtém o tamanho e posição dos botões maiores, que serão dispostos verticalmente.
-        large_button_width = int(sidebar_width * 0.60)
-        large_button_height = int(large_button_width * 0.39)
+        large_button_width = sidebar_width * 0.60
+        large_button_height = large_button_width * 0.39
         large_button_spacing = large_button_height * 0.2
         
-        large_button_x = int(sidebar_width * 0.5 - large_button_width * 0.5)
-        first_large_button_y = int(self.height * 0.35)
+        large_button_x = sidebar_width * 0.5 - large_button_width * 0.5
+        first_large_button_y = self.height * 0.35
 
         # Obtém o tamanho e posição dos botões menores, que serão dispostos horizontalmente.
-        small_button_width = (large_button_width * 0.8) // 3
-        small_button_height = int(small_button_width * 0.75)
+        small_button_width = (large_button_width * 0.8) / 3
+        small_button_height = small_button_width * 0.75
         small_button_spacing = large_button_width * 0.1
 
         first_small_button_x = large_button_x
-        small_button_y = int(sidebar_height * 0.9 - small_button_height)
+        small_button_y = sidebar_height * 0.9 - small_button_height
 
         # Obtém o tamanho e a posição da caixa de mensagem.
         message_box_width = self.width * 0.45
         message_box_height = message_box_width * 0.7
-        message_box_x = int(self.width / 2 - message_box_width / 2)
-        message_box_y = int(self.height / 2 - message_box_height / 2)
+        message_box_x = self.width / 2 - message_box_width / 2
+        message_box_y = self.height / 2 - message_box_height / 2
         
         # Carrega a imagem da barra lateral.
         sidebar_filename = application.paths.get_image("home", "sidebar.png")
@@ -179,15 +182,24 @@ class HomeScreen(Screen):
         self.__batch = batch
 
     def __check_buttons(self, x, y):
+        """
+        Retorna os botões no qual o cursor se encontra.
+        """
         play_1 = self.__play_button_1.check(x, y)
         play_2 = self.__play_button_2.check(x, y)
         play_3 = self.__play_button_3.check(x, y)
+        
         history = self.__history_button.check(x, y)
         achivements = self.__achivements_button.check(x, y)
         settings = self.__settings_button.check(x, y)
+        
         return play_1, play_2, play_3, history, achivements, settings
 
     def __set_dialog_box_message(self, widget, *message):
+        """
+        Define uma mensagem a ser mostrada em
+        um widget de caixa de mensagem.
+        """
         widget.set_message(
             self.width // 2, self.height // 2,
             *message, font_size = int(self.width * 0.012),
@@ -195,36 +207,75 @@ class HomeScreen(Screen):
         )
 
     def set_message(self, *message):
+        """
+        Define uma mensagem a ser mostrada na tela.
+        """
         self.__set_dialog_box_message(self.__message_box, *message)
 
     def set_achivements_function(self, func):
-        if not callable(func): raise TypeError("Func must be callable")
+        """
+        Define uma função para o botão de conquistas.
+        """
         self.__achivements_function = func
 
     def set_history_function(self, func):
-        if not callable(func): raise TypeError("Func must be callable")
+        """
+        Define uma função para o botão de histórico de partidas.
+        """
         self.__history_function = func
 
     def set_play_function(self, func):
-        if not callable(func): raise TypeError("Func must be callable")
+        """
+        Define uma função para o botão de jogar.
+        """
         self.__play_function = func
 
     def set_settings_function(self, func):
-        if not callable(func): raise TypeError("Func must be callable")
+        """
+        Define uma função para o botão de configurações.
+        """
         self.__settings_function = func
 
+    def on_draw(self, by_scheduler = False):
+        """
+        Evento para desenhar a tela.
+        """
+        # Realiza a animação de slide somente se a tela foi atualizada
+        # pelo agendador. Dessa forma, é possível manter uma velocidade
+        # constante, através do FPS da tela, definido no agendador.
+        if by_scheduler: self.__background.next()
+
+        # Toca sempre uma música enquanto o usuário estiver na tela.
+        if not self.sound_player.is_playing():
+            self.sound_player.play_music()
+        
+        self.__sidebar_image.blit(0, 0)
+        self.__batch.draw()
+
+        self.__confirmation_box.draw()
+        self.__message_box.draw()
+
     def on_key_press(self, symbol, modifiers):
+        """
+        Evento de tecla pressionada.
+        """
+        # Caso o ESC seja apertado, significa que o usuário deseja sair desta tela.
         if symbol == key.ESCAPE:
             message = self.__message_box.has_message()
             confirmation = self.__confirmation_box.has_message()
-            
+
+            # Mostra uma mensagem de confirmação.
             if not (message or confirmation):
                 self.__set_dialog_box_message(self.__confirmation_box, "Você realmente deseja sair?")
             if message:
                 self.__message_box.delete_message()
+                
         return True
 
     def on_mouse_motion(self, *args):
+        """
+        Evento de movimentação do cursor.
+        """
         x, y = super().on_mouse_motion(*args)[0: 2]
         self.__check_buttons(x, y)
 
@@ -232,6 +283,9 @@ class HomeScreen(Screen):
             self.__confirmation_box.check(x, y)
 
     def on_mouse_release(self, *args):
+        """
+        Evento de botão do mouse pressionado e liberado.
+        """
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
         if mouse_button != mouse.LEFT: return
             
@@ -255,15 +309,3 @@ class HomeScreen(Screen):
         elif settings: self.__settings_function()
         elif history: self.__history_function()
         elif achivements: self.__achivements_function()
-         
-    def on_draw(self, by_scheduler = False):
-        if by_scheduler: self.__background.next()
-
-        if not self.sound_player.is_playing():
-            self.sound_player.play_music()
-        
-        self.__sidebar_image.blit(0, 0)
-        self.__batch.draw()
-
-        self.__confirmation_box.draw()
-        self.__message_box.draw()

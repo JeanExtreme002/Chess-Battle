@@ -5,7 +5,10 @@ import base64, json, uuid
 __all__ = ("settings",)
 
 class Crypt(object):
-
+    """
+    Classe estática para criptografar
+    e descriptografar textos.
+    """
     @staticmethod
     def __crypt(string, key):
         new_string = ""
@@ -16,16 +19,26 @@ class Crypt(object):
     
     @staticmethod
     def encrypt(string, key):
+        """
+        Criptografa o texto, a partir de uma chave numérica.
+        """
         string = Crypt.__crypt(string, key).encode()
         return base64.b64encode(string).decode()
 
     @staticmethod
     def decrypt(string, key):
+        """
+        Descriptografa o texto, a partir de uma chave numérica.
+        """
         string = base64.b64decode(string.encode())
         return Crypt.__crypt(string.decode(), -1 * key)
 
-class ApplicationSettings(object):
 
+class ApplicationSettings(object):
+    """
+    Classe para carregar e salvar
+    configurações do aplicativo.
+    """
     __settings = {
         "size": (1280, 720),
         "volume": 100,
@@ -49,7 +62,10 @@ class ApplicationSettings(object):
         self.__settings[key] = value
         self.__save_settings()
 
-    def __load_settings(self):  
+    def __load_settings(self):
+        """
+        Carrega as configurações de um arquivo.
+        """
         try:
             file = open(self.__filename, encoding = "UTF-8")
             self.__settings.update(json.loads(Crypt.decrypt(file.read(), self.__SECRET_KEY)))
@@ -62,6 +78,9 @@ class ApplicationSettings(object):
             self.__save_settings()
 
     def __save_settings(self):
+        """
+        Salva as configurações em um arquivo.
+        """
         with open(self.__filename, "w", encoding = "UTF-8") as file:
             string = json.dumps(self.__settings)
             file.write(Crypt.encrypt(string, self.__SECRET_KEY))

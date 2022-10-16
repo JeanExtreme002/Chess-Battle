@@ -1,11 +1,12 @@
 from .screen import Screen
 from .util.button import Button
 from .util.confirmation_box import ConfirmationBox
-from pyglet import graphics
 from pyglet.window import mouse, key
 
 class SettingsScreen(Screen):
-
+    """
+    Classe para criar uma tela de configurações.
+    """
     __resolutions = [
         (640, 360),
         (960, 540),
@@ -20,11 +21,15 @@ class SettingsScreen(Screen):
         self.__load_current_settings()
         
     def __build(self):
+        """
+        Método para criar todas as imagens e objetos
+        gráficos necessários para desenhar a tela.
+        """
         application = self.get_application()
         
-        self.__batch = graphics.Batch()
-        self.__text_batch = graphics.Batch()
-        confirmation_box_batch = graphics.Batch()
+        self.__batch = self.create_batch()
+        self.__text_batch = self.create_batch()
+        confirmation_box_batch = self.create_batch()
 
         # Obtém o tamanho e a posição dos labels.
         label_width = self.width * 0.25
@@ -114,7 +119,48 @@ class SettingsScreen(Screen):
             )
         )
 
+    def __apply_changes(self):
+        """
+        Aplica as alterações realizadas.
+        """
+        self.sound_player.set_volume(self.__volume)
+        self.sound_player.set_mute(self.__muted)
+        
+        self.get_application().resize(*self.__resolutions[self.__resolution_index])
+        
+        self.__changed = False
+
+    def __change_resolution(self):
+        """
+        Altera a resolução da tela.
+        """
+        self.__resolution_index += 1
+        self.__resolution_index %= len(self.__resolutions)
+        self.__changed = True
+        self.__update_labels()
+
+    def __change_sound_status(self):
+        """
+        Ativa ou desativa o som.
+        """
+        self.__muted = not self.__muted
+        self.__changed = True
+        self.__update_labels()
+
+    def __change_sound_volume(self):
+        """
+        Altera o volume do som.
+        """
+        self.__volume += 10
+        self.__volume %= 110
+        self.__changed = True
+        self.__update_labels()
+
     def __load_current_settings(self):
+        """
+        Carrega as configurações do aplicativo para serem
+        usadas e mostradas na tela de configurações.
+        """
         application = self.get_application()
         
         try:
@@ -125,10 +171,15 @@ class SettingsScreen(Screen):
 
         self.__volume = self.sound_player.get_volume()
         self.__muted = self.sound_player.is_muted()
+        
         self.__changed = False
         self.__update_labels()
 
     def __set_dialog_box_message(self, widget, *message):
+        """
+        Define uma mensagem a ser mostrada em
+        um widget de caixa de mensagem.
+        """
         widget.set_message(
             self.width // 2, self.height // 2,
             *message, font_size = int(self.width * 0.012),
@@ -136,26 +187,49 @@ class SettingsScreen(Screen):
         )
 
     def __update_labels(self):
+        """
+        Método para atulizar os estados das labels e botões na tela.
+        """
         self.__labels[0][1].text = "{}x{}".format(*self.__resolutions[self.__resolution_index])
         self.__labels[1][1].text = "Volume: {}%".format(int(self.__volume))
 
-        if self.__muted:
-            images = [self.__dismute_button_filename, self.__activated_dismute_button_filename]
-        else:
-            images = [self.__mute_button_filename, self.__activated_mute_button_filename]
+        if self.__muted: images = [self.__dismute_button_filename, self.__activated_dismute_button_filename]
+        else: images = [self.__mute_button_filename, self.__activated_mute_button_filename]
+        
         self.__sound_button.change_image(images)
 
+    def on_draw(self, by_scheduler = False):
+        """
+        Evento para desenhar a tela.
+        """
+        self.__background_image.blit(0, 0)
+        self.__batch.draw()
+        self.__text_batch.draw()
+        self.__confirmation_box.draw()
+
     def on_key_press(self, symbol, modifiers):
+        """
+        Evento de tecla pressionada.
+        """
+        # Caso o ESC seja apertado, significa que o usuário deseja sair desta tela.
         if symbol == key.ESCAPE:
+
+            # Se não houver alterado nenhuma configuração, pode sair da tela sem problema.
             if not self.__changed:
                 self.get_application().go_back()
+
+            # Se alterou algo, será pedido uma confirmação para sair.
             elif not self.__confirmation_box.has_message():
-                self.__set_dialog_box_message(self.__confirmation_box, "Deseja sair sem salvar as alterações?")     
+                self.__set_dialog_box_message(self.__confirmation_box, "Deseja sair sem salvar as alterações?")
+                
         return True
 
     def on_mouse_motion(self, *args):
+        """
+        Evento de movimentação do cursor.
+        """
         x, y = super().on_mouse_motion(*args)[0: 2]
-        
+
         if self.__confirmation_box.has_message():
             self.__confirmation_box.check(x, y)
 
@@ -169,49 +243,37 @@ class SettingsScreen(Screen):
                 text.color = (255, 255, 255, 255)
 
     def on_mouse_release(self, *args):
+        """
+        Evento de botão do mouse pressionado e liberado.
+        """
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
         if mouse_button != mouse.LEFT: return
 
-        # Qualquer ação será realizada somente se não houver mensagens sendo mostrada na tela.
+        # Qualquer ação será realizada somente se não houver mensagem sendo mostrada na tela.
         if self.__confirmation_box.has_message():
             cancel, confirm = self.__confirmation_box.check(x, y)
-
+            
             if not (confirm or cancel): return
             self.__confirmation_box.delete_message()
-            
+
+            # Sai da tela, redefinindo as configurações, caso confirmado.
             if confirm:
                 self.__load_current_settings()
                 self.get_application().go_back()
 
-        # Verifica se alguma das configurações foi alterada.
+        # Verifica se o usuário deseja alterar a resolução.
         if self.__labels[0][0].check(x, y):
-            self.__resolution_index += 1
-            self.__resolution_index %= len(self.__resolutions)
-            self.__changed = True
-            self.__update_labels()
-            
+            self.__change_resolution()
+
+        # Verifica se o usuário deseja alterar o volume do som.
         elif self.__labels[1][0].check(x, y):
-            self.__volume += 10
-            self.__volume %= 110
-            self.__changed = True
-            self.__update_labels()
+            self.__change_sound_volume()
 
+        # Verifica se o usuário deseja ativar ou desativar o som.
         elif self.__sound_button.check(x, y):
-            self.__muted = not self.__muted
-            self.__changed = True
-            self.__update_labels()
+            self.__change_sound_status()
 
-        # Aplica as alterações.
+        # Aplica as alterações e sai da tela.
         elif self.__apply_button.check(x, y):
-            self.sound_player.set_volume(self.__volume)
-            self.sound_player.set_mute(self.__muted)
-            
-            self.__changed = False
-            self.get_application().resize(*self.__resolutions[self.__resolution_index])
+            self.__apply_changes()
             self.get_application().go_back()
-
-    def on_draw(self, by_scheduler = False):
-        self.__background_image.blit(0, 0)
-        self.__batch.draw()
-        self.__text_batch.draw()
-        self.__confirmation_box.draw()

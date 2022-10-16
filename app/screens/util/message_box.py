@@ -2,6 +2,9 @@ from .widget import Widget
 from pyglet.graphics import OrderedGroup
 
 class MessageBox(Widget):
+    """
+    Classe para criar um popup com uma mensagem na tela.
+    """
     def __init__(self, screen, batch, x, y, size, image):
         super().__init__(screen, batch, x, y, size)
 
@@ -35,26 +38,38 @@ class MessageBox(Widget):
         self.__text_group = OrderedGroup(2)
 
     def delete_message(self):
+        """
+        Apaga a mensagem.
+        """
         for text in self.__texts:
             text.delete()
         self.__texts = []
 
     def draw(self, with_messages_only = True):
+        """
+        Desenha somente se houver mensagem a ser exibida.
+        """
         if with_messages_only and not self.__texts: return
         self.batch.draw()
 
     def has_message(self):
+        """
+        Verifica se existe mensagem a ser exibida.
+        """
         return len(self.__texts) > 0
 
     def set_message(self, x, y, *lines, color = (0, 0, 0, 255), font_size = 16, anchor = ("center", "center"), line_spacing = 1):
+        """
+        Define uma mensagem a ser exibida.
+        """
         self.delete_message()
         line_index = 0
         
         for line in lines:
             text = self.screen.create_text(
-                line, x = x, y = y + line_spacing * line_index,
+                line, x = int(x), y = int(y + line_spacing * line_index),
                 batch = self.batch, group = self.__text_group,
-                color = color, font_size = font_size,
+                color = color, font_size = int(font_size),
                 anchor_x = anchor[0], anchor_y = anchor[1]
             )
             self.__texts.append(text)

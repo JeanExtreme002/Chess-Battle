@@ -1,6 +1,9 @@
 from .widget import Widget
 
 class Slide(Widget):
+    """
+    Classe para criar slides na tela.
+    """
     def __init__(self, screen, batch, x, y, size, images):
         super().__init__(screen, batch, x, y, size)
 
@@ -9,7 +12,8 @@ class Slide(Widget):
         self.__direction = 1
         self.__velocity = 1.2
         self.__index = 0
-        
+
+        # Define um tempo de espera, para quando a opacidade chegar em 100%.
         self.__show_waiting = screen.get_application().get_fps() * 5
         self.__waited = 0
 
@@ -17,29 +21,43 @@ class Slide(Widget):
         self.__load_images()
         self.__create_sprite()
 
-    def __load_images(self):
-        self.__loaded_images = []
-        
-        for filename in self.__images:
-            image = self.screen.load_image(filename, (self.width, self.height))
-            self.__loaded_images.append(image)
-
     def __create_sprite(self):
+        """
+        Cria a imagem.
+        """
         self.__sprite = self.screen.create_sprite(
             self.__loaded_images[self.__index],
             batch = self.batch, x = self.x, y = self.y
         )
 
     def __delete_sprite(self):
+        """
+        Deleta a imagem.
+        """
         self.__sprite.delete()
 
+    def __load_images(self):
+        """
+        Carrega todas as imagens que aparecerão nos slides.
+        """
+        self.__loaded_images = []
+        
+        for filename in self.__images:
+            image = self.screen.load_image(filename, (self.width, self.height))
+            self.__loaded_images.append(image)
+
     def set_velocity(self, velocity):
+        """
+        Define uma velocidade de "fade effect".
+        """
         if 0 > velocity > self.__max_opacity:
             raise ValueError("Velocity must be a value between 0 and {}".format(self.__max_opacity))
         self.__velocity = velocity
 
     def next(self):
-
+        """
+        Avança para o próximo estado da animação.
+        """
         # Após chegar na opacidade máxima, ele mantém a mesma por um certo período de tempo.
         if self.__opacity == self.__max_opacity and self.__waited < self.__show_waiting:
             self.__waited += 1

@@ -1,4 +1,9 @@
-class Widget(object):
+from abc import ABC
+
+class Widget(ABC):
+    """
+    Classe abstrata para criar widgets na tela.
+    """
     def __init__(self, screen, batch, x, y, size):
         self.__screen = screen
         self.__batch = batch

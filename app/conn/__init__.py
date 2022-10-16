@@ -1,6 +1,9 @@
 from socket import socket, AF_INET, SOCK_STREAM 
 
 class Connection(object):
+    """
+    Classe para criar uma conexão com outro jogador.
+    """
     __checking_string = "Check"
     
     def __init__(self, address, host = False):
@@ -11,10 +14,16 @@ class Connection(object):
         self.__hosting = host
 
     def __send_data(self, string):
+        """
+        Envia os dados para o receptor.
+        """
         sender = self.__connection if self.__hosting else self.__socket
         sender.send(string.encode())
 
     def connect(self):
+        """
+        Estabelece uma conexão.
+        """
         self.__socket = socket(AF_INET, SOCK_STREAM)
         self.__socket.settimeout(0.1)
         
@@ -26,19 +35,33 @@ class Connection(object):
             self.__socket.connect(self.__address)
 
     def is_connected(self):
+        """
+        Verifica se está conectado.
+        """
         try:
             self.__send_data(self.__checking_string)
             return True
         except: return False
 
     def recv(self):
+        """
+        Retorna as coordenadas de origem e destino.
+        """
         getter = self.__connection if self.__hosting else self.__socket
-        return getter.recv(64).decode().replace(self.__checking_string, "")
+        string = getter.recv(64).decode().replace(self.__checking_string, "")
+
+        return string[:2], string[2:]
 
     def send(self, origin, dest):
+        """
+        Envia as coordenadas de origem e destino.
+        """
         self.__send_data("{}{}{}{}".format(*origin, *dest))
 
     def close(self):
+        """
+        Encerra a conexão.
+        """
         if self.__connection: self.__connection.close()
         if self.__socket: self.__socket.close()
 

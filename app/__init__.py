@@ -9,7 +9,10 @@ from threading import Thread
 import os
 
 class Application(window.Window):
-
+    """
+    Classe principal do aplicativo.
+    """
+    
     __FRAMES_PER_SECOND = 60
     
     def __init__(self, title, chess_game):
@@ -27,9 +30,13 @@ class Application(window.Window):
 
         self.__initialize_screens()
         self.__current_screen = self.__home_screen
+        
         clock.schedule_interval(self.on_draw, 1 / self.get_fps())
 
     def __initialize_screens(self):
+        """
+        Inicializa todas as telas do jogo.
+        """
         self.__home_screen = HomeScreen(self)
         self.__home_screen.set_play_function(self.__start_game)
         self.__home_screen.set_settings_function(self.__show_settings_screen)
@@ -39,56 +46,98 @@ class Application(window.Window):
         self.__board_screen = BoardScreen(self)
         self.__settings_screen = SettingsScreen(self)
 
-    def __start_connection(self, host_mode): pass
-
-    def __show_settings_screen(self):
-        self.__current_screen = self.__settings_screen
-
-    def __show_history_screen(self):
-        self.__current_screen.set_message("Histórico indisponível no momento", "(ಥ﹏ಥ)")
-
     def __show_achivements_screen(self):
+        """
+        Alterna para a tela de conquistas.
+        """
         self.__current_screen.set_message("Conquistas indisponíveis no momento", "(ಥ﹏ಥ)")
 
-    def __start_game(self, selection):     
+    def __show_history_screen(self):
+        """
+        Alterna para a tela de histórico de partidas.
+        """
+        self.__current_screen.set_message("Histórico indisponível no momento", "(ಥ﹏ಥ)")
+
+    def __show_settings_screen(self):
+        """
+        Alterna para a tela de configurações.
+        """
+        self.__current_screen = self.__settings_screen
+
+    def __start_connection(self, host_mode):
+        """
+        Inicia uma conexão com outro jogador.
+        """
+        pass
+
+    def __start_game(self, selection):
+        """
+        Inicia o jogo, dada uma seleção (local ou online).
+        """
         if selection >= 2:
             self.__current_screen.set_message("Modo online indisponível no momento", "(ಥ﹏ಥ)")
         else:
             self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
             self.__current_screen = self.__board_screen
 
+    def get_fps(self):
+        """
+        Retorna a taxa de frames por segundo do aplicativo.
+        """
+        return self.__FRAMES_PER_SECOND
+
+    def get_sound_player(self):
+        """
+        Retorna o reprodutor de som.
+        """
+        return self.__sound_player
+
     def go_back(self):
-        
+        """
+        Volta uma tela para trás.
+        """
         if isinstance(self.__current_screen, SettingsScreen):
             settings.volume = self.__sound_player.get_volume()
             settings.muted = self.__sound_player.is_muted()
             
         self.__current_screen = self.__home_screen
 
-    def get_fps(self):
-        return self.__FRAMES_PER_SECOND
-
-    def get_sound_player(self):
-        return self.__sound_player
-
     def on_draw(self, interval = None):
+        """
+        Evento para desenhar a tela.
+        """
         self.clear()
         self.__current_screen.on_draw(not interval is None)
 
     def on_key_press(self, *args):
+        """
+        Evento de tecla pressionada.
+        """
         self.__current_screen.on_key_press(*args)
 
     def on_mouse_motion(self, *args):
+        """
+        Evento de movimentação do cursor.
+        """
         self.__current_screen.on_mouse_motion(*args)
 
     def on_mouse_release(self, *args):
+        """
+        Evento de botão do mouse pressionado e liberado.
+        """
         self.__current_screen.on_mouse_release(*args)
 
     def resize(self, width, height):
+        """
+        Altera o tamanho da tela do aplicativo.
+        """
         settings.size = [width, height]
         self.width = width
         self.height = height
         self.__initialize_screens()
 
     def run(self):
+        """
+        Inicia a execução do aplicativo.
+        """
         app.run()

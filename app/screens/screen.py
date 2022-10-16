@@ -1,6 +1,8 @@
+from .util.confirmation_box import ConfirmationBox
 from abc import ABC, abstractmethod
 from pyglet import image
 from pyglet import gl
+from pyglet import graphics
 from pyglet import shapes
 from pyglet import sprite
 from pyglet import text
@@ -12,7 +14,7 @@ gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
 
 class Screen(ABC):
     """
-    Classe para gerar telas.
+    Classe abstrata para criar telas.
     """
 
     _images = dict()
@@ -32,11 +34,16 @@ class Screen(ABC):
     def sound_player(self):
         return self.__application.get_sound_player()
 
-    def create_text(self, string, x, y, **kwargs):
-        y = self.get_true_y_position(y)
-        return text.Label(string, x = x, y = y, **kwargs)
+    def create_batch(self, *args, **kwargs):
+        """
+        Cria um batch.
+        """
+        return graphics.Batch(*args, **kwargs)
 
     def create_rectangle(self, x, y, width, height, **kwargs):
+        """
+        Cria um retângulo, com a posição Y invertida.
+        """
         y = self.get_true_y_position(y)
         height *= -1
 
@@ -49,11 +56,35 @@ class Screen(ABC):
         return shape
 
     def create_sprite(self, img, x, y, **kwargs):
+        """
+        Cria uma imagem, com a posição Y invertida.
+        """
         y = self.get_true_y_position(y, img.height)
         return sprite.Sprite(img, x = x, y = y, **kwargs)
 
-    def load_image(self, filename, size = None, save = True):
+    def create_text(self, string, x, y, **kwargs):
+        """
+        Cria um texto, com a posição Y invertida.
+        """
+        y = self.get_true_y_position(y)
+        return text.Label(string, x = x, y = y, **kwargs)
 
+    def get_application(self):
+        """
+        Retorna o objeto Application.
+        """
+        return self.__application
+
+    def get_true_y_position(self, y, height = 0):
+        """
+        Calcula a posição Y invertida.
+        """
+        return self.height - y - height
+
+    def load_image(self, filename, size = None, save = True):
+        """
+        Carrega uma imagem.
+        """
         # Carrega a imagem.
         if not filename in Screen._images:
             img = image.load(filename)
@@ -69,25 +100,27 @@ class Screen(ABC):
 
         return img
 
-    def get_application(self):
-        return self.__application
-
-    def get_pixels_by_percent(self, x, y):
-        width = self.width / 100 * x
-        height = self.height / 100 * y
-        return int(width), int(height)
-
-    def get_true_y_position(self, y, height = 0):
-        return self.height - y - height
+    @abstractmethod
+    def on_draw(self, by_scheduler = False):
+        """
+        Evento para desenhar a tela.
+        """
+        pass
 
     def on_mouse_motion(self, x, y, *args):
+        """
+        Evento de movimentação do cursor.
+        """
         return x, self.get_true_y_position(y), *args
 
     def on_mouse_release(self, x, y, button, modifiers):
+        """
+        Evento de botão do mouse pressionado e liberado.
+        """
         return x, self.get_true_y_position(y), button, modifiers
 
     def on_key_press(self, symbol, modifiers):
+        """
+        Evento de tecla pressionada.
+        """
         return True
-
-    @abstractmethod
-    def on_draw(self, by_scheduler = False): pass
