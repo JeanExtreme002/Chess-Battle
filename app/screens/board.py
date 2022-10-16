@@ -194,6 +194,7 @@ class BoardScreen(Screen):
         self.__stop_moving()
         
         if self.__game.play(selected_piece, (row, column)):
+            self.sound_player.play_movement_sound()
             self.__update_piece_sprites()
 
     def __select_piece(self, sprite, row, column):
