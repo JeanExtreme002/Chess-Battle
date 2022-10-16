@@ -8,8 +8,9 @@ class BoardScreen(Screen):
     __LOCAL_MODE = 0
     __ONLINE_MODE = 1
 
-    __WHITE_COLOR = (255, 255, 255)
-    __BLACK_COLOR = (50, 50, 50)
+    __BORDER_COLOR = (0, 0, 0)
+    __LIGHT_COLOR = (255, 248, 220)
+    __DARK_COLOR = (100, 71, 50)
     
     def __init__(self, application):
         super().__init__(application)
@@ -84,7 +85,7 @@ class BoardScreen(Screen):
         # Cria a borda do tabuleiro.
         self.__board_border = self.create_rectangle(
             board_x - 2, board_y - 2, board_size + 4, board_size + 4,
-            batch = self.__batch, color = (0, 0, 0)
+            batch = self.__batch, color = self.__BORDER_COLOR
         )
 
         # Cria os quadrados do tabuleiro e as peças.
@@ -97,8 +98,8 @@ class BoardScreen(Screen):
                 y = board_y + square_size * row
 
                 if (column + row) % 2 == 0:
-                    color = self.__WHITE_COLOR
-                else: color = self.__BLACK_COLOR
+                    color = self.__LIGHT_COLOR
+                else: color = self.__DARK_COLOR
 
                 square = self.create_rectangle(
                     x, y, square_size, square_size,
@@ -142,7 +143,7 @@ class BoardScreen(Screen):
                 if pos_x <= x <= pos_x + step and pos_y <= y <= pos_y + step:
                     return index_y, index_x
 
-    def __create_piece_sprites(self):
+    def __update_piece_sprites(self):
         for row in range(8):
             for column in range(8):      
                 sprite = self.__piece_sprites[row][column]
@@ -150,7 +151,7 @@ class BoardScreen(Screen):
                 if sprite: sprite.delete()
                 self.__piece_sprites[row][column] = None
 
-                piece = self.__game.get_piece(row + 1, column + 1)
+                piece = self.__game.get_piece(row, column)
                 if not piece: continue
 
                 color = "white" if piece.color.value == 0 else "black"
@@ -186,6 +187,16 @@ class BoardScreen(Screen):
                 piece_image = self.load_image(piece_filename, (size, size))
                 self.__piece_images[color][name] = piece_image
 
+    def __move_piece(self, row, column):
+        old_row, old_column = self.__selected_piece_index
+        selected_piece = self.__game.get_piece(old_row, old_column)
+        print('move', selected_piece, row, column, self.__game.get_piece(row, column))
+        if self.__game.play(selected_piece, (row, column)):
+            print('foi')
+            self.__update_piece_sprites()
+            
+        self.__stop_moving()
+
     def __select_piece(self, sprite, row, column):
         self.__moving = True
         
@@ -205,11 +216,10 @@ class BoardScreen(Screen):
     def __stop_moving(self):
         self.__moving = False
 
-        if not self.__selected_piece: return
-
-        self.__selected_piece.batch = self.__piece_batch
-        self.__selected_piece.x = self.__selected_piece_position[0]
-        self.__selected_piece.y = self.__selected_piece_position[1]
+        if self.__selected_piece:
+            self.__selected_piece.batch = self.__piece_batch
+            self.__selected_piece.x = self.__selected_piece_position[0]
+            self.__selected_piece.y = self.__selected_piece_position[1]
         
         self.__selected_piece = None
         self.__selected_piece_index = None
@@ -231,7 +241,7 @@ class BoardScreen(Screen):
         self.__player_input = input_func
         self.__player_output = output_func
 
-        self.__create_piece_sprites()
+        self.__update_piece_sprites()
 
     def on_key_press(self, symbol, modifiers):
         self.__stop_moving()
@@ -269,16 +279,23 @@ class BoardScreen(Screen):
         if not coords: return
 
         row, column = coords
-
+    
         # Seleciona uma peça do tabuleiro.
         if not self.__moving:
+            piece = self.__game.get_piece(row, column)
+            player_color = self.__game.get_player().color
+
+            if not piece or piece.color != player_color: return
+            
             sprite = self.__piece_sprites[row][column]
-            if sprite: self.__select_piece(sprite, row, column)
+            self.__select_piece(sprite, row, column)
 
         # Para de mover a peça.  
         elif (row, column) == self.__selected_piece_index:
             self.__stop_moving()
 
+        # Move a peça de uma casa à outra.
+        else: self.__move_piece(row, column)
 
     def on_draw(self, by_scheduler = False):
         self.__background_image.blit(0, 0)
