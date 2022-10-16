@@ -149,7 +149,7 @@ class BoardScreen(Screen):
         spacing_y = self.__destroyed_piece_size * 1.1
 
         # Calcula a posição da peça destruída.
-        if color == "white":
+        if color == "black":
             x = self.__score_board_x + self.__score_board_width * 0.4 - self.__destroyed_piece_size
             x -= spacing_x if index >= 8 else 0
         else:
