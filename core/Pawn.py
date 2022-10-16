@@ -92,16 +92,18 @@ class Pawn(Piece):
         Returns the new updated situation if the move was possible"""
         psb_moves = self.legal_moves(situation)
         # checking if the move is possible
-        if target not in psb_moves:
-            return situation
+        #if target not in psb_moves:
+        #    return situation
         # updating attributes
+        
         self._has_moved2 = True if target[1] == self.y + 2 or target[1] == self.y - 2 else False
+        #self._has_moved2 = True
         self._has_moved = True
 
         new_situation = self.update_situation(target, situation)
         # checking promotion
-        if self.promotion:
-            role = globals()[piece.name]
-            new_role = role(self.color, self.x, self.y)
-            new_situation[self.x][self.y] = new_role
+        #if self.promotion:
+        #    role = globals()[piece.name]
+        #    new_role = role(self.color, self.x, self.y)
+        #    new_situation[self.x][self.y] = new_role
         return new_situation

@@ -10,7 +10,7 @@ from .Color import Color
 
 class Board():
     def __init__(self):
-        self.pecas = [[0]*8 for i in range(8)]
+        self.pecas = [[None]*8 for i in range(8)]
 
         for i in range(8):       
             wp = Pawn(Color.White,i,1)
@@ -54,8 +54,10 @@ class Board():
             for j in range(8):
                 if type(self.pecas[i][j]) == int:
                     print(f"{self.pecas[i][j]:02d}", end=" ")
+                elif self.pecas[i][j] == None:
+                    print("00", end=" ")
                 else:
-                    print(self.pecas[i][j].r_id, end=" ")
+                    print(f"{self.pecas[i][j].r_id:02d}", end=" ")
             print()
 
     def write_pos(self):

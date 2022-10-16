@@ -11,6 +11,7 @@ class ChessGame:
         self.__white_player = Player(Color.White)
         self.__black_player = Player(Color.Black)
         self.__current_player = self.__white_player
+        self.__white_player.played = True
         self.__board = Board()
 
     @property
@@ -51,7 +52,6 @@ class ChessGame:
     def get_piece(self, x:int, y:int) -> Piece: #0 ≤ x, y ≤ 7
         try:
             piece = self.__board.pecas[x][y]
-
         except KeyError:
             return
 
@@ -64,15 +64,17 @@ class ChessGame:
         pass
 
     def play(self, piece:Piece, to:tuple[int, int]) -> bool:
-        if (self.__black_player.played and (not piece.r_id%2)) or (self.__white_player.played and piece.r_id%2):
+        '''if (self.__black_player.played and (not piece.r_id%2)) or (self.__white_player.played and piece.r_id%2):
             #Se não é a vez da cor jogar...
             return False
 
         if not (list(to) in piece.legal_moves(self.__board.pecas)):
             #Se o movimento não é legal...
-            return False
+            return False'''
 
-        piece.move(to, self.__board.pecas)
+        self.__board.pecas = piece.move(to, self.__board.pecas)
         self.__change_player()
+        self.__board.imprimir()
+        print()
 
         return True
