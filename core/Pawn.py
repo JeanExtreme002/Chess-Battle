@@ -85,7 +85,7 @@ class Pawn(Piece):
                 return True
         return False
 
-    def move(self, target: list[int, int], situation: list[[]], piece: Optional[PromotionRoles] = None) -> list[[]]:
+    '''def move(self, target: list[int, int], situation: list[[]], piece: Optional[PromotionRoles] = None) -> list[[]]:
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
@@ -106,4 +106,4 @@ class Pawn(Piece):
         #    role = globals()[piece.name]
         #    new_role = role(self.color, self.x, self.y)
         #    new_situation[self.x][self.y] = new_role
-        return new_situation
+        return new_situation'''

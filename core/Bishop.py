@@ -53,7 +53,7 @@ class Bishop(Piece):
         finally:
             return psb_moves
 
-    def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+    '''def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
@@ -63,4 +63,4 @@ class Bishop(Piece):
         if target not in psb_moves:
             return situation
         new_situation = self.update_situation(target, situation)
-        return new_situation
+        return new_situation'''

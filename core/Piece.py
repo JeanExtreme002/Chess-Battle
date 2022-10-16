@@ -88,10 +88,17 @@ class Piece(ABC):
         Returns the legal moves"""
         return
 
-    @abstractmethod
+    #@abstractmethod
     def move(self, target: list[int, int], situation: list[[]]):
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
         Returns the new updated situation if the move was possible"""
-        return
+
+        #Isso é temporário
+        '''psb_moves = self.legal_moves(situation)
+        # checking if the move is possible
+        if target not in psb_moves:
+            return situation'''
+        new_situation = self.update_situation(target, situation)
+        return new_situation
