@@ -44,6 +44,8 @@ class Application(window.Window):
         self.__home_screen.set_achivements_function(self.__show_achivements_screen)
         
         self.__board_screen = BoardScreen(self)
+        self.__board_screen.set_board_coordinates(True)
+        
         self.__settings_screen = SettingsScreen(self)
 
     def __show_achivements_screen(self):

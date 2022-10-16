@@ -35,6 +35,8 @@ class BoardScreen(Screen):
 
         self.__key_input_buffer = [None, None]
 
+        self.__board_coord_texts = []
+        
         self.__build()
         
     def __build(self):
@@ -168,6 +170,43 @@ class BoardScreen(Screen):
             x = x, y = y
         )
         sprite_list.append(sprite)
+
+    def __create_board_coordinates(self):
+        """
+        Cria as letras e números ao lado do tabuleiro,
+        correspondentes às linhas e colunas.
+        """ 
+        for column in range(8):
+            x = self.__board_x + self.__square_size * 0.5 + self.__square_size * column
+            y = self.__board_y + self.__board_size + self.height * 0.03
+
+            text = self.__create_board_coord_text(chr(ord("A") + column), x, y)
+            self.__board_coord_texts.append(text)
+
+        for row in range(8):
+            x = self.__board_x + self.__board_size + self.height * 0.03
+            y = self.__board_y + self.__square_size * 0.5 + self.__square_size * row
+
+            text = self.__create_board_coord_text(chr(ord("8") - row), x, y)
+            self.__board_coord_texts.append(text)
+
+    def __create_board_coord_text(self, string, x, y):
+        """
+        Cria o texto de uma coordenada do tabuleiro.
+        """
+        text = self.create_text(
+            string, x, y, batch = self.__piece_batch,
+            color = (255, 255, 255, 255), font_size = self.width * 0.01,
+            anchor_x = "center", anchor_y = "center"
+        )
+        return text
+
+    def __delete_board_coordinates(self):
+        """
+        Apaga os textos das coordenadas do tabuleiro.
+        """
+        for text in self.__board_coord_texts: text.delete()
+        self.__board_coord_texts = []
 
     def __delete_destroyed_pieces(self):
         """
@@ -403,6 +442,13 @@ class BoardScreen(Screen):
     @property
     def ONLINE_MODE(self):
         return self.__ONLINE_MODE
+
+    def set_board_coordinates(self, boolean = True):
+        """
+        Mostra ou esconde as coordenadas do tabuleiro.
+        """
+        self.__delete_board_coordinates()
+        if boolean: self.__create_board_coordinates()
 
     def set_new_game(self, game, mode, input_func = None, output_func = None):
         """
