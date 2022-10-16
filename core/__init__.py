@@ -74,7 +74,5 @@ class ChessGame:
 
         self.__board.pecas = piece.move(to, self.__board.pecas)
         self.__change_player()
-        self.__board.imprimir()
-        print()
 
         return True

@@ -57,16 +57,9 @@ class Piece(ABC):
 
     def update_situation(self, target: list[int, int], situation: list[[]]) -> list[[]]:
         """Updates the board situation after a move"""
-        for i in situation:
-            for n in i: print(n.name if n else None, end=' ')
-            print()
-        print(target, self.y, self.x)
         situation[self.y][self.x] = None
         self._update_position(target)
         situation[self.y][self.x] = self
-        for i in situation:
-            for n in i: print(n.name if n else None, end=' ')
-            print()
         return situation
 
     @staticmethod
