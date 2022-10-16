@@ -13,6 +13,12 @@ class BoardScreen(Screen):
     __BORDER_COLOR = (0, 0, 0)
     __LIGHT_COLOR = (255, 248, 220)
     __DARK_COLOR = (100, 71, 50)
+
+    __COORD_TEXT_COLOR = [
+        (255, 255, 255, 255),
+        (220, 220, 220, 255),
+        (220, 0, 0, 255)
+    ]
     
     def __init__(self, application):
         super().__init__(application)
@@ -24,17 +30,19 @@ class BoardScreen(Screen):
 
         self.__moving_by_mouse = False
         self.__moving_by_keyboard = False
-        
+
         self.__selected_piece = None
         self.__selected_piece_shadow = None
         self.__selected_piece_index = None
         self.__selected_piece_position = None
+
+        self.__selected_target_shadow = None
         
         self.__piece_sprites = [[None,] * 8 for i in range(8)]
         self.__destroyed_piece_sprites = {"white": list(), "black": list()}
 
         self.__key_input_buffer = [None, None]
-
+        
         self.__board_coord_texts = []
         
         self.__build()
@@ -196,10 +204,24 @@ class BoardScreen(Screen):
         """
         text = self.create_text(
             string, x, y, batch = self.__piece_batch,
-            color = (255, 255, 255, 255), font_size = self.width * 0.01,
+            color = self.__COORD_TEXT_COLOR[0], font_size = self.width * 0.01,
             anchor_x = "center", anchor_y = "center"
         )
         return text
+
+    def __create_target_shadow(self, row, column):
+        """
+        Cria uma sombra para uma dada casa do tabuleiro,
+        identificando o destino da peça selecionada.
+        """
+        x, y = self.__get_piece_image_pos(column, row)
+        
+        self.__selected_target_shadow = self.create_rectangle(
+            x, y, self.__square_size, self.__square_size,
+            batch = self.__selected_piece_batch,
+            color = self.__COORD_TEXT_COLOR[2][:3]
+        )
+        self.__selected_target_shadow.opacity = 50
 
     def __delete_board_coordinates(self):
         """
@@ -217,6 +239,13 @@ class BoardScreen(Screen):
             for sprite in sprite_list: sprite.delete()
             self.__destroyed_piece_sprites[color] = []
 
+    def __deselect_coordinates(self):
+        """
+        Desseleciona as coordenadas do tabuleiro.
+        """
+        for text in self.__board_coord_texts:
+            text.color = self.__COORD_TEXT_COLOR[0]
+
     def __deselect_piece(self):
         """
         Desseleciona a peça, antes selecionada pelo teclado ou mouse. Caso
@@ -224,7 +253,9 @@ class BoardScreen(Screen):
         """
         self.__moving_by_mouse = False
         self.__moving_by_keyboard = False
+        
         self.__key_input_buffer = [None, None]
+        self.__deselect_coordinates()
 
         if self.__selected_piece:
             self.__selected_piece.batch = self.__piece_batch
@@ -233,6 +264,11 @@ class BoardScreen(Screen):
 
         if self.__selected_piece_shadow:
             self.__selected_piece_shadow.delete()
+
+        if self.__selected_target_shadow:
+            self.__selected_target_shadow.delete()
+
+        self.__selected_target_shadow = None
             
         self.__selected_piece = None
         self.__selected_piece_shadow = None
@@ -265,6 +301,14 @@ class BoardScreen(Screen):
         pos_x = self.__board_x + self.__square_size * x
         pos_y = self.__board_y + self.__square_size * y
         return pos_x, pos_y
+
+    def __is_key_input_buffer_full(self):
+        """
+        Verifica se o buffer de teclas de coordenadas está cheio.
+        """
+        for key in self.__key_input_buffer:
+            if key is None: return False
+        return True
 
     def __is_mouse_on_board(self, x, y):
         """
@@ -330,7 +374,7 @@ class BoardScreen(Screen):
 
         # Se a jogada ocorreu com sucesso, o tabuleiro é completamente atualizado.
         if self.__game.play(selected_piece, (row, column)):
-            
+
             # Se havia peça na posição de destino, o som a ser reproduzido
             # será o de ataque, além de que a peça será registrada como
             # destruída. Caso contrário, será de movimento.
@@ -342,6 +386,15 @@ class BoardScreen(Screen):
 
             # Atualiza o tabuleiro na tela.
             self.__update_piece_sprites()
+
+    def __select_coordinate(self, index, axis_y = False, target = False):
+        """
+        Seleciona uma coordenada do tabuleiro.
+        """
+        if not self.__board_coord_texts: return
+        
+        text = self.__board_coord_texts[index + (8 if axis_y else 0)]
+        text.color = self.__COORD_TEXT_COLOR[2 if target else 1]
 
     def __select_piece(self, row, column, piece_on = False):
         """
@@ -368,7 +421,7 @@ class BoardScreen(Screen):
         Define uma peça a ser selecionada, para que a mesma
         possa ser movida através do teclado.
         """
-        self.__deselect_piece()
+        if self.__moving_by_mouse: self.__deselect_piece()
         self.__moving_by_keyboard = True
 
         self.__key_input_buffer = [None, None]
@@ -390,7 +443,7 @@ class BoardScreen(Screen):
         Define uma peça a ser selecionada, para que a mesma
         possa ser movida livremente com o cursor.
         """
-        self.__deselect_piece()
+        if self.__moving_by_keyboard: self.__deselect_piece()
         self.__moving_by_mouse = True
         self.__select_piece(row, column, True)
         
@@ -490,22 +543,27 @@ class BoardScreen(Screen):
         # Verifica se o usuário selecionou uma coluna
         if key.A <= symbol <= key.H and self.__key_input_buffer[1] is None:
             self.__key_input_buffer[1] = symbol - key.A
+            self.__select_coordinate(self.__key_input_buffer[1], axis_y = False, target = self.__moving_by_keyboard)
 
         # Verifica se o usuário selecionou uma linha.
         elif key._1 <= symbol <= key._9 and not self.__key_input_buffer[1] is None:
             self.__key_input_buffer[0] = 7 - (symbol - key._1)
+            self.__select_coordinate(self.__key_input_buffer[0], axis_y = True, target = self.__moving_by_keyboard)
 
+            # Se a peça já foi selecionado, o destino da peça será marcado.
+            if self.__moving_by_keyboard: self.__create_target_shadow(*self.__key_input_buffer)
+
+        # Se a tecla for ENTER e as coordenadas de destino foram selecionadas,
+        # o movimento da peça selecionada será realizado.
+        elif symbol in [key.ENTER, key.SPACE] and self.__is_key_input_buffer_full() and self.__moving_by_keyboard:
+            self.__move_piece(*self.__key_input_buffer)
+            
         # Se não, apaga os registros de teclas anteriores.
         else: self.__deselect_piece()
 
-        # Se a coluna e linha foram selecionadas, uma ação sob o tabuleiro será realizada.
-        if all([not position is None for position in self.__key_input_buffer]):
-            
-            # Move a peça selecionada.
-            if self.__moving_by_keyboard: self.__move_piece(*self.__key_input_buffer)
-
-            # Seleciona uma peça a ser movida.
-            else: self.__select_piece_by_keyboard(*self.__key_input_buffer)
+        # Seleciona uma peça a ser movida caso as coordenadas tenham sido selecionadas.
+        if self.__is_key_input_buffer_full() and not self.__moving_by_keyboard:
+            self.__select_piece_by_keyboard(*self.__key_input_buffer)
             
         return True
 
