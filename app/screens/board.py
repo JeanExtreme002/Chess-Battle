@@ -193,12 +193,19 @@ class BoardScreen(Screen):
         """
         old_row, old_column = self.__selected_piece_index
         selected_piece = self.__game.get_piece(old_row, old_column)
+        dest_piece = self.__game.get_piece(row, column)
 
         self.__stop_moving()
 
         # Se a jogada ocorreu com sucesso, o tabuleiro é completamente atualizado.
         if self.__game.play(selected_piece, (row, column)):
-            self.sound_player.play_movement_sound()
+            
+            # Se havia peça na posição de destino, o som a ser reproduzido
+            # será de ataque. Caso contrário, será de movimento.
+            if dest_piece: self.sound_player.play_attacking_sound()
+            else: self.sound_player.play_movement_sound()
+
+            # Atualiza o tabuleiro na tela.
             self.__update_piece_sprites()
 
     def __select_piece(self, row, column):

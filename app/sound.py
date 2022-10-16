@@ -13,6 +13,7 @@ class SoundPlayer():
         self.__loaded_sounds = {
             "effects": {
                 "starting": self.__load_sounds("effects", "starting"),
+                "attacking": self.__load_sounds("effects", "attacking"),
                 "movement": self.__load_sounds("effects", "movement"),
                 "victory": self.__load_sounds("effects", "victory")
             },
@@ -58,6 +59,11 @@ class SoundPlayer():
         
         while self.is_playing():
             self.__player.next_source()
+
+    def play_attacking_sound(self):
+       
+        sound = random.choice(self.__loaded_sounds["effects"]["attacking"])
+        self.__play_sound(sound)
         
     def play_movement_sound(self):
        
