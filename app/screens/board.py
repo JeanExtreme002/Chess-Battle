@@ -546,7 +546,7 @@ class BoardScreen(Screen):
             self.__select_coordinate(self.__key_input_buffer[1], axis_y = False, target = self.__moving_by_keyboard)
 
         # Verifica se o usuário selecionou uma linha.
-        elif key._1 <= symbol <= key._9 and not self.__key_input_buffer[1] is None:
+        elif key._1 <= symbol <= key._9 and not self.__key_input_buffer[1] is None and not self.__key_input_buffer[0]:
             self.__key_input_buffer[0] = 7 - (symbol - key._1)
             self.__select_coordinate(self.__key_input_buffer[0], axis_y = True, target = self.__moving_by_keyboard)
 
