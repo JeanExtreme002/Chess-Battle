@@ -362,11 +362,17 @@ class BoardScreen(Screen):
         """
         Move a peça selecionada para uma posição XY, se possível.
         """
+  
         old_row, old_column = self.__selected_piece_index
         selected_piece = self.__game.get_piece(old_row, old_column)
         dest_piece = self.__game.get_piece(row, column)
 
         self.__deselect_piece()
+
+        # Caso a coordenada seja igual à coordenada da peça selecionada,
+        # o seu movimento será invalidado, reproduzindo um som de soltar a peça. 
+        if row == old_row and column == old_column:
+            return self.__play_dropping_piece_sound(selected_piece)
 
         # Impede que uma peça destrua outra peça da mesma cor.
         if dest_piece and dest_piece.color == selected_piece.color:
@@ -389,6 +395,20 @@ class BoardScreen(Screen):
 
         # Caso contrário, um som de movimento inválido será reproduzido.
         else: self.sound_player.play_invalid_movement_sound()
+        
+    def __play_dropping_piece_sound(self, piece):
+        """
+        Reproduz som de largar peça.
+        """
+        if piece.name == "knight": self.sound_player.play_dropping_knight_sound()
+        else: self.sound_player.play_dropping_sound() 
+
+    def __play_getting_piece_sound(self, piece):
+        """
+        Reproduz som de selecionar peça.
+        """
+        if piece.name == "knight": self.sound_player.play_getting_knight_sound()
+        else: self.sound_player.play_getting_sound() 
 
     def __select_coordinate(self, index, axis_y = False, target = False):
         """
@@ -408,9 +428,9 @@ class BoardScreen(Screen):
 
         # Verifica se a seleção é uma peça pertencente ao jogador da rodada.
         if not piece or piece.color != player_color:
-            self.__deselect_piece()
-            return False
-        
+            return self.__deselect_piece()
+
+        self.__play_getting_piece_sound(piece)
         sprite = self.__piece_sprites[row][column]
 
         # Troca o batch para que a peça fique na
@@ -420,8 +440,6 @@ class BoardScreen(Screen):
         self.__selected_piece = sprite
         self.__selected_piece_index = (row, column)
         self.__selected_piece_position = (sprite.x, sprite.y)
-
-        return True
 
     def __select_piece_by_keyboard(self, row, column):
         """
@@ -452,10 +470,7 @@ class BoardScreen(Screen):
         """
         if self.__moving_by_keyboard: self.__deselect_piece()
         self.__moving_by_mouse = True
-
-        # Se a seleção ocorreu com sucesso, um som será reproduzido.
-        if self.__select_piece(row, column, True):
-            self.sound_player.play_getting_sound()
+        self.__select_piece(row, column, True)
         
     def __set_dialog_box_message(self, widget, *message):
         """
@@ -618,12 +633,6 @@ class BoardScreen(Screen):
         # Seleciona uma peça do tabuleiro.
         if not self.__moving_by_mouse:
             self.__select_piece_by_mouse(row, column)
-
-        # Caso a coordenada seja igual à coordenada da peça selecionada,
-        # o seu movimento será interrompido.  
-        elif (row, column) == self.__selected_piece_index:
-            self.sound_player.play_dropping_sound()
-            self.__deselect_piece()
 
         # Move a peça de uma casa à outra.
         else: self.__move_piece(row, column)

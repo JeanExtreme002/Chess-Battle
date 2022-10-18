@@ -17,7 +17,9 @@ class SoundPlayer():
                 "starting": self.__load_sounds("effects", "starting"),
                 "attacking": self.__load_sounds("effects", "attacking"),
                 "dropping": self.__load_sounds("effects", "dropping"),
+                "dropping_knight": self.__load_sounds("effects", "dropping_knight"),
                 "getting": self.__load_sounds("effects", "getting"),
+                "getting_knight": self.__load_sounds("effects", "getting_knight"),
                 "invalid_movement": self.__load_sounds("effects", "invalid_movement"),
                 "movement": self.__load_sounds("effects", "movement"),
                 "victory": self.__load_sounds("effects", "victory")
@@ -100,11 +102,25 @@ class SoundPlayer():
         sound = random.choice(self.__loaded_sounds["effects"]["dropping"])
         self.__play_sound(sound)
 
+    def play_dropping_knight_sound(self):
+        """
+        Reproduz som de largar a peça selecionada.
+        """
+        sound = random.choice(self.__loaded_sounds["effects"]["dropping_knight"])
+        self.__play_sound(sound)
+
     def play_getting_sound(self):
         """
         Reproduz som de selecionar peça.
         """
         sound = random.choice(self.__loaded_sounds["effects"]["getting"])
+        self.__play_sound(sound)
+
+    def play_getting_knight_sound(self):
+        """
+        Reproduz som de selecionar peça.
+        """
+        sound = random.choice(self.__loaded_sounds["effects"]["getting_knight"])
         self.__play_sound(sound)
 
     def play_invalid_movement_sound(self):
