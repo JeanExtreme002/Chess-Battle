@@ -383,9 +383,12 @@ class BoardScreen(Screen):
                 self.sound_player.play_attacking_sound()
             else:
                 self.sound_player.play_movement_sound()
-
+    
             # Atualiza o tabuleiro na tela.
             self.__update_piece_sprites()
+
+        # Caso contrário, um som de movimento inválido será reproduzido.
+        else: self.sound_player.play_invalid_movement_sound()
 
     def __select_coordinate(self, index, axis_y = False, target = False):
         """
@@ -606,12 +609,14 @@ class BoardScreen(Screen):
         row, column = coords
     
         # Seleciona uma peça do tabuleiro.
-        if not self.__moving_by_mouse: 
+        if not self.__moving_by_mouse:
+            self.sound_player.play_getting_sound()
             self.__select_piece_by_mouse(row, column)
 
         # Caso a coordenada seja igual à coordenada da peça selecionada,
         # o seu movimento será interrompido.  
         elif (row, column) == self.__selected_piece_index:
+            self.sound_player.play_dropping_sound()
             self.__deselect_piece()
 
         # Move a peça de uma casa à outra.

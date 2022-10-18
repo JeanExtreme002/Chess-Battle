@@ -16,6 +16,9 @@ class SoundPlayer():
             "effects": {
                 "starting": self.__load_sounds("effects", "starting"),
                 "attacking": self.__load_sounds("effects", "attacking"),
+                "dropping": self.__load_sounds("effects", "dropping"),
+                "getting": self.__load_sounds("effects", "getting"),
+                "invalid_movement": self.__load_sounds("effects", "invalid_movement"),
                 "movement": self.__load_sounds("effects", "movement"),
                 "victory": self.__load_sounds("effects", "victory")
             },
@@ -29,7 +32,7 @@ class SoundPlayer():
         Carrega todos os sons de um determinado diretório.
         """
         sounds = []
-        
+
         for filename in paths.get_sound_list(*path):
             sounds.append(media.load(filename))
         return sounds
@@ -89,6 +92,27 @@ class SoundPlayer():
         """
         sound = random.choice(self.__loaded_sounds["effects"]["attacking"])
         self.__play_sound(sound)
+
+    def play_dropping_sound(self):
+        """
+        Reproduz som de largar a peça selecionada.
+        """
+        sound = random.choice(self.__loaded_sounds["effects"]["dropping"])
+        self.__play_sound(sound)
+
+    def play_getting_sound(self):
+        """
+        Reproduz som de selecionar peça.
+        """
+        sound = random.choice(self.__loaded_sounds["effects"]["getting"])
+        self.__play_sound(sound)
+
+    def play_invalid_movement_sound(self):
+        """
+        Reproduz som de movimento inválido.
+        """
+        sound = random.choice(self.__loaded_sounds["effects"]["invalid_movement"])
+        self.__play_sound(sound)
         
     def play_movement_sound(self):
         """
@@ -129,3 +153,4 @@ class SoundPlayer():
         """
         sound = random.choice(self.__loaded_sounds["effects"]["victory"])
         self.__play_sound(sound)
+        
