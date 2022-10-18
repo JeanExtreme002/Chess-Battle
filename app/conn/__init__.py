@@ -20,6 +20,16 @@ class Connection(object):
         sender = self.__connection if self.__hosting else self.__socket
         sender.send(string.encode())
 
+    def close(self):
+        """
+        Encerra a conexão.
+        """
+        if self.__connection: self.__connection.close()
+        if self.__socket: self.__socket.close()
+
+        self.__connection = None
+        self.__socket = None
+
     def connect(self):
         """
         Estabelece uma conexão.
@@ -58,13 +68,4 @@ class Connection(object):
         """
         self.__send_data("{}{}{}{}".format(*origin, *dest))
 
-    def close(self):
-        """
-        Encerra a conexão.
-        """
-        if self.__connection: self.__connection.close()
-        if self.__socket: self.__socket.close()
-
-        self.__connection = None
-        self.__socket = None
         
