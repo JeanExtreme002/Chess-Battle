@@ -30,24 +30,29 @@ class Connection(object):
         self.__connection = None
         self.__socket = None
 
-    def connect(self):
+    def connect(self, timeout = 5):
         """
         Estabelece uma conexão.
         """
         self.__socket = socket(AF_INET, SOCK_STREAM)
-        self.__socket.settimeout(0.1)
-        
-        if self.__hosting:
-            self.__socket.bind(self.__address)
-            self.__socket.listen(1)
-            self.__connection = self.__socket.accept()[0]
-        else:
-            self.__socket.connect(self.__address)
+        self.__socket.settimeout(timeout)
+
+        try:
+            if self.__hosting:
+                self.__socket.bind(self.__address)
+                self.__socket.listen(1)
+
+                self.__connection = self.__socket.accept()[0]
+            else:
+                self.__socket.connect(self.__address)
+        except: self.close()
 
     def is_connected(self):
         """
         Verifica se está conectado.
         """
+        if not self.__connection and not self.__socket: return False
+        
         try:
             self.__send_data(self.__checking_string)
             return True
@@ -68,4 +73,3 @@ class Connection(object):
         """
         self.__send_data("{}{}{}{}".format(*origin, *dest))
 
-        

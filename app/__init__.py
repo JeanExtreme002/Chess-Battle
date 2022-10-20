@@ -70,18 +70,33 @@ class Application(window.Window):
         """
         Inicia uma conexão com outro jogador.
         """
-        pass
-
+        self.__connection = Connection(settings.address, host_mode)
+        
+        for i in range(6):
+            self.__connection.connect(timeout = 1)
+            print(host_mode, i)
+            if self.__connection.is_connected(): return True
+        return False
+        
     def __start_game(self, selection):
         """
         Inicia o jogo, dada uma seleção (local ou online).
         """
-        if selection >= 2:
-            self.__current_screen.set_message("Modo online indisponível no momento", "(ಥ﹏ಥ)")
-        else:
+
+        # Inicia o jogo localmente.
+        if selection == 1:
             self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
             self.__current_screen = self.__board_screen
-
+            return
+        
+        # Tentar estabelecer uma conexão.
+        if not self.__start_connection(selection == 2):
+            return self.__current_screen.set_message("Infelizmente, não foi possível conectar.", "Por favor, verique a sua conexão.")
+    
+        # Inicia o jogo online.  
+        self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.ONLINE_MODE)
+        self.__current_screen = self.__board_screen
+        
     def get_fps(self):
         """
         Retorna a taxa de frames por segundo do aplicativo.
