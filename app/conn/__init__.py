@@ -1,4 +1,4 @@
-from socket import socket, AF_INET, SOCK_STREAM 
+from socket import socket, timeout, AF_INET, SOCK_STREAM 
 
 class Connection(object):
     """
@@ -47,29 +47,52 @@ class Connection(object):
                 self.__socket.connect(self.__address)
         except: self.close()
 
-    def is_connected(self):
+    def is_connected(self, attempts = 1):
         """
         Verifica se está conectado.
         """
         if not self.__connection and not self.__socket: return False
-        
-        try:
-            self.__send_data(self.__checking_string)
-            return True
-        except: return False
+
+        for i in range(attempts):
+            try:
+                self.__send_data(self.__checking_string)
+                return True
+            except: pass
+        return False
 
     def recv(self):
         """
         Retorna as coordenadas de origem e destino.
         """
         getter = self.__connection if self.__hosting else self.__socket
-        string = getter.recv(64).decode().replace(self.__checking_string, "")
 
-        return string[:2], string[2:]
+        try:
+            string = getter.recv(64).decode().replace(self.__checking_string, "")
+
+        except ConnectionResetError:
+            self.close()
+            return False
+            
+        except timeout:
+            return
+
+        if len(string) == 4:
+            origin = (int(string[0]), int(string[1]))
+            dest = (int(string[2]), int(string[3]))
+            return origin, dest
 
     def send(self, origin, dest):
         """
         Envia as coordenadas de origem e destino.
         """
-        self.__send_data("{}{}{}{}".format(*origin, *dest))
+        try:
+            self.__send_data("{}{}{}{}".format(*origin, *dest))
+            return True
+
+        except ConnectionResetError:
+            self.close()
+            return False
+        
+        except timeout:
+            return False 
 

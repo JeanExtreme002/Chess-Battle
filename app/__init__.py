@@ -25,6 +25,9 @@ class Application(window.Window):
 
         self.paths = paths
 
+        self.__address = settings.address
+        self.__connection = None
+
         self.__chess_game = chess_game
         self.__sound_player = SoundPlayer(settings.volume, settings.muted)
 
@@ -48,6 +51,34 @@ class Application(window.Window):
         
         self.__settings_screen = SettingsScreen(self)
 
+    def __finish_online_match_by_error(self):
+        """
+        Encerra a partida online informando que houve um erro.
+        """
+        self.go_back()
+        self.__current_screen.set_message("Conexão perdida.")
+
+        return False
+
+    def __get_movement(self):
+        """
+        Retorna a jogada realizada pelo outro jogador, se houver.
+        """
+        if self.__connection.is_connected():
+            return self.__connection.recv()
+
+        return self.__finish_online_match_by_error()
+
+    def __send_movement(self, origin, dest):
+        """
+        Envia a jogada realizada para o outro jogador.
+        """
+        if self.__connection.is_connected():
+            self.__connection.send(origin, dest)
+            return True
+
+        return self.__finish_online_match_by_error()
+            
     def __show_achivements_screen(self):
         """
         Alterna para a tela de conquistas.
@@ -72,9 +103,8 @@ class Application(window.Window):
         """
         self.__connection = Connection(settings.address, host_mode)
         
-        for i in range(6):
-            self.__connection.connect(timeout = 1)
-            print(host_mode, i)
+        for i in range(10):
+            self.__connection.connect(timeout = 0.3)
             if self.__connection.is_connected(): return True
         return False
         
@@ -93,10 +123,13 @@ class Application(window.Window):
         if not self.__start_connection(selection == 2):
             return self.__current_screen.set_message("Infelizmente, não foi possível conectar.", "Por favor, verique a sua conexão.")
     
-        # Inicia o jogo online.  
-        self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.ONLINE_MODE)
+        # Inicia o jogo online, sendo o host o primeiro a jogar.  
+        self.__board_screen.set_new_game(
+            self.__chess_game, self.__board_screen.ONLINE_MODE,
+            self.__send_movement, self.__get_movement, selection == 2
+        )
         self.__current_screen = self.__board_screen
-        
+  
     def get_fps(self):
         """
         Retorna a taxa de frames por segundo do aplicativo.
@@ -107,7 +140,7 @@ class Application(window.Window):
         """
         Retorna o endereço IP do usuário.
         """
-        return settings.address[0]
+        return self.__address[0]
 
     def get_sound_player(self):
         """
@@ -119,9 +152,9 @@ class Application(window.Window):
         """
         Volta uma tela para trás.
         """
-        if isinstance(self.__current_screen, SettingsScreen):
-            settings.volume = self.__sound_player.get_volume()
-            settings.muted = self.__sound_player.is_muted()
+        if self.__connection:
+            self.__connection.close()
+            self.__connection = None
             
         self.__current_screen = self.__home_screen
 
@@ -154,7 +187,6 @@ class Application(window.Window):
         """
         Altera o tamanho da tela do aplicativo.
         """
-        settings.size = [width, height]
         self.width = width
         self.height = height
         self.__initialize_screens()
@@ -163,10 +195,19 @@ class Application(window.Window):
         """
         Inicia a execução do aplicativo.
         """
-        app.run()
+        app.run()    
+
+    def save_settings(self):
+        """
+        Salva todas as configurações atuais do aplicativo serão salvas.
+        """
+        settings.address = self.__address
+        settings.size = [self.width, self.height]
+        settings.volume = self.__sound_player.get_volume()
+        settings.muted = self.__sound_player.is_muted()
 
     def set_ip_address(self, address):
         """
         Define um endereço IP para o usuário.
         """
-        settings.address[0] = address
+        self.__address[0] = address

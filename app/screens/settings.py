@@ -145,6 +145,7 @@ class SettingsScreen(Screen):
 
         self.get_application().set_ip_address(self.__ip_entry.get_text())
         self.get_application().resize(*self.__resolutions[self.__resolution_index])
+        self.get_application().save_settings()
         
         self.__changed = False
 

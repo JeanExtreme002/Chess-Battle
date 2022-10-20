@@ -25,8 +25,9 @@ class BoardScreen(Screen):
 
         self.__mode = None
         self.__game = None
-        self.__player_input = None
-        self.__player_output = None
+        self.__movement_sender = None
+        self.__movement_receiver = None
+        self.__player = False
 
         self.__moving_by_mouse = False
         self.__moving_by_keyboard = False
@@ -358,7 +359,7 @@ class BoardScreen(Screen):
                 piece_image = self.load_image(piece_filename, (size, size))
                 self.__piece_images[color][name] = piece_image
 
-    def __move_piece(self, row, column):
+    def __move_piece(self, row, column, received = False):
         """
         Move a peça selecionada para uma posição XY, se possível.
         """
@@ -380,14 +381,19 @@ class BoardScreen(Screen):
 
         # Se a jogada ocorreu com sucesso, o tabuleiro é completamente atualizado.
         if self.__game.play(selected_piece, (row, column)):
+            sent = True
+            
+            # Se o modo for online, envia a jogada para o outro jogador.
+            if self.__mode == self.ONLINE_MODE and not received:
+                sent = self.__movement_sender((old_row, old_column), (row, column))
 
             # Se havia peça na posição de destino, o som a ser reproduzido
             # será o de ataque, além de que a peça será registrada como
             # destruída. Caso contrário, será de movimento.
-            if dest_piece:
+            if sent and dest_piece:
                 self.__add_destroyed_piece(dest_piece)
                 self.sound_player.play_attacking_sound()
-            else:
+            elif sent:
                 self.sound_player.play_movement_sound()
     
             # Atualiza o tabuleiro na tela.
@@ -419,7 +425,7 @@ class BoardScreen(Screen):
         text = self.__board_coord_texts[index + (8 if axis_y else 0)]
         text.color = self.__COORD_TEXT_COLOR[2 if target else 1]
 
-    def __select_piece(self, row, column, piece_on = False):
+    def __select_piece(self, row, column, piece_on = False, received = False):
         """
         Seleciona uma peça do tabuleiro.
         """
@@ -430,7 +436,11 @@ class BoardScreen(Screen):
         if not piece or piece.color != player_color:
             return self.__deselect_piece()
 
-        self.__play_getting_piece_sound(piece)
+        # Se o modo for online, verifica se é a vez do jogador.
+        if self.__mode == self.ONLINE_MODE and not received and piece.color.value != self.__player:
+            return self.__deselect_piece()
+
+        if not received: self.__play_getting_piece_sound(piece)
         sprite = self.__piece_sprites[row][column]
 
         # Troca o batch para que a peça fique na
@@ -528,7 +538,7 @@ class BoardScreen(Screen):
         self.__delete_board_coordinates()
         if boolean: self.__create_board_coordinates()
 
-    def set_new_game(self, game, mode, input_func = None, output_func = None):
+    def set_new_game(self, game, mode, sender_func = None, receiver_func = None, is_first_player = False):
         """
         Define um novo jogo.
         """
@@ -536,8 +546,9 @@ class BoardScreen(Screen):
         
         self.__game = game
         self.__mode = mode
-        self.__player_input = input_func
-        self.__player_output = output_func
+        self.__movement_sender = sender_func
+        self.__movement_receiver = receiver_func
+        self.__player = int(not is_first_player) # WHITE = 0; BLACK = 1
 
         self.__delete_destroyed_pieces()
         self.__update_piece_sprites()
@@ -546,6 +557,15 @@ class BoardScreen(Screen):
         """
         Evento para desenhar a tela.
         """
+        # Verifica se houve alguma jogada realizada pelo outro jogador.
+        if self.__mode == self.ONLINE_MODE:
+            movement = self.__movement_receiver()
+
+            if movement:
+                print('>>>',movement)
+                self.__select_piece(*movement[0], received = True)
+                self.__move_piece(*movement[1], received = True)
+            
         self.__background_image.blit(0, 0)
         self.__batch.draw()
         self.__piece_batch.draw()
