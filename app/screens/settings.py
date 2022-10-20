@@ -1,12 +1,14 @@
 from .screen import Screen
 from .util.button import Button
 from .util.confirmation_box import ConfirmationBox
+from .util.ip_address_entry import IPAddressEntry
 from pyglet.window import mouse, key
 
 class SettingsScreen(Screen):
     """
     Classe para criar uma tela de configurações.
     """
+    
     __resolutions = [
         (640, 360),
         (960, 540),
@@ -16,6 +18,8 @@ class SettingsScreen(Screen):
     
     def __init__(self, application):
         super().__init__(application)
+
+        self.__selected_ip_entry = False
         
         self.__build()
         self.__load_current_settings()
@@ -42,6 +46,12 @@ class SettingsScreen(Screen):
         sound_button_width = sound_button_height
         sound_button_x = label_x + label_width * 1.1
         sound_button_y = first_label_y + (label_height + label_height * 0.2) + sound_button_height * 0.5
+
+        # Obtém o tamanho e a posição da caixa de texto de endereço IP.
+        ip_entry_width = self.width * 0.23
+        ip_entry_height = ip_entry_width * 0.15
+        ip_entry_x = self.width / 2 - ip_entry_width / 2
+        ip_entry_y = self.height * 0.6 - ip_entry_height
 
         # Obtém o tamanho e a posição do botão de aplicar alterações.
         apply_button_width = self.width * 0.2
@@ -89,7 +99,14 @@ class SettingsScreen(Screen):
             self, self.__batch, sound_button_x, sound_button_y,
             (sound_button_width, sound_button_height),
             (self.__mute_button_filename, self.__activated_mute_button_filename)
-        )    
+        )
+
+        # Cria caixa de texto para inserir um endereço IP.
+        self.__ip_entry = IPAddressEntry(
+            self, self.__batch, ip_entry_x, ip_entry_y,
+            (ip_entry_width, ip_entry_height), border = 2,
+            default_text = "Endereço IP"
+        )
 
         # Cria botão para aplicar as configurações.
         apply_button_filename = application.paths.get_image("settings", "buttons", "apply.png")
@@ -125,7 +142,8 @@ class SettingsScreen(Screen):
         """
         self.sound_player.set_volume(self.__volume)
         self.sound_player.set_mute(self.__muted)
-        
+
+        self.get_application().set_ip_address(self.__ip_entry.get_text())
         self.get_application().resize(*self.__resolutions[self.__resolution_index])
         
         self.__changed = False
@@ -198,6 +216,11 @@ class SettingsScreen(Screen):
         
         self.__sound_button.change_image(images)
 
+        self.__ip_entry.clear()
+
+        for char in self.get_application().get_ip_address():
+            self.__ip_entry.add_char(char)
+
     def on_draw(self, by_scheduler = False):
         """
         Evento para desenhar a tela.
@@ -206,6 +229,7 @@ class SettingsScreen(Screen):
         self.__batch.draw()
         self.__text_batch.draw()
         self.__confirmation_box.draw()
+        self.__ip_entry.next()
 
     def on_key_press(self, symbol, modifiers):
         """
@@ -221,6 +245,15 @@ class SettingsScreen(Screen):
             # Se alterou algo, será pedido uma confirmação para sair.
             elif not self.__confirmation_box.has_message():
                 self.__set_dialog_box_message(self.__confirmation_box, "Deseja sair sem salvar as alterações?")
+
+        # Insere o caractere na caixa de texto do endereço IP, se o mesmo foi selecionado.
+        if self.__selected_ip_entry:
+            if symbol == key.BACKSPACE:
+                self.__ip_entry.delete_char()
+                self.__changed = True
+                
+            elif self.__ip_entry.add_char(chr(symbol)):
+                self.__changed = True
                 
         return True
 
@@ -260,6 +293,9 @@ class SettingsScreen(Screen):
             if confirm:
                 self.__load_current_settings()
                 self.get_application().go_back()
+
+        self.__selected_ip_entry = self.__ip_entry.check(x, y)
+        self.__ip_entry.set_pipe(self.__selected_ip_entry)
 
         # Verifica se o usuário deseja alterar a resolução.
         if self.__labels[0][0].check(x, y):

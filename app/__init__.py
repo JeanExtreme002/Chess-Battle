@@ -88,6 +88,12 @@ class Application(window.Window):
         """
         return self.__FRAMES_PER_SECOND
 
+    def get_ip_address(self):
+        """
+        Retorna o endereço IP do usuário.
+        """
+        return settings.address[0]
+
     def get_sound_player(self):
         """
         Retorna o reprodutor de som.
@@ -143,3 +149,9 @@ class Application(window.Window):
         Inicia a execução do aplicativo.
         """
         app.run()
+
+    def set_ip_address(self, address):
+        """
+        Define um endereço IP para o usuário.
+        """
+        settings.address[0] = address
