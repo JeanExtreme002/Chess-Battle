@@ -23,7 +23,7 @@ class Queen(Piece):
                 if not in_board_boundary:
                     break
                 else:
-                    self._list_moves.append([x, y])
+                    self._list_moves.append([y, x])
         return self._list_moves.copy()
 
     def legal_moves(self, situation: list[[]]) -> list:
@@ -44,18 +44,18 @@ class Queen(Piece):
                     in_board_boundary = 0 <= x < 8 and 0 <= y < 8
                     if not in_board_boundary:
                         break
-                    if not blocked and situation[x][y] is not None:
+                    if not blocked and situation[y][x] is not None:
                         blocked = True
-                        if situation[x][y].color == self.color:
-                            psb_moves.remove([x, y])
+                        if situation[y][x].color == self.color:
+                            psb_moves.remove([y, x])
                     elif blocked:
-                        psb_moves.remove([x, y])
+                        psb_moves.remove([y, x])
         except IndexError as e:
             print("Ops!", e, "Occurred")
         finally:
             return psb_moves
 
-    '''def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+    def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
@@ -65,4 +65,4 @@ class Queen(Piece):
         if target not in psb_moves:
             return situation
         new_situation = self.update_situation(target, situation)
-        return new_situation'''
+        return new_situation

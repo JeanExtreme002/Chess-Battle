@@ -53,10 +53,10 @@ class ChessGame:
         try:
             piece = self.__board.pecas[x][y]
         except KeyError:
-            return
+            return None
 
-        if piece == 0:
-            return
+        if piece is None:
+            return None
 
         return piece
 
@@ -66,13 +66,12 @@ class ChessGame:
     def play(self, piece:Piece, to:tuple[int, int]) -> bool:
         '''if (self.__black_player.played and (not piece.r_id%2)) or (self.__white_player.played and piece.r_id%2):
             #Se não é a vez da cor jogar...
-            return False
-
+            return False'''
         if not (list(to) in piece.legal_moves(self.__board.pecas)):
             #Se o movimento não é legal...
-            return False'''
+            return False
 
-        self.__board.pecas = piece.move(to, self.__board.pecas)
+        self.__board.pecas = piece.move(list(to), self.__board.pecas)
         self.__change_player()
 
         return True

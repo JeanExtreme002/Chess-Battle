@@ -34,10 +34,10 @@ class Board():
         bb1 = Bishop(Color.Black, 5, 7)
 
         wk = King(Color.White, 3, 0)
-        bk = King(Color.Black, 4, 7)
+        bk = King(Color.Black, 3, 7)
 
         wq = Queen(Color.White, 4, 0)
-        bq = Queen(Color.Black, 3, 7)
+        bq = Queen(Color.Black, 4, 7)
 
         for p in (wr0, wr1, br0, br1, wn0, wn1, bn0, bn1, wb0, wb1, bb0, bb1, bq, wq, bk, wk):
             self.add_piece(p)
