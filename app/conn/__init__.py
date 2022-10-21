@@ -20,7 +20,7 @@ class Connection(object):
         """
         Envia os dados para o receptor.
         """
-        sender = self.__connection if self.__hosting else self.__socket
+        sender = self.__connection if self.is_host() else self.__socket
         if encrypt: string = self.__crypter.encrypt(string)
         
         sender.send(string.encode())
@@ -43,7 +43,7 @@ class Connection(object):
         self.__socket.settimeout(timeout)
 
         try:
-            if self.__hosting:
+            if self.is_host():
                 self.__socket.bind(self.__address)
                 self.__socket.listen(1)
 
@@ -65,11 +65,17 @@ class Connection(object):
             except: pass
         return False
 
+    def is_host(self):
+        """
+        Verifica se é um host ou client.
+        """
+        return self.__hosting
+
     def recv(self):
         """
         Retorna as coordenadas de origem e destino.
         """
-        getter = self.__connection if self.__hosting else self.__socket
+        getter = self.__connection if self.is_host() else self.__socket
 
         try:
             string = getter.recv(256).decode()

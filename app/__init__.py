@@ -116,16 +116,27 @@ class Application(window.Window):
         """
 
         # Inicia o jogo localmente.
-        if selection == 1:
-            self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
-            self.__current_screen = self.__board_screen
-            return
-        
+        if selection == 1: return self.__local_game()
+
+        # Inicia o jogo online.
+        self.__current_screen.set_popup_message("Procurando por um jogador na rede...", "Por favor, aguarde.")
+        clock.schedule_once(lambda interval: self.__start_online_game(selection), 1 / self.get_fps() * 2)
+
+    def __start_local_game(self):
+        """
+        Inicia o jogo no modo local.
+        """
+        self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
+        self.__current_screen = self.__board_screen
+
+    def __start_online_game(self, selection):
+        """
+        Inicia o jogo no modo online.
+        """
         # Tentar estabelecer uma conexão.
         if not self.__start_connection(selection == 2):
             return self.__current_screen.set_popup_message("Infelizmente, não foi possível conectar.", "Por favor, verique a sua conexão.")
-    
-        # Inicia o jogo online, sendo o host o primeiro a jogar.  
+        
         self.__board_screen.set_new_game(
             self.__chess_game, self.__board_screen.ONLINE_MODE,
             self.__send_movement, self.__get_movement, selection == 2
