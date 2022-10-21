@@ -1,7 +1,5 @@
 from .screen import Screen
-from .util.button import Button
-from .util.confirmation_box import ConfirmationBox
-from .util.ip_address_entry import IPAddressEntry
+from .util import Button, ConfirmationBox, IPAddressEntry
 from pyglet.window import mouse, key
 
 class SettingsScreen(Screen):

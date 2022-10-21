@@ -23,9 +23,9 @@ class Entry(Widget):
         
     def __build(self):
         """
-        Cria o objeto gráfico.
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar o widget.
         """
-
         self.__background_group = OrderedGroup(0)
         self.__text_group = OrderedGroup(1)
         

@@ -1,8 +1,5 @@
 from .screen import Screen
-from .util.button import Button
-from .util.confirmation_box import ConfirmationBox
-from .util.slide import Slide
-from .util.message_box import MessageBox
+from .util import Button, ConfirmationBox, MessageBox, Slide
 from pyglet.window import mouse, key
 
 class HomeScreen(Screen):
@@ -59,7 +56,7 @@ class HomeScreen(Screen):
         message_box_height = message_box_width * 0.7
         message_box_x = self.width / 2 - message_box_width / 2
         message_box_y = self.height / 2 - message_box_height / 2
-        
+
         # Carrega a imagem da barra lateral.
         sidebar_filename = application.paths.get_image("home", "sidebar.png")
         sidebar_image = self.load_image(sidebar_filename, (sidebar_width, sidebar_height))
@@ -206,7 +203,7 @@ class HomeScreen(Screen):
             line_spacing = int(self.width * 0.025)
         )
 
-    def set_message(self, *message):
+    def set_popup_message(self, *message):
         """
         Define uma mensagem a ser mostrada na tela.
         """

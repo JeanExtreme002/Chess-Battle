@@ -14,6 +14,10 @@ class MessageBox(Widget):
         self.__build()
 
     def __build(self):
+        """
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar o widget.
+        """
         # Cria a sombra para destacar a caixa de texto.
         self.__shadow_group = OrderedGroup(0)
         
@@ -45,11 +49,11 @@ class MessageBox(Widget):
             text.delete()
         self.__texts = []
 
-    def draw(self, with_messages_only = True):
+    def draw(self, with_message_only = True):
         """
-        Desenha somente se houver mensagem a ser exibida.
+        Desenha o widget, com a possível condição de que haja mensagem.
         """
-        if with_messages_only and not self.__texts: return
+        if with_message_only and not self.__texts: return
         self.batch.draw()
 
     def has_message(self):

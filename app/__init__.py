@@ -56,7 +56,7 @@ class Application(window.Window):
         Encerra a partida online informando que houve um erro.
         """
         self.go_back()
-        self.__current_screen.set_message("Conexão perdida.")
+        self.__current_screen.set_popup_message("Conexão perdida.")
 
         return False
 
@@ -83,13 +83,13 @@ class Application(window.Window):
         """
         Alterna para a tela de conquistas.
         """
-        self.__current_screen.set_message("Conquistas indisponíveis no momento", "(ಥ﹏ಥ)")
+        self.__current_screen.set_popup_message("Conquistas indisponíveis no momento", "(ಥ﹏ಥ)")
 
     def __show_history_screen(self):
         """
         Alterna para a tela de histórico de partidas.
         """
-        self.__current_screen.set_message("Histórico indisponível no momento", "(ಥ﹏ಥ)")
+        self.__current_screen.set_popup_message("Histórico indisponível no momento", "(ಥ﹏ಥ)")
 
     def __show_settings_screen(self):
         """
@@ -103,7 +103,9 @@ class Application(window.Window):
         """
         self.__connection = Connection(settings.address, host_mode)
         
-        for i in range(10):
+        attempts = 10
+        
+        for i in range(attempts):
             self.__connection.connect(timeout = 0.3)
             if self.__connection.is_connected(): return True
         return False
@@ -121,7 +123,7 @@ class Application(window.Window):
         
         # Tentar estabelecer uma conexão.
         if not self.__start_connection(selection == 2):
-            return self.__current_screen.set_message("Infelizmente, não foi possível conectar.", "Por favor, verique a sua conexão.")
+            return self.__current_screen.set_popup_message("Infelizmente, não foi possível conectar.", "Por favor, verique a sua conexão.")
     
         # Inicia o jogo online, sendo o host o primeiro a jogar.  
         self.__board_screen.set_new_game(

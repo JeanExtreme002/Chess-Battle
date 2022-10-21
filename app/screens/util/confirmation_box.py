@@ -14,8 +14,8 @@ class ConfirmationBox(MessageBox):
 
     def __build(self):
         """
-        Método para criar todas as imagens e objetos
-        gráficos necessários para desenhar o widget.
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar o widget.
         """
         self.__button_group = OrderedGroup(3)
         button_width = self.width * 0.1

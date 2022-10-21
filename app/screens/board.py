@@ -1,5 +1,5 @@
 from .screen import Screen
-from .util.confirmation_box import ConfirmationBox
+from .util import ConfirmationBox
 from pyglet.window import mouse, key
 
 class BoardScreen(Screen):
