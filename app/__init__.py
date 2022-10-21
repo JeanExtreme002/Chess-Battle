@@ -120,7 +120,7 @@ class Application(window.Window):
 
         # Inicia o jogo online.
         self.__current_screen.set_popup_message("Procurando por um jogador na rede...", "Por favor, aguarde.")
-        clock.schedule_once(lambda interval: self.__start_online_game(selection), 1 / self.get_fps() * 2)
+        clock.schedule_once(lambda interval: self.__start_online_game(selection), 1 / self.get_fps() * 3)
 
     def __start_local_game(self):
         """
