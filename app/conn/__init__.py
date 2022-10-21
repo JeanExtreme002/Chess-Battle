@@ -1,3 +1,4 @@
+from .crypt import ConnectionCrypter
 from socket import socket, timeout, AF_INET, SOCK_STREAM 
 
 class Connection(object):
@@ -13,11 +14,15 @@ class Connection(object):
         self.__address = tuple(address)
         self.__hosting = host
 
-    def __send_data(self, string):
+        self.__crypter = ConnectionCrypter(address)
+
+    def __send_data(self, string, encrypt = True):
         """
         Envia os dados para o receptor.
         """
         sender = self.__connection if self.__hosting else self.__socket
+        if encrypt: string = self.__crypter.encrypt(string)
+        
         sender.send(string.encode())
 
     def close(self):
@@ -46,7 +51,7 @@ class Connection(object):
             else:
                 self.__socket.connect(self.__address)
         except: self.close()
-
+            
     def is_connected(self, attempts = 1):
         """
         Verifica se está conectado.
@@ -55,7 +60,7 @@ class Connection(object):
 
         for i in range(attempts):
             try:
-                self.__send_data(self.__checking_string)
+                self.__send_data(self.__checking_string, encrypt = False)
                 return True
             except: pass
         return False
@@ -67,8 +72,10 @@ class Connection(object):
         getter = self.__connection if self.__hosting else self.__socket
 
         try:
-            string = getter.recv(64).decode().replace(self.__checking_string, "")
-
+            string = getter.recv(256).decode()
+            string = string.replace(self.__checking_string, "")
+            string = self.__crypter.decrypt(string)
+            
         except ConnectionResetError:
             self.close()
             return False

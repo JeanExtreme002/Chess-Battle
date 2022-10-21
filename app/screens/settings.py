@@ -269,6 +269,7 @@ class SettingsScreen(Screen):
 
         self.__apply_button.check(x, y)
         self.__sound_button.check(x, y)
+        self.__ip_entry.check(x, y)
 
         for label, text in self.__labels:
             if label.check(x, y):

@@ -562,7 +562,6 @@ class BoardScreen(Screen):
             movement = self.__movement_receiver()
 
             if movement:
-                print('>>>',movement)
                 self.__select_piece(*movement[0], received = True)
                 self.__move_piece(*movement[1], received = True)
             

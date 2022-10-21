@@ -69,7 +69,12 @@ class Entry(Widget):
         in_x = self.x <= cursor_pos[0] <= (self.x + self.width)
         in_y = self.y <= cursor_pos[1] <= (self.y + self.height)
         
-        return in_x and in_y
+        if in_x and in_y:
+            self.__background.color = (240, 240, 240)
+            return True
+        
+        self.__background.color = (250, 250, 250)
+        return False
 
     def clear(self):
         """
