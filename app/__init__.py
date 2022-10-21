@@ -116,7 +116,7 @@ class Application(window.Window):
         """
 
         # Inicia o jogo localmente.
-        if selection == 1: return self.__local_game()
+        if selection == 1: return self.__start_local_game()
 
         # Inicia o jogo online.
         self.__current_screen.set_popup_message("Procurando por um jogador na rede...", "Por favor, aguarde.")
