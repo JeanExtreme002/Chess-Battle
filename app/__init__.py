@@ -227,6 +227,8 @@ class Application(window.Window):
         """
         self.width = width
         self.height = height
+        
+        self.__center_window()
         self.__initialize_screens()
 
     def run(self):
