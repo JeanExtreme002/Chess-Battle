@@ -207,6 +207,7 @@ class HomeScreen(Screen):
         """
         Define uma mensagem a ser mostrada na tela.
         """
+        if not message[0]: return self.__message_box.delete_message()
         self.__set_dialog_box_message(self.__message_box, *message)
 
     def set_achivements_function(self, func):

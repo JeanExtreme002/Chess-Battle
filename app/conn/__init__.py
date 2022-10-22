@@ -16,6 +16,14 @@ class Connection(object):
 
         self.__crypter = ConnectionCrypter(address)
 
+    def __coordinates_to_string(self, origin, dest):
+        """
+        Recebe duas tuplas XY, indicando origem e destino,
+        e retorna uma string dessas coordenadas.
+        """
+        return "{}{}{}{}".format(*origin, *dest)
+
+ 
     def __send_data(self, string, encrypt = True):
         """
         Envia os dados para o receptor.
@@ -24,6 +32,17 @@ class Connection(object):
         if encrypt: string = self.__crypter.encrypt(string)
         
         sender.send(string.encode())
+        return True
+
+    def __string_to_coordinates(self, string):
+        """
+        Recebe uma string e retorna duas tuplas XY,
+        indicando origem e destino.
+        """
+        if len(string) == 4:
+            origin = (int(string[0]), int(string[1]))
+            dest = (int(string[2]), int(string[3]))
+            return origin, dest
 
     def close(self):
         """
@@ -35,10 +54,12 @@ class Connection(object):
         self.__connection = None
         self.__socket = None
 
-    def connect(self, timeout = 5):
+    def connect(self, timeout = 5, attempts = 1):
         """
         Estabelece uma conexão.
         """
+        if attempts == 0: return
+        
         self.__socket = socket(AF_INET, SOCK_STREAM)
         self.__socket.settimeout(timeout)
 
@@ -50,7 +71,9 @@ class Connection(object):
                 self.__connection = self.__socket.accept()[0]
             else:
                 self.__socket.connect(self.__address)
-        except: self.close()
+        except:
+            self.close()
+            self.connect(timeout, attempts - 1)
             
     def is_connected(self, attempts = 1):
         """
@@ -81,31 +104,25 @@ class Connection(object):
             string = getter.recv(256).decode()
             string = string.replace(self.__checking_string, "")
             string = self.__crypter.decrypt(string)
+            return self.__string_to_coordinates(string)
             
-        except ConnectionResetError:
+        except (ConnectionAbortedError, ConnectionResetError):
             self.close()
-            return False
             
-        except timeout:
-            return
-
-        if len(string) == 4:
-            origin = (int(string[0]), int(string[1]))
-            dest = (int(string[2]), int(string[3]))
-            return origin, dest
+        except timeout: pass
 
     def send(self, origin, dest):
         """
         Envia as coordenadas de origem e destino.
         """
         try:
-            self.__send_data("{}{}{}{}".format(*origin, *dest))
-            return True
+            string = self.__coordinates_to_string(origin, dest)
+            return self.__send_data(string)
 
         except ConnectionResetError:
             self.close()
-            return False
         
-        except timeout:
-            return False 
+        except timeout: pass
+
+        return False 
 

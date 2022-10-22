@@ -45,6 +45,9 @@ class BoardScreen(Screen):
         self.__key_input_buffer = [None, None]
         
         self.__board_coord_texts = []
+
+        self.__request_interval = application.get_fps() * 0.2
+        self.__frame_counter = 0
         
         self.__build()
         
@@ -558,12 +561,15 @@ class BoardScreen(Screen):
         Evento para desenhar a tela.
         """
         # Verifica se houve alguma jogada realizada pelo outro jogador.
-        if self.__mode == self.ONLINE_MODE:
+        if self.__mode == self.ONLINE_MODE and self.__frame_counter == 0:
             movement = self.__movement_receiver()
 
             if movement:
                 self.__select_piece(*movement[0], received = True)
                 self.__move_piece(*movement[1], received = True)
+
+        self.__frame_counter += 1
+        self.__frame_counter %= self.__request_interval
             
         self.__background_image.blit(0, 0)
         self.__batch.draw()

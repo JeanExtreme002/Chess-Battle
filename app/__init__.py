@@ -127,13 +127,9 @@ class Application(window.Window):
         Inicia uma conexão com outro jogador.
         """
         self.__connection = Connection(settings.address, host_mode)
+        self.__connection.connect(timeout = 0.3, attempts = 10)
         
-        attempts = 10
-        
-        for i in range(attempts):
-            self.__connection.connect(timeout = 0.3)
-            if self.__connection.is_connected(): return True
-        return False
+        return self.__connection.is_connected()
         
     def __start_game(self, selection):
         """
@@ -161,6 +157,8 @@ class Application(window.Window):
         # Tentar estabelecer uma conexão.
         if not self.__start_connection(selection == 2):
             return self.__current_screen.set_popup_message("Infelizmente, não foi possível conectar.", "Por favor, verique a sua conexão.")
+
+        self.__current_screen.set_popup_message(None)
         
         self.__board_screen.set_new_game(
             self.__chess_game, self.__board_screen.ONLINE_MODE,
