@@ -1,6 +1,6 @@
 from .config import paths, settings
 from .conn import Connection
-from .screens import BoardScreen, HomeScreen, SettingsScreen
+from .screens import BoardScreen, HistoryScreen, HomeScreen, SettingsScreen
 from .sound import SoundPlayer
 from pyglet import app
 from pyglet import clock
@@ -50,6 +50,7 @@ class Application(window.Window):
         self.__board_screen.set_board_coordinates(True)
         
         self.__settings_screen = SettingsScreen(self)
+        self.__history_screen = HistoryScreen(self)
 
     def __finish_online_match_by_error(self):
         """
@@ -89,7 +90,7 @@ class Application(window.Window):
         """
         Alterna para a tela de histórico de partidas.
         """
-        self.__current_screen.set_popup_message("Histórico indisponível no momento", "(ಥ﹏ಥ)")
+        self.__current_screen = self.__history_screen
 
     def __show_settings_screen(self):
         """
