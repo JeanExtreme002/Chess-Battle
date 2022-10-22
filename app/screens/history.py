@@ -20,9 +20,20 @@ class HistoryScreen(Screen):
         self.__batch = self.create_batch()
         self.__text_batch = self.create_batch()
 
+        # Obtém o tamanho e a posição do frame de partida.
+        frame_width = self.width * 0.43
+        frame_height = frame_width * 0.8
+        frame_x = self.width / 2 - frame_width / 2
+        frame_y = self.height / 2 - frame_height / 2
+
         # Cria o plano de fundo.
         background_filename = application.paths.get_image("history", "background.png")
         self.__background_image = self.load_image(background_filename, (self.width, self.height))
+
+        # Cria o frame de partida.
+        frame_filename = application.paths.get_image("history", "frame.png")
+        frame_image = self.load_image(frame_filename, (frame_width, frame_height))
+        self.__frame = self.create_sprite(frame_image, frame_x, frame_y, batch = self.__batch)
 
     def on_draw(self, by_scheduler = False):
         """
