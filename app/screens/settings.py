@@ -147,6 +147,17 @@ class SettingsScreen(Screen):
         
         self.__changed = False
 
+    def __change_ip_address(self, symbol):
+        """
+        Altera o endereço IP na caixa de entrada.
+        """
+        if symbol == key.BACKSPACE:
+            self.__ip_entry.delete_char()
+            self.__changed = True
+                
+        elif self.__ip_entry.add_char(chr(symbol)):
+            self.__changed = True
+
     def __change_resolution(self):
         """
         Altera a resolução da tela.
@@ -188,6 +199,11 @@ class SettingsScreen(Screen):
 
         self.__volume = self.sound_player.get_volume()
         self.__muted = self.sound_player.is_muted()
+
+        self.__ip_entry.clear()
+
+        for char in self.get_application().get_ip_address():
+            self.__ip_entry.add_char(char)
         
         self.__changed = False
         self.__update_labels()
@@ -215,11 +231,6 @@ class SettingsScreen(Screen):
         
         self.__sound_button.change_image(images)
 
-        self.__ip_entry.clear()
-
-        for char in self.get_application().get_ip_address():
-            self.__ip_entry.add_char(char)
-
     def on_draw(self, by_scheduler = False):
         """
         Evento para desenhar a tela.
@@ -246,14 +257,8 @@ class SettingsScreen(Screen):
                 self.__set_dialog_box_message(self.__confirmation_box, "Deseja sair sem salvar as alterações?")
 
         # Insere o caractere na caixa de texto do endereço IP, se o mesmo foi selecionado.
-        if self.__selected_ip_entry:
-            if symbol == key.BACKSPACE:
-                self.__ip_entry.delete_char()
-                self.__changed = True
-                
-            elif self.__ip_entry.add_char(chr(symbol)):
-                self.__changed = True
-                
+        if self.__selected_ip_entry: self.__change_ip_address(symbol)
+
         return True
 
     def on_mouse_motion(self, *args):
