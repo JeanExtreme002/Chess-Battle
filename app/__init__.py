@@ -1,8 +1,9 @@
 from .config import paths, settings
 from .conn import Connection
-from .screens import BoardScreen, HistoryScreen, HomeScreen, SettingsScreen
+from .screens import BoardScreen, HistoryScreen, HomeScreen, SettingsScreen, StartupScreen
 from .sound import SoundPlayer
 from pyglet import app
+from pyglet import canvas
 from pyglet import clock
 from pyglet import window
 from threading import Thread
@@ -22,6 +23,7 @@ class Application(window.Window):
             height = settings.size[1],
             resizable = False
         )
+        self.__center_window()
 
         self.paths = paths
 
@@ -29,12 +31,32 @@ class Application(window.Window):
         self.__connection = None
 
         self.__chess_game = chess_game
+        self.__initialize()
+
+    def __center_window(self):
+        """
+        Centraliza a janela da aplicação.
+        """
+        user_screen = canvas.Display().get_screens()[0]
+        
+        x = int(user_screen.width / 2 - self.width / 2)
+        y = int(user_screen.height / 2 - self.height / 2)
+        
+        self.set_location(x, y)
+
+    def __initialize(self):
+        """
+        Inicializa a aplicação.
+        """
+        # Mostra uma tela de inicialização, enquanto o aplicativo inicializa.
+        self.__current_screen = StartupScreen(self)
+        clock.schedule_interval(self.on_draw, 1 / self.get_fps())
+
+        # Inicializa o reprodutor de sons.
         self.__sound_player = SoundPlayer(settings.volume, settings.muted)
 
-        self.__initialize_screens()
-        self.__current_screen = self.__home_screen
-        
-        clock.schedule_interval(self.on_draw, 1 / self.get_fps())
+        # Inicializa as telas do jogo.
+        clock.schedule_once(lambda interval: self.__initialize_screens(), 1 / self.get_fps() * 5)
 
     def __initialize_screens(self):
         """
@@ -51,6 +73,8 @@ class Application(window.Window):
         
         self.__settings_screen = SettingsScreen(self)
         self.__history_screen = HistoryScreen(self)
+
+        self.__current_screen = self.__home_screen
 
     def __finish_online_match_by_error(self):
         """
