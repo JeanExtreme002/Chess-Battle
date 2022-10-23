@@ -81,28 +81,29 @@ class Screen(ABC):
         """
         return self.height - y - height
 
-    def load_image(self, filename, size = None, save = True):
+    def load_image(self, filename, size = "original"):
         """
         Carrega uma imagem.
         """
-        # Carrega a imagem.
-        if not filename in Screen._images or not size in Screen._images[filename]:
-            img = image.load(filename)
+        # Obtém a imagem original, sem modificações, se ela não tiver sido salva.
+        if not filename in Screen._images:
+            Screen._images[filename] = dict()
+            Screen._images[filename]["original"] = image.load(filename)
+        
+        # Caso a imagem na resolução solicitada não tenha sido salva, uma cópia
+        # da imagem original será criada, redimensionando a mesma.
+        if not size in Screen._images[filename]:
+            img = Screen._images[filename]["original"]
+            img = img.get_region(0, 0, img.width, img.height)
 
-            # Salva a imagem, caso solicitado.
-            if save:
-                Screen._images[filename] = dict()
-                Screen._images[filename][size] = img
-        else:
-            img = Screen._images[filename][size]
-
-        # Redefine o seu tamanho, caso solicitado, alterando a sua escala.
-        if size:
-            img = img.get_texture() 
+            img = img.get_texture()
             img.width = size[0]
             img.height = size[1]
+            
+            Screen._images[filename][size] = img
 
-        return img
+        # Retorna a imagem com a resolução deseja.
+        return Screen._images[filename][size]
 
     @abstractmethod
     def on_draw(self, by_scheduler = False):

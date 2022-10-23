@@ -92,7 +92,7 @@ class BoardScreen(Screen):
 
         # Inicializa as imagens de peças.
         self.__load_piece_images(self.__square_size)
-        self.__load_destroyed_piece_images(self.__destroyed_piece_size)
+        self.__load_destroyed_piece_images()
 
         # Cria o plano de fundo.
         background_filename = application.paths.get_image("board", "background.png")
@@ -320,7 +320,7 @@ class BoardScreen(Screen):
         on_y = self.__board_y <= y <= self.__board_y + self.__board_size
         return on_x and on_y
 
-    def __load_destroyed_piece_images(self, size):
+    def __load_destroyed_piece_images(self):
         """
         Carrega as imagens das peças do jogo,
         salvando-as em um dicionário.
@@ -333,6 +333,7 @@ class BoardScreen(Screen):
             "black": dict(),
             "white": dict()
         }
+        size = self.__destroyed_piece_size
 
         for color in self.__destroyed_piece_images.keys():
             for name in piece_names:
