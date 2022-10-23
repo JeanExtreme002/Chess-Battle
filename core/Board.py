@@ -1,12 +1,12 @@
+from .Bishop import Bishop
+from .Knight import Knight
 from .Piece import Piece
+from .Queen import Queen
+from .King import King
 from .Pawn import Pawn
 from .Rook import Rook
-from enum import Enum
-from .Queen import Queen
-from .Knight import Knight
-from .Bishop import Bishop
-from .King import King
 from .Color import Color
+from enum import Enum
 
 class Board():
     def __init__(self):
@@ -61,14 +61,6 @@ class Board():
     def write_pos(self):
         for i in range(8):
             print(self.pecas[i])
-
-class Data():
-    game_number = 0
-
-    @property
-    def currentgame(self):
-        file = ""
-        return
 
 if __name__ == '__main__':
     tabuleiro = Board()
