@@ -4,16 +4,25 @@ class Button(Widget):
     """
     Classe para criar botões na tela.
     """
-    def __init__(self, screen, batch, x, y, size, images, group = None):
-        super().__init__(screen, batch, x, y, size)
+    def __init__(self, screen, x, y, size, images, widget_group = None):
+        super().__init__(screen, x, y, size, widget_group = widget_group)
         
         self.__activated = False
         self.__previous_status = False
-        self.__group = group
-        
-        self.__sprite = None
-        self.change_image(images)
+        self.__images = images
 
+        self.__build()
+
+    def __build(self):
+        """
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar o widget.
+        """
+        self.__batch = self.screen.create_batch()
+        self.__sprite = None
+        
+        self.change_image(self.__images)
+        
     def __load_images(self):
         """
         Carrega as imagens do botão.
@@ -29,8 +38,7 @@ class Button(Widget):
         """
         self.__sprite = self.screen.create_sprite(
             self.__loaded_images[int(self.__activated)],
-            batch = self.batch, x = self.x, y = self.y,
-            group = self.__group
+            batch = self.__batch, x = self.x, y = self.y
         )
 
     def __delete_sprite(self):
@@ -64,3 +72,9 @@ class Button(Widget):
             self.__create_sprite()
 
         return self.__activated
+
+    def draw(self):
+        """
+        Desenha o widget na tela.
+        """
+        self.__batch.draw()

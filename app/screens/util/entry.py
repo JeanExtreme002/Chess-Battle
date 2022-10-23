@@ -1,12 +1,11 @@
 from .widget import Widget
-from pyglet.graphics import OrderedGroup
 
 class Entry(Widget):
     """
     Classe para criar caixas de input.
     """
-    def __init__(self, screen, batch, x, y, size, border = 0, default_text = ""):
-        super().__init__(screen, batch, x, y, size)
+    def __init__(self, screen, x, y, size, border = 0, default_text = "", widget_group = None):
+        super().__init__(screen, x, y, size, widget_group = widget_group)
         self.__border_size = border
         self.__default_text = default_text
         
@@ -26,30 +25,27 @@ class Entry(Widget):
         Cria todas as imagens e objetos gráficos
         necessários para desenhar o widget.
         """
-        self.__background_group = OrderedGroup(0)
-        self.__text_group = OrderedGroup(1)
+        self.__background_batch = self.screen.create_batch()
+        self.__text_batch = self.screen.create_batch()
         
         self.__border = self.screen.create_rectangle(
             self.x - self.__border_size, self.y - self.__border_size,
             self.width + self.__border_size * 2,
             self.height + self.__border_size * 2,
-            batch = self.batch,
-            group = self.__background_group,
+            batch = self.__background_batch,
             color = (0, 0, 0)
         )
 
         self.__background = self.screen.create_rectangle(
             self.x, self.y, self.width, self.height,
-            batch = self.batch,
-            group = self.__background_group,
+            batch = self.__background_batch,
             color = (255, 255, 255)
         )
 
         self.__text = self.screen.create_text(
             self.__input_string, self.x + 5, self.y + self.height // 2,
             anchor_x = "left", anchor_y = "center",
-            batch = self.batch,
-            group = self.__text_group,
+            batch = self.__text_batch,
             font_size = self.height * 0.4,
             color = (0, 0, 0, 255)
         )
@@ -91,6 +87,13 @@ class Entry(Widget):
         
         self.__input_string = self.__input_string[:-1]
         self.update_text()
+
+    def draw(self):
+        """
+        Desenha o widget na tela.
+        """
+        self.__background_batch.draw()
+        self.__text_batch.draw()
 
     def get_text(self):
         """

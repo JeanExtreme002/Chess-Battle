@@ -1,5 +1,5 @@
 from .screen import Screen
-from .util import Button, ConfirmationBox, IPAddressEntry
+from .util import Button, ConfirmationBox, IPAddressEntry, WidgetGroup
 from pyglet.window import mouse, key
 
 class SettingsScreen(Screen):
@@ -29,9 +29,8 @@ class SettingsScreen(Screen):
         """
         application = self.get_application()
         
-        self.__batch = self.create_batch()
         self.__text_batch = self.create_batch()
-        confirmation_box_batch = self.create_batch()
+        self.__widget_group = WidgetGroup()
 
         # Obtém o tamanho e a posição dos labels.
         label_width = self.width * 0.25
@@ -75,15 +74,16 @@ class SettingsScreen(Screen):
 
         for index in range(2):
             label = Button(
-                self, self.__batch, label_x, first_label_y + (label_height + label_height * 0.1) * index,
-                (label_width, label_height), (label_filename, activated_label_filename)
+                self, label_x, first_label_y + (label_height + label_height * 0.1) * index,
+                (label_width, label_height), (label_filename, activated_label_filename),
+                widget_group = self.__widget_group
             )
             
             text = self.create_text(
                 str(), label_x + label_width / 2,
                 first_label_y + label_height / 1.7 + (label_height + label_height * 0.1) * index,
-                color = (255, 255, 255, 255), font_size = int(self.width * 0.017), anchor_x = "center", anchor_y = "center",
-                batch = self.__text_batch
+                color = (255, 255, 255, 255), font_size = int(self.width * 0.017),
+                anchor_x = "center", anchor_y = "center", batch = self.__text_batch
             )
             self.__labels.append((label, text))
 
@@ -94,16 +94,17 @@ class SettingsScreen(Screen):
         self.__activated_dismute_button_filename = application.paths.get_image("settings", "buttons", "activated_dismute.png")
         
         self.__sound_button = Button(
-            self, self.__batch, sound_button_x, sound_button_y,
-            (sound_button_width, sound_button_height),
-            (self.__mute_button_filename, self.__activated_mute_button_filename)
+            self, sound_button_x, sound_button_y, (sound_button_width, sound_button_height),
+            (self.__mute_button_filename, self.__activated_mute_button_filename),
+            widget_group = self.__widget_group
         )
 
         # Cria caixa de texto para inserir um endereço IP.
         self.__ip_entry = IPAddressEntry(
-            self, self.__batch, ip_entry_x, ip_entry_y,
-            (ip_entry_width, ip_entry_height), border = 2,
-            default_text = "Endereço IP"
+            self, ip_entry_x, ip_entry_y,
+            (ip_entry_width, ip_entry_height),
+            border = 2, default_text = "Endereço IP",
+            widget_group = self.__widget_group
         )
 
         # Cria botão para aplicar as configurações.
@@ -111,9 +112,10 @@ class SettingsScreen(Screen):
         activated_apply_button_filename = application.paths.get_image("settings", "buttons", "activated_apply.png")
         
         self.__apply_button = Button(
-            self, self.__batch, apply_button_x, apply_button_y,
+            self, apply_button_x, apply_button_y,
             (apply_button_width, apply_button_height),
-            (apply_button_filename, activated_apply_button_filename)
+            (apply_button_filename, activated_apply_button_filename),
+            widget_group = self.__widget_group
         )
                 
         # Cria uma caixa de mensagens e uma caixa de confirmação.
@@ -126,7 +128,7 @@ class SettingsScreen(Screen):
         activated_confirm_button_filename = application.paths.get_image("general", "buttons", "activated_confirm.png")
 
         self.__confirmation_box = ConfirmationBox(
-            self, confirmation_box_batch, message_box_x, message_box_y,
+            self, message_box_x, message_box_y,
             (message_box_width, message_box_height), message_box_filename,
             button_images = (
                 (cancel_button_filename, activated_cancel_button_filename),
@@ -236,9 +238,10 @@ class SettingsScreen(Screen):
         Evento para desenhar a tela.
         """
         self.__background_image.blit(0, 0)
-        self.__batch.draw()
+        self.__widget_group.draw()
         self.__text_batch.draw()
         self.__confirmation_box.draw()
+        
         self.__ip_entry.next()
 
     def on_key_press(self, symbol, modifiers):

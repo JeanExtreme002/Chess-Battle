@@ -61,8 +61,6 @@ class BoardScreen(Screen):
         self.__batch = self.create_batch()
         self.__piece_batch = self.create_batch()
         self.__selected_piece_batch = self.create_batch()
-        
-        confirmation_box_batch = self.create_batch()
 
         # Obtém o tamanho do tabuleiro, que deve ser divisível por oito.
         self.__board_size = int(self.height * 0.9)
@@ -145,9 +143,9 @@ class BoardScreen(Screen):
         activated_confirm_button_filename = application.paths.get_image("general", "buttons", "activated_confirm.png")
 
         self.__confirmation_box = ConfirmationBox(
-            self, confirmation_box_batch, message_box_x, message_box_y,
-            (message_box_width, message_box_height), message_box_filename,
-            button_images = (
+            self, message_box_x, message_box_y,
+            (message_box_width, message_box_height),
+            message_box_filename, button_images = (
                 (cancel_button_filename, activated_cancel_button_filename),
                 (confirm_button_filename, activated_confirm_button_filename)
             )

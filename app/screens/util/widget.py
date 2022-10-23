@@ -1,23 +1,24 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 class Widget(ABC):
     """
     Classe abstrata para criar widgets na tela.
     """
-    def __init__(self, screen, batch, x, y, size):
+    def __init__(self, screen, x, y, size, widget_group = None):
         self.__screen = screen
-        self.__batch = batch
-
+        
         self.__position = (x, y)
         self.__size = size
+
+        if widget_group:
+            widget_group.add(self)
+
+    @abstractmethod
+    def draw(self): pass
 
     @property
     def screen(self):
         return self.__screen
-
-    @property
-    def batch(self):
-        return self.__batch
 
     @property
     def x(self):

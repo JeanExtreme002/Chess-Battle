@@ -1,12 +1,12 @@
 from .widget import Widget
-from pyglet.graphics import OrderedGroup
+from .highlighted_widget import HighlightedWidget
 
-class MessageBox(Widget):
+class MessageBox(HighlightedWidget):
     """
     Classe para criar um popup com uma mensagem na tela.
     """
-    def __init__(self, screen, batch, x, y, size, image):
-        super().__init__(screen, batch, x, y, size)
+    def __init__(self, screen, x, y, size, image, widget_group = None):
+        super().__init__(screen, x, y, size, widget_group = widget_group)
 
         self.__texts = []
         
@@ -18,28 +18,18 @@ class MessageBox(Widget):
         Cria todas as imagens e objetos gráficos
         necessários para desenhar o widget.
         """
-        # Cria a sombra para destacar a caixa de texto.
-        self.__shadow_group = OrderedGroup(0)
-        
-        self.__shadow = self.screen.create_rectangle(
-            0, 0, self.screen.width, self.screen.height,
-            batch = self.batch, group = self.__shadow_group,
-            color = (0, 0, 0)
-        )
-        self.__shadow.opacity = 150
-
         # Cria a imagem de background da caixa de texto.
         self.__loaded_image = self.screen.load_image(self.__image, (self.width, self.height))
         
-        self.__box_group = OrderedGroup(1)
+        self.__background_batch = self.screen.create_batch()
         
-        self.__sprite = self.screen.create_sprite(
-            self.__loaded_image, batch = self.batch,
-            group = self.__box_group, x = self.x, y = self.y
+        self.__background = self.screen.create_sprite(
+            self.__loaded_image, batch = self.__background_batch,
+            x = self.x, y = self.y
         )
 
         # Cria um grupo para os textos.
-        self.__text_group = OrderedGroup(2)
+        self.__text_batch = self.screen.create_batch()
 
     def delete_message(self):
         """
@@ -51,10 +41,16 @@ class MessageBox(Widget):
 
     def draw(self, with_message_only = True):
         """
-        Desenha o widget, com a possível condição de que haja mensagem.
+        Desenha o widget na tela, com a possível condição de que haja mensagem.
         """
-        if with_message_only and not self.__texts: return
-        self.batch.draw()
+        if with_message_only and not self.__texts: return False
+
+        super().draw()
+        
+        self.__background_batch.draw()
+        self.__text_batch.draw()
+
+        return True
 
     def has_message(self):
         """
@@ -72,8 +68,7 @@ class MessageBox(Widget):
         for line in lines:
             text = self.screen.create_text(
                 line, x = int(x), y = int(y + line_spacing * line_index),
-                batch = self.batch, group = self.__text_group,
-                color = color, font_size = int(font_size),
+                batch = self.__text_batch, color = color, font_size = int(font_size),
                 anchor_x = anchor[0], anchor_y = anchor[1]
             )
             self.__texts.append(text)

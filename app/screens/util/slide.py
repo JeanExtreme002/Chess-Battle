@@ -4,8 +4,8 @@ class Slide(Widget):
     """
     Classe para criar slides na tela.
     """
-    def __init__(self, screen, batch, x, y, size, images):
-        super().__init__(screen, batch, x, y, size)
+    def __init__(self, screen, x, y, size, images, widget_group = None):
+        super().__init__(screen, x, y, size, widget_group = widget_group)
 
         self.__max_opacity = 255
         self.__opacity = 70
@@ -19,15 +19,23 @@ class Slide(Widget):
 
         self.__images = images
         self.__load_images()
+        self.__build()
+
+    def __build(self):
+        """
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar o widget.
+        """
+        self.__batch = self.screen.create_batch()
         self.__create_sprite()
 
     def __create_sprite(self):
         """
-        Cria a imagem.
+        Cria a imagem do widget.
         """
         self.__sprite = self.screen.create_sprite(
             self.__loaded_images[self.__index],
-            batch = self.batch, x = self.x, y = self.y
+            batch = self.__batch, x = self.x, y = self.y
         )
 
     def __delete_sprite(self):
@@ -45,6 +53,12 @@ class Slide(Widget):
         for filename in self.__images:
             image = self.screen.load_image(filename, (self.width, self.height))
             self.__loaded_images.append(image)
+
+    def draw(self):
+        """
+        Desenha o widget na tela.
+        """
+        self.__batch.draw()
 
     def set_velocity(self, velocity):
         """

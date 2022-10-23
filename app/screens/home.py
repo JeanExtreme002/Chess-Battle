@@ -1,5 +1,5 @@
 from .screen import Screen
-from .util import Button, ConfirmationBox, MessageBox, Slide
+from .util import Button, ConfirmationBox, MessageBox, Slide, WidgetGroup
 from pyglet.window import mouse, key
 
 class HomeScreen(Screen):
@@ -14,10 +14,8 @@ class HomeScreen(Screen):
 
     def __build(self):
         application = self.get_application()
-        batch = self.create_batch()
-        
-        message_box_batch = self.create_batch()
-        confirmation_box_batch = self.create_batch()
+        self.__batch = self.create_batch()
+        self.__widget_group = WidgetGroup()
 
         # Obtém tamanho e posição da imagem background.
         background_x, background_y = self.width * 0.3, 0
@@ -57,14 +55,14 @@ class HomeScreen(Screen):
         message_box_x = self.width / 2 - message_box_width / 2
         message_box_y = self.height / 2 - message_box_height / 2
 
-        # Carrega a imagem da barra lateral.
+        # Carrega e cria a imagem da barra lateral.
         sidebar_filename = application.paths.get_image("home", "sidebar.png")
-        sidebar_image = self.load_image(sidebar_filename, (sidebar_width, sidebar_height))
+        self.__sidebar_image = self.load_image(sidebar_filename, (sidebar_width, sidebar_height))
     
-        # Carrega a imagem de logo.
+        # Carrega e cria a imagem de logo.
         logo_filename = application.paths.get_image("home", "logo.png")
         logo_image = self.load_image(logo_filename, (logo_width, logo_height))
-        logo_sprite = self.create_sprite(logo_image, batch = batch, x = logo_x, y = logo_y)
+        self.__logo_sprite = self.create_sprite(logo_image, batch = self.__batch, x = logo_x, y = logo_y)
 
         # Carrega a imagem dos botões de jogar.
         play_button_1_filename = application.paths.get_image("home", "buttons", "play_local.png")
@@ -87,53 +85,54 @@ class HomeScreen(Screen):
         activated_settings_button_filename = application.paths.get_image("home", "buttons", "activated_settings.png")
 
         # Cria os botões de jogar.
-        play_button_1 = Button(
-            self, batch, large_button_x,
-            first_large_button_y + (large_button_height + large_button_spacing) * 0,
-            (large_button_width, large_button_height),
-            (play_button_1_filename, activated_play_button_1_filename)
+        self.__play_button_1 = Button(
+            self, large_button_x, first_large_button_y + (large_button_height + large_button_spacing) * 0,
+            (large_button_width, large_button_height), (play_button_1_filename, activated_play_button_1_filename),
+            widget_group = self.__widget_group
         )
 
-        play_button_2 = Button(
-            self, batch, large_button_x,
-            first_large_button_y + (large_button_height + large_button_spacing) * 1,
-            (large_button_width, large_button_height),
-            (play_button_2_filename, activated_play_button_2_filename)
+        self.__play_button_2 = Button(
+            self, large_button_x, first_large_button_y + (large_button_height + large_button_spacing) * 1,
+            (large_button_width, large_button_height), (play_button_2_filename, activated_play_button_2_filename),
+            widget_group = self.__widget_group
         )
 
-        play_button_3 = Button(
-            self, batch, large_button_x,
-            first_large_button_y + (large_button_height + large_button_spacing) * 2,
-            (large_button_width, large_button_height),
-            (play_button_3_filename, activated_play_button_3_filename)
+        self.__play_button_3 = Button(
+            self, large_button_x, first_large_button_y + (large_button_height + large_button_spacing) * 2,
+            (large_button_width, large_button_height), (play_button_3_filename, activated_play_button_3_filename),
+            widget_group = self.__widget_group
         )
 
         # Cria os botões de histórico, conquistas e configurações.
-        history_button = Button(
-            self, batch, first_small_button_x + (small_button_width + small_button_spacing) * 0,
+        self.__history_button = Button(
+            self, first_small_button_x + (small_button_width + small_button_spacing) * 0,
             small_button_y, (small_button_width, small_button_height),
-            (history_button_filename, activated_history_button_filename)
+            (history_button_filename, activated_history_button_filename),
+            widget_group = self.__widget_group
         )
 
-        achivements_button = Button(
-            self, batch, first_small_button_x + (small_button_width + small_button_spacing) * 1,
+        self.__achivements_button = Button(
+            self, first_small_button_x + (small_button_width + small_button_spacing) * 1,
             small_button_y, (small_button_width, small_button_height),
-            (achivements_button_filename, activated_achivements_button_filename)
+            (achivements_button_filename, activated_achivements_button_filename),
+            widget_group = self.__widget_group
         )
 
-        settings_button = Button(
-            self, batch, first_small_button_x + (small_button_width + small_button_spacing) * 2,
+        self.__settings_button = Button(
+            self, first_small_button_x + (small_button_width + small_button_spacing) * 2,
             small_button_y, (small_button_width, small_button_height),
-            (settings_button_filename, activated_settings_button_filename)
+            (settings_button_filename, activated_settings_button_filename),
+            widget_group = self.__widget_group
         )
 
         # Carrega a imagem de background.
         background_filenames = application.paths.get_image_list("home", "background", shuffle = True)
         
-        background = Slide(
-            self, batch, background_x, background_y,
+        self.__background = Slide(
+            self, background_x, background_y,
             (background_width, background_height),
-            background_filenames
+            background_filenames,
+            widget_group = self.__widget_group
         )
 
         # Cria uma caixa de mensagens e uma caixa de confirmação.
@@ -145,38 +144,21 @@ class HomeScreen(Screen):
         confirm_button_filename = application.paths.get_image("general", "buttons", "confirm.png")
         activated_confirm_button_filename = application.paths.get_image("general", "buttons", "activated_confirm.png")
 
-        message_box = MessageBox(
-            self, message_box_batch, message_box_x, message_box_y,
-            (message_box_width, message_box_height), message_box_filename
+        self.__message_box = MessageBox(
+            self, message_box_x, message_box_y,
+            (message_box_width, message_box_height), message_box_filename,
+            widget_group = self.__widget_group
         )
 
-        confirmation_box = ConfirmationBox(
-            self, confirmation_box_batch, message_box_x, message_box_y,
+        self.__confirmation_box = ConfirmationBox(
+            self, message_box_x, message_box_y,
             (message_box_width, message_box_height), message_box_filename,
             button_images = (
                 (cancel_button_filename, activated_cancel_button_filename),
                 (confirm_button_filename, activated_confirm_button_filename)
-            )
+            ),
+            widget_group = self.__widget_group
         )
-
-        # Instancia as imagens desenhadas no batch (para o garbage collector não apagá-las antes de desenhar)
-        # e a posição do background, que será necessária para desenhar posteriormente.
-        self.__sidebar_image = sidebar_image
-        self.__background = background
-        
-        self.__logo_sprite = logo_sprite
-        self.__message_box = message_box
-        self.__confirmation_box = confirmation_box
-        
-        self.__play_button_1 = play_button_1
-        self.__play_button_2 = play_button_2
-        self.__play_button_3 = play_button_3
-
-        self.__history_button = history_button
-        self.__achivements_button = achivements_button
-        self.__settings_button = settings_button
-        
-        self.__batch = batch
 
     def __check_buttons(self, x, y):
         """
@@ -248,10 +230,9 @@ class HomeScreen(Screen):
             self.sound_player.play_music()
         
         self.__sidebar_image.blit(0, 0)
+        
         self.__batch.draw()
-
-        self.__confirmation_box.draw()
-        self.__message_box.draw()
+        self.__widget_group.draw()
 
     def on_key_press(self, symbol, modifiers):
         """
