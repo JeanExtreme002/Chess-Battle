@@ -1,5 +1,5 @@
 from .screen import Screen
-from .util import ConfirmationBox
+from .util import ConfirmationPopup
 from pyglet.window import mouse, key
 
 class BoardScreen(Screen):
@@ -84,11 +84,11 @@ class BoardScreen(Screen):
         self.__score_board_x = score_board_area_x + score_board_area_width / 2 - self.__score_board_width / 2
         self.__score_board_y = self.__board_y
 
-        # Obtém o tamanho e a posição da caixa de mensagem.
-        message_box_width = self.width * 0.45
-        message_box_height = message_box_width * 0.7
-        message_box_x = self.width / 2 - message_box_width / 2
-        message_box_y = self.height / 2 - message_box_height / 2
+        # Obtém o tamanho e a posição do popup.
+        popup_width = self.width * 0.45
+        popup_height = popup_width * 0.7
+        popup_x = self.width / 2 - popup_width / 2
+        popup_y = self.height / 2 - popup_height / 2
 
         # Inicializa as imagens de peças.
         self.__load_piece_images(self.__square_size)
@@ -133,8 +133,8 @@ class BoardScreen(Screen):
                 )
                 self.__square_shapes.append(square)
                 
-        # Cria uma caixa de mensagens e uma caixa de confirmação.
-        message_box_filename = application.paths.get_image("general", "message_box.png")
+        # Cria um popup de confirmação.
+        popup_filename = application.paths.get_image("general", "popup.png")
 
         cancel_button_filename = application.paths.get_image("general", "buttons", "cancel.png")
         activated_cancel_button_filename = application.paths.get_image("general", "buttons", "activated_cancel.png")
@@ -142,10 +142,10 @@ class BoardScreen(Screen):
         confirm_button_filename = application.paths.get_image("general", "buttons", "confirm.png")
         activated_confirm_button_filename = application.paths.get_image("general", "buttons", "activated_confirm.png")
 
-        self.__confirmation_box = ConfirmationBox(
-            self, message_box_x, message_box_y,
-            (message_box_width, message_box_height),
-            message_box_filename, button_images = (
+        self.__confirmation_popup = ConfirmationPopup(
+            self, popup_x, popup_y,
+            (popup_width, popup_height),
+            popup_filename, button_images = (
                 (cancel_button_filename, activated_cancel_button_filename),
                 (confirm_button_filename, activated_confirm_button_filename)
             )
@@ -574,7 +574,7 @@ class BoardScreen(Screen):
         self.__batch.draw()
         self.__piece_batch.draw()
         self.__selected_piece_batch.draw()
-        self.__confirmation_box.draw()
+        self.__confirmation_popup.draw()
 
     def on_key_press(self, symbol, modifiers):
         """
@@ -585,9 +585,9 @@ class BoardScreen(Screen):
         # Caso o ESC seja apertado, significa que o usuário deseja sair
         # desta tela. Nesse caso, uma mensagem de confirmação deverá aparecer.
         if symbol == key.ESCAPE:
-            if not self.__confirmation_box.has_message():
+            if not self.__confirmation_popup.has_message():
                 self.__deselect_piece()
-                self.__set_dialog_box_message(self.__confirmation_box, "Realmente deseja abandonar o jogo?")
+                self.__set_dialog_box_message(self.__confirmation_popup, "Realmente deseja abandonar o jogo?")
 
         # Verifica se o usuário selecionou uma coluna
         if key.A <= symbol <= key.H and self.__key_input_buffer[1] is None:
@@ -622,8 +622,8 @@ class BoardScreen(Screen):
         """
         x, y = super().on_mouse_motion(*args)[0: 2]
         
-        if self.__confirmation_box.has_message():
-            self.__confirmation_box.check(x, y)
+        if self.__confirmation_popup.has_message():
+            self.__confirmation_popup.check(x, y)
 
         # Atualiza a posição da imagem da peça selecionada.
         if self.__moving_by_mouse:
@@ -639,11 +639,11 @@ class BoardScreen(Screen):
         if mouse_button != mouse.LEFT: return
 
         # Qualquer ação será realizada somente se não houver mensagens sendo mostrada na tela.
-        if self.__confirmation_box.has_message():
-            cancel, confirm = self.__confirmation_box.check(x, y)
+        if self.__confirmation_popup.has_message():
+            cancel, confirm = self.__confirmation_popup.check(x, y)
 
             if not (confirm or cancel): return
-            self.__confirmation_box.delete_message()
+            self.__confirmation_popup.delete_message()
 
             # Sai da tela, caso confirmado.
             if confirm: self.get_application().go_back()

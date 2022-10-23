@@ -1,7 +1,7 @@
 from .widget import Widget
 from .highlighted_widget import HighlightedWidget
 
-class MessageBox(HighlightedWidget):
+class Popup(HighlightedWidget):
     """
     Classe para criar um popup com uma mensagem na tela.
     """

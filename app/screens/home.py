@@ -1,5 +1,5 @@
 from .screen import Screen
-from .util import Button, ConfirmationBox, MessageBox, Slide, WidgetGroup
+from .util import Button, ConfirmationPopup, Popup, Slide, WidgetGroup
 from pyglet.window import mouse, key
 
 class HomeScreen(Screen):
@@ -49,11 +49,11 @@ class HomeScreen(Screen):
         first_small_button_x = large_button_x
         small_button_y = sidebar_height * 0.9 - small_button_height
 
-        # Obtém o tamanho e a posição da caixa de mensagem.
-        message_box_width = self.width * 0.45
-        message_box_height = message_box_width * 0.7
-        message_box_x = self.width / 2 - message_box_width / 2
-        message_box_y = self.height / 2 - message_box_height / 2
+        # Obtém o tamanho e a posição do popup.
+        popup_width = self.width * 0.45
+        popup_height = popup_width * 0.7
+        popup_x = self.width / 2 - popup_width / 2
+        popup_y = self.height / 2 - popup_height / 2
 
         # Carrega e cria a imagem da barra lateral.
         sidebar_filename = application.paths.get_image("home", "sidebar.png")
@@ -135,8 +135,8 @@ class HomeScreen(Screen):
             widget_group = self.__widget_group
         )
 
-        # Cria uma caixa de mensagens e uma caixa de confirmação.
-        message_box_filename = application.paths.get_image("general", "message_box.png")
+        # Cria um popup para mensagens e um popup de confirmação.
+        popup_filename = application.paths.get_image("general", "popup.png")
 
         cancel_button_filename = application.paths.get_image("general", "buttons", "cancel.png")
         activated_cancel_button_filename = application.paths.get_image("general", "buttons", "activated_cancel.png")
@@ -144,15 +144,13 @@ class HomeScreen(Screen):
         confirm_button_filename = application.paths.get_image("general", "buttons", "confirm.png")
         activated_confirm_button_filename = application.paths.get_image("general", "buttons", "activated_confirm.png")
 
-        self.__message_box = MessageBox(
-            self, message_box_x, message_box_y,
-            (message_box_width, message_box_height), message_box_filename,
-            widget_group = self.__widget_group
+        self.__popup = Popup(
+            self, popup_x, popup_y, (popup_width, popup_height),
+            popup_filename, widget_group = self.__widget_group
         )
 
-        self.__confirmation_box = ConfirmationBox(
-            self, message_box_x, message_box_y,
-            (message_box_width, message_box_height), message_box_filename,
+        self.__confirmation_popup = ConfirmationPopup(
+            self, popup_x, popup_y, (popup_width, popup_height), popup_filename,
             button_images = (
                 (cancel_button_filename, activated_cancel_button_filename),
                 (confirm_button_filename, activated_confirm_button_filename)
@@ -189,8 +187,8 @@ class HomeScreen(Screen):
         """
         Define uma mensagem a ser mostrada na tela.
         """
-        if not message[0]: return self.__message_box.delete_message()
-        self.__set_dialog_box_message(self.__message_box, *message)
+        if not message[0]: return self.__popup.delete_message()
+        self.__set_dialog_box_message(self.__popup, *message)
 
     def set_achivements_function(self, func):
         """
@@ -240,14 +238,14 @@ class HomeScreen(Screen):
         """
         # Caso o ESC seja apertado, significa que o usuário deseja sair desta tela.
         if symbol == key.ESCAPE:
-            message = self.__message_box.has_message()
-            confirmation = self.__confirmation_box.has_message()
+            message = self.__popup.has_message()
+            confirmation = self.__confirmation_popup.has_message()
 
             # Mostra uma mensagem de confirmação.
             if not (message or confirmation):
-                self.__set_dialog_box_message(self.__confirmation_box, "Você realmente deseja sair?")
+                self.__set_dialog_box_message(self.__confirmation_popup, "Você realmente deseja sair?")
             if message:
-                self.__message_box.delete_message()
+                self.__popup.delete_message()
                 
         return True
 
@@ -258,8 +256,8 @@ class HomeScreen(Screen):
         x, y = super().on_mouse_motion(*args)[0: 2]
         self.__check_buttons(x, y)
 
-        if self.__confirmation_box.has_message():
-            self.__confirmation_box.check(x, y)
+        if self.__confirmation_popup.has_message():
+            self.__confirmation_popup.check(x, y)
 
     def on_mouse_release(self, *args):
         """
@@ -271,14 +269,14 @@ class HomeScreen(Screen):
         play_button_1, play_button_2, play_button_3, history, achivements, settings = self.__check_buttons(x, y)
 
         # Qualquer ação será realizada somente se não houver mensagens sendo mostrada na tela.
-        if self.__message_box.has_message():
-            return self.__message_box.delete_message()
+        if self.__popup.has_message():
+            return self.__popup.delete_message()
 
-        if self.__confirmation_box.has_message():
-            cancel, confirm = self.__confirmation_box.check(x, y)
+        if self.__confirmation_popup.has_message():
+            cancel, confirm = self.__confirmation_popup.check(x, y)
 
             if confirm: self.get_application().close()
-            elif cancel: self.__confirmation_box.delete_message()
+            elif cancel: self.__confirmation_popup.delete_message()
             return
 
         # Verifica se algum botão de jogar foi apertado.

@@ -1,5 +1,5 @@
 from .screen import Screen
-from .util import Button, ConfirmationBox, IPAddressEntry, WidgetGroup
+from .util import Button, ConfirmationPopup, IPAddressEntry, WidgetGroup
 from pyglet.window import mouse, key
 
 class SettingsScreen(Screen):
@@ -56,11 +56,11 @@ class SettingsScreen(Screen):
         apply_button_x = self.width / 2 - apply_button_width / 2
         apply_button_y = self.height * 0.8 - apply_button_height
         
-        # Obtém o tamanho e a posição da caixa de mensagem.
-        message_box_width = self.width * 0.45
-        message_box_height = message_box_width * 0.7
-        message_box_x = self.width / 2 - message_box_width / 2
-        message_box_y = self.height / 2 - message_box_height / 2
+        # Obtém o tamanho e a posição do popup.
+        popup_width = self.width * 0.45
+        popup_height = popup_width * 0.7
+        popup_x = self.width / 2 - popup_width / 2
+        popup_y = self.height / 2 - popup_height / 2
 
         # Cria o plano de fundo.
         background_filename = application.paths.get_image("settings", "background.png")
@@ -118,8 +118,8 @@ class SettingsScreen(Screen):
             widget_group = self.__widget_group
         )
                 
-        # Cria uma caixa de mensagens e uma caixa de confirmação.
-        message_box_filename = application.paths.get_image("general", "message_box.png")
+        # Cria um popup de confirmação.
+        popup_filename = application.paths.get_image("general", "popup.png")
 
         cancel_button_filename = application.paths.get_image("general", "buttons", "cancel.png")
         activated_cancel_button_filename = application.paths.get_image("general", "buttons", "activated_cancel.png")
@@ -127,9 +127,9 @@ class SettingsScreen(Screen):
         confirm_button_filename = application.paths.get_image("general", "buttons", "confirm.png")
         activated_confirm_button_filename = application.paths.get_image("general", "buttons", "activated_confirm.png")
 
-        self.__confirmation_box = ConfirmationBox(
-            self, message_box_x, message_box_y,
-            (message_box_width, message_box_height), message_box_filename,
+        self.__confirmation_popup = ConfirmationPopup(
+            self, popup_x, popup_y,
+            (popup_width, popup_height), popup_filename,
             button_images = (
                 (cancel_button_filename, activated_cancel_button_filename),
                 (confirm_button_filename, activated_confirm_button_filename)
@@ -240,7 +240,7 @@ class SettingsScreen(Screen):
         self.__background_image.blit(0, 0)
         self.__widget_group.draw()
         self.__text_batch.draw()
-        self.__confirmation_box.draw()
+        self.__confirmation_popup.draw()
         
         self.__ip_entry.next()
 
@@ -256,8 +256,8 @@ class SettingsScreen(Screen):
                 self.get_application().go_back()
 
             # Se alterou algo, será pedido uma confirmação para sair.
-            elif not self.__confirmation_box.has_message():
-                self.__set_dialog_box_message(self.__confirmation_box, "Deseja sair sem salvar as alterações?")
+            elif not self.__confirmation_popup.has_message():
+                self.__set_dialog_box_message(self.__confirmation_popup, "Deseja sair sem salvar as alterações?")
 
         # Insere o caractere na caixa de texto do endereço IP, se o mesmo foi selecionado.
         if self.__selected_ip_entry: self.__change_ip_address(symbol)
@@ -270,8 +270,8 @@ class SettingsScreen(Screen):
         """
         x, y = super().on_mouse_motion(*args)[0: 2]
 
-        if self.__confirmation_box.has_message():
-            self.__confirmation_box.check(x, y)
+        if self.__confirmation_popup.has_message():
+            self.__confirmation_popup.check(x, y)
 
         self.__apply_button.check(x, y)
         self.__sound_button.check(x, y)
@@ -291,11 +291,11 @@ class SettingsScreen(Screen):
         if mouse_button != mouse.LEFT: return
 
         # Qualquer ação será realizada somente se não houver mensagem sendo mostrada na tela.
-        if self.__confirmation_box.has_message():
-            cancel, confirm = self.__confirmation_box.check(x, y)
+        if self.__confirmation_popup.has_message():
+            cancel, confirm = self.__confirmation_popup.check(x, y)
             
             if not (confirm or cancel): return
-            self.__confirmation_box.delete_message()
+            self.__confirmation_popup.delete_message()
 
             # Sai da tela, redefinindo as configurações, caso confirmado.
             if confirm:

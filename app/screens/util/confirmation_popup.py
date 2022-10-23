@@ -1,7 +1,7 @@
 from .button import Button
-from .message_box import MessageBox
+from .popup import Popup
 
-class ConfirmationBox(MessageBox):
+class ConfirmationPopup(Popup):
     """
     Classe para criar um popup de confirmação na tela.
     """

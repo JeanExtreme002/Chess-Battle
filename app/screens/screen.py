@@ -1,4 +1,3 @@
-from .util.confirmation_box import ConfirmationBox
 from abc import ABC, abstractmethod
 from pyglet import image
 from pyglet import gl
