@@ -1,8 +1,6 @@
 from .Player import Player
-from typing import Union
 from .Piece import Piece
-from enum import Enum
-from .teste import Board
+from .Board import Board
 from .Color import Color
 
 class ChessGame:
@@ -25,11 +23,6 @@ class ChessGame:
     @property
     def board(self):
         return self.__board
-    
-    #def new_game(self, first_player=None, timeout=None):
-    #    if first_player == None:
-    #        first_player = self.__white_player
-    #    self.__white_player.played = True #Assumimos que o método get_player será chamado após o 1º jogador fazer um movimento
 
     def load_game(self, match:int, round:int): #Esperando database ficar pronto (ou quase isso)...
         return NotImplemented
@@ -60,13 +53,10 @@ class ChessGame:
 
         return piece
 
-    def get_status(self) -> Enum:
+    def get_status(self) -> str:
         pass
 
     def play(self, piece:Piece, to:tuple[int, int]) -> bool:
-        '''if (self.__black_player.played and (not piece.r_id%2)) or (self.__white_player.played and piece.r_id%2):
-            #Se não é a vez da cor jogar...
-            return False'''
         if not (list(to) in piece.legal_moves(self.__board.pecas)):
             #Se o movimento não é legal...
             return False
