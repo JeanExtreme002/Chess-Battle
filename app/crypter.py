@@ -1,28 +1,23 @@
+from abc import ABC, abstractmethod
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 import base64
 
-class ConnectionCrypter(object):
+class Crypter(ABC):
     """
-    Classe para encriptografar e descriptografar
-    os dados trafegados pela conexão.
+    Classe para criptografar e descriptografar strings.
     """
-    def __init__(self, address):
-        self.__fernet = Fernet(self.__get_key(address))
+    def __init__(self, password = str()):
+        key = self.generate_key(password)
+        key = self.__get_key(key)
+        
+        self.__fernet = Fernet(key)
 
-    def __get_key(self, address):
+    def __get_key(self, password):
         """
         Gera uma chave de criptografia.
-        """
-        password = str()
-
-        for index in range(0, len(address[0]), 2):
-            password += address[0][index: index + 2]
-            
-            if index // 2 < len(str(address[1])):
-                 password += str(address[1])[index // 2]
-    
+        """ 
         digest = hashes.Hash(hashes.SHA256(), backend = default_backend())
         digest.update(password.encode())
         return base64.urlsafe_b64encode(digest.finalize())
@@ -44,3 +39,10 @@ class ConnectionCrypter(object):
 
         data = bytes(string, encoding = "UTF-8")
         return self.__fernet.encrypt(data).decode()
+
+    def generate_key(self, password):
+        """
+        Recebe uma senha e retorna uma chave parcial.
+        """
+        return password
+

@@ -1,4 +1,4 @@
-from .config import paths
+from .data import paths
 from pyglet import media
 import random
 

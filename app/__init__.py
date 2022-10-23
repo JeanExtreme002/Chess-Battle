@@ -1,5 +1,5 @@
-from .config import paths, settings
 from .conn import Connection
+from .data import paths, settings
 from .screens import BoardScreen, HistoryScreen, HomeScreen, SettingsScreen, StartupScreen
 from .sound import SoundPlayer
 from pyglet import app
@@ -127,7 +127,7 @@ class Application(window.Window):
         Inicia uma conexão com outro jogador.
         """
         self.__connection = Connection(settings.address, host_mode)
-        self.__connection.connect(timeout = 0.3, attempts = 10)
+        self.__connection.connect(timeout_in_seconds = 0.3, attempts = 10)
         
         return self.__connection.is_connected()
         
@@ -223,6 +223,8 @@ class Application(window.Window):
         """
         Altera o tamanho da tela do aplicativo.
         """
+        if width == self.width and height == self.height: return
+        
         self.width = width
         self.height = height
         

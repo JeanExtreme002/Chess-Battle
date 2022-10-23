@@ -1,4 +1,4 @@
-from .crypt import ConnectionCrypter
+from .connection_crypter import ConnectionCrypter
 from socket import socket, timeout, AF_INET, SOCK_STREAM 
 
 class Connection(object):
@@ -54,15 +54,17 @@ class Connection(object):
         self.__connection = None
         self.__socket = None
 
-    def connect(self, timeout = 5, attempts = 1):
+    def connect(self, timeout_in_seconds = 5, attempts = 1):
         """
         Estabelece uma conexão.
         """
         if attempts == 0: return
         
         self.__socket = socket(AF_INET, SOCK_STREAM)
-        self.__socket.settimeout(timeout)
+        self.__socket.settimeout(timeout_in_seconds)
 
+        # Tenta estabelecer uma conexão, criando um servidor
+        # ou se conectando à um servidor existente.
         try:
             if self.is_host():
                 self.__socket.bind(self.__address)
@@ -71,9 +73,23 @@ class Connection(object):
                 self.__connection = self.__socket.accept()[0]
             else:
                 self.__socket.connect(self.__address)
+
+        # Caso o tempo para conectar tenha excedido, uma nova
+        # tentativa de conexão será realizada.
+        except timeout:
+            self.close()
+            self.connect(timeout_in_seconds, attempts - 1)
+
+        # Se outro tipo de exceção ocorreu, uma nova tentativa
+        # de conexão será realizada somente se o modo de abertura
+        # de conexão não for host. Caso o contrário, significaria
+        # que pode existir algum problema no endereço informado.
+        # Neste caso, é inútil realizar novas tentativas.
         except:
             self.close()
-            self.connect(timeout, attempts - 1)
+            
+            if not self.is_host():
+                self.connect(timeout_in_seconds, attempts - 1)
             
     def is_connected(self, attempts = 1):
         """
