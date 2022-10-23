@@ -2,8 +2,11 @@ class WidgetGroup(object):
     """
     Classe para criar um grupo de widgets.
     """
-    def __init__(self):
+    def __init__(self, widget_group = None):
         self.__widgets = []
+
+        if widget_group:
+            widget_group.add(self)
 
     def add(self, widget):
         """
