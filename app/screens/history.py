@@ -21,7 +21,7 @@ class HistoryScreen(Screen):
         self.__text_batch = self.create_batch()
 
         # Obtém o tamanho e a posição do frame de partida.
-        frame_width = self.width * 0.43
+        frame_width = self.width * 0.5
         frame_height = frame_width * 0.8
         frame_x = self.width / 2 - frame_width / 2
         frame_y = self.height / 2 - frame_height / 2

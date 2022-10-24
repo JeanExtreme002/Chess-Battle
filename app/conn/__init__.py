@@ -14,8 +14,6 @@ class Connection(object):
         self.__address = tuple(address)
         self.__hosting = host
 
-        self.__crypter = ConnectionCrypter(address)
-
     def __coordinates_to_string(self, origin, dest):
         """
         Recebe duas tuplas XY, indicando origem e destino,
@@ -23,15 +21,19 @@ class Connection(object):
         """
         return "{}{}{}{}".format(*origin, *dest)
 
- 
+    def __get_connection(self):
+        """
+        Retorna o objeto de conexão.
+        """
+        return self.__connection if self.is_host() else self.__socket
+
     def __send_data(self, string, encrypt = True):
         """
         Envia os dados para o receptor.
         """
-        sender = self.__connection if self.is_host() else self.__socket
         if encrypt: string = self.__crypter.encrypt(string)
         
-        sender.send(string.encode())
+        self.__get_connection().send(string.encode())
         return True
 
     def __string_to_coordinates(self, string):
@@ -73,6 +75,9 @@ class Connection(object):
                 self.__connection = self.__socket.accept()[0]
             else:
                 self.__socket.connect(self.__address)
+
+            connection = self.__get_connection()
+            self.__crypter = ConnectionCrypter(self.__address, connection)
 
         # Caso o tempo para conectar tenha excedido, uma nova
         # tentativa de conexão será realizada.
