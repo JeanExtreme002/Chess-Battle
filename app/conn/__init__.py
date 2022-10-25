@@ -76,8 +76,10 @@ class Connection(object):
             else:
                 self.__socket.connect(self.__address)
 
-            connection = self.__get_connection()
-            self.__crypter = ConnectionCrypter(self.__address, connection)
+            # Cria objeto para criptografar os dados.
+            self.__crypter = ConnectionCrypter(
+                self.__address, self.__get_connection()
+            )
 
         # Caso o tempo para conectar tenha excedido, uma nova
         # tentativa de conexão será realizada.

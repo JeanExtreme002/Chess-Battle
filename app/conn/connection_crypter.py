@@ -1,5 +1,5 @@
 from ..crypter import Crypter
-import time
+import random
 
 class ConnectionCrypter(Crypter):
     """
@@ -22,9 +22,11 @@ class ConnectionCrypter(Crypter):
             if index // 2 < len(str(address[1])):
                  password += str(address[1])[index // 2]
 
-        salt = str(time.time())
+        salt = str(random.randint(10**6, 10**9))
 
         self.__connection.send(salt.encode())
-        salt += self.__connection.recv(128).decode()
+        value = self.__connection.recv(128).decode()
+
+        salt += value
 
         return password + salt
