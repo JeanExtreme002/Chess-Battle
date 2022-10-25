@@ -1,3 +1,4 @@
+from .achievement import Achievement
 from .button import Button
 from .confirmation_popup import ConfirmationPopup
 from .entry import Entry

@@ -1,5 +1,5 @@
 from .conn import Connection
-from .data import paths, settings
+from .data import achievements, paths, settings
 from .screens import BoardScreen, HistoryScreen, HomeScreen, SettingsScreen, StartupScreen
 from .sound import SoundPlayer
 from pyglet import app
@@ -24,7 +24,6 @@ class Application(window.Window):
             resizable = False
         )
         self.__center_window()
-
         self.paths = paths
 
         self.__address = settings.address
@@ -165,6 +164,12 @@ class Application(window.Window):
             self.__send_movement, self.__get_movement, selection == 2
         )
         self.__current_screen = self.__board_screen
+
+    def add_achievement(self, title, description):
+        """
+        Adiciona uma nova conquista de usuário.
+        """
+        achievements.add_achievement(title, description)
   
     def get_fps(self):
         """

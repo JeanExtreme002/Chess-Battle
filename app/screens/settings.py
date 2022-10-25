@@ -149,6 +149,8 @@ class SettingsScreen(Screen):
         
         self.__changed = False
 
+        self.get_application().add_achievement("Organizando o novo lar", "Alterou as configurações do jogo.")
+
     def __change_ip_address(self, symbol):
         """
         Altera o endereço IP na caixa de entrada.
