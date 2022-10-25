@@ -22,11 +22,13 @@ class ConnectionCrypter(Crypter):
             if index // 2 < len(str(address[1])):
                  password += str(address[1])[index // 2]
 
-        salt = str(random.randint(10**6, 10**9))
+        values = []
+        values.append(str(random.randint(10**6, 10**10)))
 
-        self.__connection.send(salt.encode())
-        value = self.__connection.recv(128).decode()
+        self.__connection.send(values[0].encode())
+        values.append(self.__connection.recv(32).decode())
 
-        salt += value
+        values.sort()
+        salt = "".join(values)
 
         return password + salt
