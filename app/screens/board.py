@@ -1,5 +1,5 @@
 from .screen import Screen
-from .util import ConfirmationPopup
+from .util import ConfirmationPopup, MediaController
 from pyglet.window import mouse, key
 
 class BoardScreen(Screen):
@@ -9,6 +9,7 @@ class BoardScreen(Screen):
     
     __LOCAL_MODE = 0
     __ONLINE_MODE = 1
+    __REPLAY_MODE = 2
 
     __BORDER_COLOR = (0, 0, 0)
     __LIGHT_COLOR = (255, 248, 220)
@@ -47,7 +48,11 @@ class BoardScreen(Screen):
         self.__board_coord_texts = []
 
         self.__request_interval = application.get_fps() * 0.2
-        self.__frame_counter = 0
+        self.__request_frame_counter = 0
+
+        self.__replay_speed = 0.1
+        self.__replay_frame_counter = 0
+        self.__replay_index = 0
         
         self.__build()
         
@@ -89,6 +94,11 @@ class BoardScreen(Screen):
         popup_height = popup_width * 0.7
         popup_x = self.width / 2 - popup_width / 2
         popup_y = self.height / 2 - popup_height / 2
+
+        # Obtém o tamanho e a posição do controlador de replay.
+        replay_controller_width = self.width * 0.2
+        replay_controller_x = self.__score_board_x + self.__score_board_width / 2 - replay_controller_width / 2
+        replay_controller_y = self.__score_board_y + self.__score_board_height * 0.915
 
         # Inicializa as imagens de peças.
         self.__load_piece_images(self.__square_size)
@@ -134,13 +144,13 @@ class BoardScreen(Screen):
                 self.__square_shapes.append(square)
                 
         # Cria um popup de confirmação.
-        popup_filename = application.paths.get_image("general", "popup.png")
+        popup_filename = application.paths.get_image("general", "popup", "popup.png")
 
-        cancel_button_filename = application.paths.get_image("general", "buttons", "cancel.png")
-        activated_cancel_button_filename = application.paths.get_image("general", "buttons", "activated_cancel.png")
+        cancel_button_filename = application.paths.get_image("general", "popup", "buttons", "cancel.png")
+        activated_cancel_button_filename = application.paths.get_image("general", "popup", "buttons", "activated_cancel.png")
         
-        confirm_button_filename = application.paths.get_image("general", "buttons", "confirm.png")
-        activated_confirm_button_filename = application.paths.get_image("general", "buttons", "activated_confirm.png")
+        confirm_button_filename = application.paths.get_image("general", "popup", "buttons", "confirm.png")
+        activated_confirm_button_filename = application.paths.get_image("general", "popup", "buttons", "activated_confirm.png")
 
         self.__confirmation_popup = ConfirmationPopup(
             self, popup_x, popup_y,
@@ -148,6 +158,37 @@ class BoardScreen(Screen):
             popup_filename, button_images = (
                 (cancel_button_filename, activated_cancel_button_filename),
                 (confirm_button_filename, activated_confirm_button_filename)
+            )
+        )
+
+        # Cria um controlador para um eventual replay.
+        previous_button_filename = application.paths.get_image("general", "media_controller", "buttons", "previous.png")
+        activated_previous_button_filename = application.paths.get_image("general", "media_controller", "buttons", "activated_previous.png")
+        
+        back_button_filename = application.paths.get_image("general", "media_controller", "buttons", "back.png")
+        activated_back_button_filename = application.paths.get_image("general", "media_controller", "buttons", "activated_back.png")
+
+        pause_button_filename = application.paths.get_image("general", "media_controller", "buttons", "pause.png")
+        activated_pause_button_filename = application.paths.get_image("general", "media_controller", "buttons", "activated_pause.png")
+
+        play_button_filename = application.paths.get_image("general", "media_controller", "buttons", "play.png")
+        activated_play_button_filename = application.paths.get_image("general", "media_controller", "buttons", "activated_play.png")
+
+        forward_button_filename = application.paths.get_image("general", "media_controller", "buttons", "forward.png")
+        activated_forward_button_filename = application.paths.get_image("general", "media_controller", "buttons", "activated_forward.png")
+
+        next_button_filename = application.paths.get_image("general", "media_controller", "buttons", "next.png")
+        activated_next_button_filename = application.paths.get_image("general", "media_controller", "buttons", "activated_next.png")
+
+        self.__replay_controller = MediaController(
+            self, replay_controller_x, replay_controller_y, replay_controller_width,
+            images = (
+                (previous_button_filename, activated_previous_button_filename),
+                (back_button_filename, activated_back_button_filename),
+                (pause_button_filename, activated_pause_button_filename),
+                (play_button_filename, activated_play_button_filename),
+                (forward_button_filename, activated_forward_button_filename),
+                (next_button_filename, activated_next_button_filename)
             )
         )
 
@@ -276,6 +317,28 @@ class BoardScreen(Screen):
         self.__selected_piece_shadow = None
         self.__selected_piece_index = None
         self.__selected_piece_position = None
+
+    def __execute_replay_action(self, actions):
+        """
+        Executa uma funcionalidade do modo replay.
+        """
+
+        if actions[0] and self.__replay_index > 0:
+            self.__replay_speed = 0
+            self.__replay_index -= 1
+
+        elif actions[1] and self.__replay_speed > -1:
+            self.__replay_speed -= 0.1
+    
+        elif actions[2]:
+            self.__replay_controller.switch_play_button()
+
+        elif actions[3] and self.__replay_speed < 1:
+            self.__replay_speed += 0.1
+
+        elif actions[4]:
+            self.__replay_speed = 0
+            self.__replay_index += 1        
 
     def __get_coord_on_board(self, x, y):
         """
@@ -533,6 +596,10 @@ class BoardScreen(Screen):
     def ONLINE_MODE(self):
         return self.__ONLINE_MODE
 
+    @property
+    def REPLAY_MODE(self):
+        return self.__REPLAY_MODE
+
     def set_board_coordinates(self, boolean = True):
         """
         Mostra ou esconde as coordenadas do tabuleiro.
@@ -560,20 +627,25 @@ class BoardScreen(Screen):
         Evento para desenhar a tela.
         """
         # Verifica se houve alguma jogada realizada pelo outro jogador.
-        if self.__mode == self.ONLINE_MODE and self.__frame_counter == 0:
+        if self.__mode == self.ONLINE_MODE and self.__request_frame_counter == 0:
             movement = self.__movement_receiver()
 
             if movement:
                 self.__select_piece(*movement[0], received = True)
                 self.__move_piece(*movement[1], received = True)
 
-        self.__frame_counter += 1
-        self.__frame_counter %= self.__request_interval
-            
+        self.__request_frame_counter += 1
+        self.__request_frame_counter %= self.__request_interval
+
+        # Desenha os objetos na tela.   
         self.__background_image.blit(0, 0)
         self.__batch.draw()
         self.__piece_batch.draw()
         self.__selected_piece_batch.draw()
+
+        if self.__mode == self.REPLAY_MODE:
+            self.__replay_controller.draw()
+        
         self.__confirmation_popup.draw()
 
     def on_key_press(self, symbol, modifiers):
@@ -588,6 +660,9 @@ class BoardScreen(Screen):
             if not self.__confirmation_popup.has_message():
                 self.__deselect_piece()
                 self.__set_dialog_box_message(self.__confirmation_popup, "Realmente deseja abandonar o jogo?")
+
+        # Impede jogadas no modo replay.
+        if self.__mode == self.REPLAY_MODE: return
 
         # Verifica se o usuário selecionou uma coluna
         if key.A <= symbol <= key.H and self.__key_input_buffer[1] is None:
@@ -625,6 +700,9 @@ class BoardScreen(Screen):
         if self.__confirmation_popup.has_message():
             self.__confirmation_popup.check(x, y)
 
+        if self.__mode == self.REPLAY_MODE:
+            self.__replay_controller.check(x, y)
+
         # Atualiza a posição da imagem da peça selecionada.
         if self.__moving_by_mouse:
             piece = self.__selected_piece
@@ -647,6 +725,11 @@ class BoardScreen(Screen):
 
             # Sai da tela, caso confirmado.
             if confirm: self.get_application().go_back()
+
+        # Verifica se algum botão do controlador de replay foi pressionado.
+        if self.__game == self.REPLAY_MODE:
+            buttons = self.__replay_controller.check(x, y)
+            return self.__execute_replay_action(buttons)
 
         # Obtém a casa do tabuleiro através da posição do cursor.
         coords = self.__get_coord_on_board(x, y)

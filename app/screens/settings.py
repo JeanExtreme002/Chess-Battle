@@ -119,13 +119,13 @@ class SettingsScreen(Screen):
         )
                 
         # Cria um popup de confirmação.
-        popup_filename = application.paths.get_image("general", "popup.png")
+        popup_filename = application.paths.get_image("general", "popup", "popup.png")
 
-        cancel_button_filename = application.paths.get_image("general", "buttons", "cancel.png")
-        activated_cancel_button_filename = application.paths.get_image("general", "buttons", "activated_cancel.png")
+        cancel_button_filename = application.paths.get_image("general", "popup", "buttons", "cancel.png")
+        activated_cancel_button_filename = application.paths.get_image("general", "popup", "buttons", "activated_cancel.png")
         
-        confirm_button_filename = application.paths.get_image("general", "buttons", "confirm.png")
-        activated_confirm_button_filename = application.paths.get_image("general", "buttons", "activated_confirm.png")
+        confirm_button_filename = application.paths.get_image("general", "popup", "buttons", "confirm.png")
+        activated_confirm_button_filename = application.paths.get_image("general", "popup", "buttons", "activated_confirm.png")
 
         self.__confirmation_popup = ConfirmationPopup(
             self, popup_x, popup_y,
