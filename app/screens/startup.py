@@ -11,8 +11,8 @@ class StartupScreen(Screen):
         
     def __build(self):
         """
-        Método para criar todas as imagens e objetos
-        gráficos necessários para desenhar a tela.
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar a tela.
         """
         application = self.get_application()
         
@@ -20,7 +20,7 @@ class StartupScreen(Screen):
         background_filename = application.paths.get_image("startup", "background.png")
         self.__background_image = self.load_image(background_filename, (self.width, self.height))
 
-    def on_draw(self, by_scheduler = False):
+    def on_draw_screen(self, by_scheduler = False):
         """
         Evento para desenhar a tela.
         """

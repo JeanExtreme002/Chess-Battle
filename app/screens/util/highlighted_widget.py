@@ -24,11 +24,11 @@ class HighlightedWidget(Widget):
         width = self.screen.width if self.__fill == "expand" else self.width + self.__fill * 2
         height = self.screen.height if self.__fill == "expand" else self.height + self.__fill * 2
 
-        self.__background = self.screen.create_rectangle(
+        self._highlight = self.screen.create_rectangle(
             x, y, width, height, batch = self.__background_batch,
             color = self.__color
         )
-        self.__background.opacity = self.__opacity
+        self._highlight.opacity = self.__opacity
 
     def draw(self):
         """

@@ -13,6 +13,10 @@ class HomeScreen(Screen):
         self.__build()
 
     def __build(self):
+        """
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar a tela.
+        """
         application = self.get_application()
         self.__batch = self.create_batch()
         self.__widget_group = WidgetGroup()
@@ -214,7 +218,7 @@ class HomeScreen(Screen):
         """
         self.__settings_function = func
 
-    def on_draw(self, by_scheduler = False):
+    def on_draw_screen(self, by_scheduler = False):
         """
         Evento para desenhar a tela.
         """

@@ -1,3 +1,4 @@
+from .util import Achievement
 from abc import ABC, abstractmethod
 from pyglet import image
 from pyglet import gl
@@ -17,9 +18,24 @@ class Screen(ABC):
     """
 
     _images = dict()
+    _achievement_widget = None
     
     def __init__(self, application):
         self.__application = application
+        self.__build()
+
+    def __build(self):
+        """
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar a tela.
+        """
+        application = self.get_application()
+        achievement_filename = application.paths.get_image("general", "achievement.png")
+        
+        Screen._achievement_widget = Achievement(
+            self, (application.width * 0.4, application.height * 0.15),
+            image = achievement_filename, font_size = application.height * 0.15 * 0.2
+        )
         
     @property
     def width(self):
@@ -104,10 +120,19 @@ class Screen(ABC):
         # Retorna a imagem com a resolução deseja.
         return Screen._images[filename][size]
 
-    @abstractmethod
     def on_draw(self, by_scheduler = False):
         """
         Evento para desenhar a tela.
+        """
+        if by_scheduler: Screen._achievement_widget.next()
+        
+        self.on_draw_screen(by_scheduler)
+        Screen._achievement_widget.draw()
+
+    @abstractmethod
+    def on_draw_screen(self, by_scheduler = False):
+        """
+        Método chamado pelo evento on_draw para desenhar a tela.
         """
         pass
 
@@ -128,3 +153,9 @@ class Screen(ABC):
         Evento de tecla pressionada.
         """
         return True
+
+    def set_achievement(self, title):
+        """
+        Mostra uma conquista obtida na tela.
+        """
+        Screen._achievement_widget.set_achievement(title)

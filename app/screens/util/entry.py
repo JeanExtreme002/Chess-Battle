@@ -103,7 +103,7 @@ class Entry(Widget):
 
     def next(self):
         """
-        Apaga o último caractere da caixa de texto.
+        Avança para o próximo estado da animação.
         """
         self.__frames = (self.__frames + 1) % self.__pipe_interval
         if self.__frames == 0: self.__pipe_on = not self.__pipe_on

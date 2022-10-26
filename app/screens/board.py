@@ -53,13 +53,13 @@ class BoardScreen(Screen):
         self.__replay_speed = 0.1
         self.__replay_frame_counter = 0
         self.__replay_index = 0
-        
+
         self.__build()
         
     def __build(self):
         """
-        Método para criar todas as imagens e objetos
-        gráficos necessários para desenhar a tela.
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar a tela.
         """
         application = self.get_application()
         
@@ -458,6 +458,17 @@ class BoardScreen(Screen):
             if sent and dest_piece:
                 self.__add_destroyed_piece(dest_piece)
                 self.sound_player.play_attacking_sound()
+
+                # Conquista de usuário.
+                if self.__mode == self.ONLINE_MODE and not received:
+                    self.get_application().add_achievement("A primeira de muitas...", "Eliminou uma peça do seu adversário no modo online.")
+                    self.__killstreak += 1
+                    
+                    if self.__killstreak == 5:
+                        self.get_application().add_achievement("Sangue nos olhos.", "Eliminou 5 peças em sequência.")
+                else:
+                    self.__killstreak = 0
+                
             elif sent:
                 self.sound_player.play_movement_sound()
     
@@ -619,10 +630,19 @@ class BoardScreen(Screen):
         self.__movement_receiver = receiver_func
         self.__player = int(not is_first_player) # WHITE = 0; BLACK = 1
 
+        self.__killstreak = 0
+
         self.__delete_destroyed_pieces()
         self.__update_piece_sprites()
 
-    def on_draw(self, by_scheduler = False):
+        # Conquista de usuário.
+        if self.__mode == self.LOCAL_MODE:
+            self.get_application().add_achievement("Cara a cara, mano a mano!", "Iniciou pela primeira vez uma partida local.")
+            
+        if self.__mode == self.ONLINE_MODE:
+            self.get_application().add_achievement("Quebrando barreiras.", "Iniciou pela primeira vez uma partida online.")
+
+    def on_draw_screen(self, by_scheduler = False):
         """
         Evento para desenhar a tela.
         """

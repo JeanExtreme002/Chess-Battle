@@ -41,11 +41,14 @@ class UserAchievements(object):
         """
         Adiciona uma nova conquista.
         """
+        if title in self.__achievements: return False
+        
         self.__achievements[title] = {
             "description": description,
             "time": time.time()
         }
         self.__save_achievements()
+        return True
 
     def get_achievements(self):
         """

@@ -12,8 +12,8 @@ class HistoryScreen(Screen):
         
     def __build(self):
         """
-        Método para criar todas as imagens e objetos
-        gráficos necessários para desenhar a tela.
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar a tela.
         """
         application = self.get_application()
         
@@ -35,7 +35,7 @@ class HistoryScreen(Screen):
         frame_image = self.load_image(frame_filename, (frame_width, frame_height))
         self.__frame = self.create_sprite(frame_image, frame_x, frame_y, batch = self.__batch)
 
-    def on_draw(self, by_scheduler = False):
+    def on_draw_screen(self, by_scheduler = False):
         """
         Evento para desenhar a tela.
         """

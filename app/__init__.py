@@ -7,7 +7,7 @@ from pyglet import canvas
 from pyglet import clock
 from pyglet import window
 from threading import Thread
-import os
+import os, time
 
 class Application(window.Window):
     """
@@ -43,6 +43,18 @@ class Application(window.Window):
         
         self.set_location(x, y)
 
+    def __check_achivements(self):
+        """
+        Verifica se o usuário pode liberar determinadas
+        conquistas obtidas ao iniciar o jogo.
+        """
+        self.add_achievement("Uma nova jornada começa...", "Iniciou o jogo pela primeira vez.")
+
+        localtime = time.localtime()
+        
+        if localtime.tm_mday == 20 and localtime.tm_mon == 7:
+            self.add_achievement("É dia de xadrez!!", "Iniciou o jogo no dia internacional do xadrez.") 
+
     def __initialize(self):
         """
         Inicializa a aplicação.
@@ -74,6 +86,7 @@ class Application(window.Window):
         self.__history_screen = HistoryScreen(self)
 
         self.__current_screen = self.__home_screen
+        self.__check_achivements()
 
     def __finish_online_match_by_error(self):
         """
@@ -169,7 +182,8 @@ class Application(window.Window):
         """
         Adiciona uma nova conquista de usuário.
         """
-        achievements.add_achievement(title, description)
+        if achievements.add_achievement(title, description):
+            self.__current_screen.set_achievement(title)
   
     def get_fps(self):
         """

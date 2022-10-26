@@ -20,3 +20,4 @@ class WidgetGroup(object):
         """
         for widget in self.__widgets:
             widget.draw()
+

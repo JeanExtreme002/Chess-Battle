@@ -24,8 +24,8 @@ class SettingsScreen(Screen):
         
     def __build(self):
         """
-        Método para criar todas as imagens e objetos
-        gráficos necessários para desenhar a tela.
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar a tela.
         """
         application = self.get_application()
         
@@ -149,7 +149,8 @@ class SettingsScreen(Screen):
         
         self.__changed = False
 
-        self.get_application().add_achievement("Organizando o novo lar", "Alterou as configurações do jogo.")
+        # Conquista de usuário.
+        self.get_application().add_achievement("Do jeitinho que eu gosto.", "Alterou as configurações do jogo.")
 
     def __change_ip_address(self, symbol):
         """
@@ -235,7 +236,7 @@ class SettingsScreen(Screen):
         
         self.__sound_button.change_image(images)
 
-    def on_draw(self, by_scheduler = False):
+    def on_draw_screen(self, by_scheduler = False):
         """
         Evento para desenhar a tela.
         """
@@ -244,7 +245,7 @@ class SettingsScreen(Screen):
         self.__text_batch.draw()
         self.__confirmation_popup.draw()
         
-        self.__ip_entry.next()
+        if by_scheduler: self.__ip_entry.next()
 
     def on_key_press(self, symbol, modifiers):
         """
