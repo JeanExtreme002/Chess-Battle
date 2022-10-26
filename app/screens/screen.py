@@ -30,10 +30,10 @@ class Screen(ABC):
         necessários para desenhar a tela.
         """
         application = self.get_application()
-        achievement_filename = application.paths.get_image("general", "achievement.png")
+        achievement_filename = application.paths.get_image("general", "trophy.png")
         
         Screen._achievement_widget = Achievement(
-            self, (application.width * 0.4, application.height * 0.15),
+            self, (application.width * 0.4, application.height * 0.13),
             image = achievement_filename, font_size = application.height * 0.15 * 0.2
         )
         

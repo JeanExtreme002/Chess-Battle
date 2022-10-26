@@ -1,6 +1,6 @@
 from .conn import Connection
 from .data import achievements, paths, settings
-from .screens import BoardScreen, HistoryScreen, HomeScreen, SettingsScreen, StartupScreen
+from .screens import AchievementScreen, BoardScreen, HistoryScreen, HomeScreen, SettingsScreen, StartupScreen
 from .sound import SoundPlayer
 from pyglet import app
 from pyglet import canvas
@@ -77,13 +77,14 @@ class Application(window.Window):
         self.__home_screen.set_play_function(self.__start_game)
         self.__home_screen.set_settings_function(self.__show_settings_screen)
         self.__home_screen.set_history_function(self.__show_history_screen)
-        self.__home_screen.set_achivements_function(self.__show_achivements_screen)
+        self.__home_screen.set_achievement_function(self.__show_achievement_screen)
         
         self.__board_screen = BoardScreen(self)
         self.__board_screen.set_board_coordinates(True)
         
         self.__settings_screen = SettingsScreen(self)
         self.__history_screen = HistoryScreen(self)
+        self.__achievement_screen = AchievementScreen(self)
 
         self.__current_screen = self.__home_screen
         self.__check_achivements()
@@ -116,11 +117,11 @@ class Application(window.Window):
 
         return self.__finish_online_match_by_error()
             
-    def __show_achivements_screen(self):
+    def __show_achievement_screen(self):
         """
         Alterna para a tela de conquistas.
         """
-        self.__current_screen.set_popup_message("Conquistas indisponíveis no momento", "(ಥ﹏ಥ)")
+        self.__current_screen = self.__achievement_screen
 
     def __show_history_screen(self):
         """

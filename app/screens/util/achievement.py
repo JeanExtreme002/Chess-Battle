@@ -1,4 +1,3 @@
-from .widget import Widget
 from .highlighted_widget import HighlightedWidget
 
 class Achievement(HighlightedWidget):
@@ -48,6 +47,7 @@ class Achievement(HighlightedWidget):
             self.y + self.height * 0.5,
             anchor_x = "left", anchor_y = "center",
             batch = self.__batch,
+            font_name = "Comic Sans MS",
             font_size = self.__font_size,
             color = (255, 255, 255, 255)
         )  

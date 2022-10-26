@@ -1,4 +1,3 @@
-from .widget import Widget
 from .highlighted_widget import HighlightedWidget
 
 class Popup(HighlightedWidget):

@@ -1,4 +1,3 @@
-from .widget import Widget
 from .entry import Entry
 
 class IPAddressEntry(Entry):

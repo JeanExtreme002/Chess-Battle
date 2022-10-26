@@ -1,6 +1,5 @@
 from .button import Button
 from .highlighted_widget import HighlightedWidget
-from .widget import Widget
 from .widget_group import WidgetGroup
 
 class MediaController(HighlightedWidget):

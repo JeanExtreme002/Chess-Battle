@@ -82,8 +82,8 @@ class HomeScreen(Screen):
         history_button_filename = application.paths.get_image("home", "buttons", "history.png")
         activated_history_button_filename = application.paths.get_image("home", "buttons", "activated_history.png")
 
-        achivements_button_filename = application.paths.get_image("home", "buttons", "achivements.png")
-        activated_achivements_button_filename = application.paths.get_image("home", "buttons", "activated_achivements.png")
+        achievement_button_filename = application.paths.get_image("home", "buttons", "achievement.png")
+        activated_achievement_button_filename = application.paths.get_image("home", "buttons", "activated_achievement.png")
 
         settings_button_filename = application.paths.get_image("home", "buttons", "settings.png")
         activated_settings_button_filename = application.paths.get_image("home", "buttons", "activated_settings.png")
@@ -115,10 +115,10 @@ class HomeScreen(Screen):
             widget_group = self.__widget_group
         )
 
-        self.__achivements_button = Button(
+        self.__achievement_button = Button(
             self, first_small_button_x + (small_button_width + small_button_spacing) * 1,
             small_button_y, (small_button_width, small_button_height),
-            (achivements_button_filename, activated_achivements_button_filename),
+            (achievement_button_filename, activated_achievement_button_filename),
             widget_group = self.__widget_group
         )
 
@@ -171,10 +171,10 @@ class HomeScreen(Screen):
         play_3 = self.__play_button_3.check(x, y)
         
         history = self.__history_button.check(x, y)
-        achivements = self.__achivements_button.check(x, y)
+        achievement = self.__achievement_button.check(x, y)
         settings = self.__settings_button.check(x, y)
         
-        return play_1, play_2, play_3, history, achivements, settings
+        return play_1, play_2, play_3, history, achievement, settings
 
     def __set_dialog_box_message(self, widget, *message):
         """
@@ -194,11 +194,11 @@ class HomeScreen(Screen):
         if not message[0]: return self.__popup.delete_message()
         self.__set_dialog_box_message(self.__popup, *message)
 
-    def set_achivements_function(self, func):
+    def set_achievement_function(self, func):
         """
         Define uma função para o botão de conquistas.
         """
-        self.__achivements_function = func
+        self.__achievement_function = func
 
     def set_history_function(self, func):
         """
@@ -270,7 +270,7 @@ class HomeScreen(Screen):
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
         if mouse_button != mouse.LEFT: return
             
-        play_button_1, play_button_2, play_button_3, history, achivements, settings = self.__check_buttons(x, y)
+        play_button_1, play_button_2, play_button_3, history, achievement, settings = self.__check_buttons(x, y)
 
         # Qualquer ação será realizada somente se não houver mensagens sendo mostrada na tela.
         if self.__popup.has_message():
@@ -289,4 +289,4 @@ class HomeScreen(Screen):
         elif play_button_3: self.__play_function(3)
         elif settings: self.__settings_function()
         elif history: self.__history_function()
-        elif achivements: self.__achivements_function()
+        elif achievement: self.__achievement_function()
