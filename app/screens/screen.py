@@ -84,6 +84,34 @@ class Screen(ABC):
         y = self.get_true_y_position(y)
         return text.Label(string, x = x, y = y, **kwargs)
 
+    def free_memory(self, save_original = True):
+        """
+        Método para apagar todas as imagens utilizadas pela tela.
+        """
+        found_image_filenames = []
+
+        # Busca por imagens que não estão sendo utilizadas por outras telas,
+        # para que sejam posteriormente removidas do dicionário.
+        for filename, resolutions in Screen._images.items():
+            if self in resolutions["original"]["users"]:
+                resolutions["original"]["users"].remove(self)
+
+            if len(resolutions["original"]["users"]) == 0:
+                found_image_filenames.append([filename, list(resolutions.keys())])
+
+        # Percorre a lista de imagens encontradas para remoção, apagando-as do dicionário.
+        for filename, resolutions in found_image_filenames:
+
+            # Apaga todo o dicionário referente ao arquivo de imagem,
+            # caso o usuário não deseje salvar a imagem original.
+            if not save_original:
+                Screen._images.pop(filename)
+                continue
+
+            # Remove todas as diferentes resoluções de imagem derivadas da imagem original.
+            for size in resolutions:
+                if size != "original": Screen._images[filename].pop(size)
+
     def get_application(self):
         """
         Retorna o objeto Application.
@@ -103,22 +131,27 @@ class Screen(ABC):
         # Obtém a imagem original, sem modificações, se ela não tiver sido salva.
         if not filename in Screen._images:
             Screen._images[filename] = dict()
-            Screen._images[filename]["original"] = image.load(filename)
+            Screen._images[filename]["original"] = dict()
+            Screen._images[filename]["original"]["image"] = image.load(filename)
+            Screen._images[filename]["original"]["users"] = set()
         
         # Caso a imagem na resolução solicitada não tenha sido salva, uma cópia
         # da imagem original será criada, redimensionando a mesma.
         if not size in Screen._images[filename]:
-            img = Screen._images[filename]["original"]
+            img = Screen._images[filename]["original"]["image"]
             img = img.get_region(0, 0, img.width, img.height)
 
             img = img.get_texture()
             img.width = size[0]
             img.height = size[1]
             
-            Screen._images[filename][size] = img
+            Screen._images[filename][size] = dict()
+            Screen._images[filename][size]["image"] = img
+
+        Screen._images[filename]["original"]["users"].add(self)
 
         # Retorna a imagem com a resolução deseja.
-        return Screen._images[filename][size]
+        return Screen._images[filename][size]["image"]
 
     def on_draw(self, by_scheduler = False):
         """

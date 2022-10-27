@@ -55,10 +55,22 @@ class Application(window.Window):
         if localtime.tm_mday == 20 and localtime.tm_mon == 7:
             self.add_achievement("É dia de xadrez!!", "Iniciou o jogo no dia internacional do xadrez.") 
 
+    def __destroy_screens(self):
+        """
+        Destrói as telas criadas, liberando o espaço em memória.
+        """
+        self.__home_screen.free_memory()
+        self.__board_screen.free_memory()
+        self.__settings_screen.free_memory()
+        self.__history_screen.free_memory()
+        self.__achievement_screen.free_memory()
+
     def __initialize(self):
         """
         Inicializa a aplicação.
         """
+        self.__initializing = True
+        
         # Mostra uma tela de inicialização, enquanto o aplicativo inicializa.
         self.__current_screen = StartupScreen(self)
         clock.schedule_interval(self.on_draw, 1 / self.get_fps())
@@ -86,6 +98,10 @@ class Application(window.Window):
         self.__history_screen = HistoryScreen(self)
         self.__achievement_screen = AchievementScreen(self)
 
+        if self.__initializing:
+            self.__current_screen.free_memory()
+            self.__initializing = False
+            
         self.__current_screen = self.__home_screen
         self.__check_achivements()
 
@@ -255,6 +271,7 @@ class Application(window.Window):
         self.height = height
         
         self.__center_window()
+        self.__destroy_screens()
         self.__initialize_screens()
 
     def run(self):
