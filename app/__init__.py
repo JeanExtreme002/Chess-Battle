@@ -227,6 +227,12 @@ class Application(window.Window):
         """
         self.__current_screen.on_key_press(*args)
 
+    def on_mouse_drag(self, *args):
+        """
+        Evento de botão do mouse pressionado.
+        """
+        self.__current_screen.on_mouse_drag(*args)
+
     def on_mouse_motion(self, *args):
         """
         Evento de movimentação do cursor.
@@ -235,7 +241,7 @@ class Application(window.Window):
 
     def on_mouse_release(self, *args):
         """
-        Evento de botão do mouse pressionado e liberado.
+        Evento de botão do mouse liberado.
         """
         self.__current_screen.on_mouse_release(*args)
 

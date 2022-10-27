@@ -9,6 +9,8 @@ class AchievementScreen(Screen):
     def __init__(self, application):
         super().__init__(application)
         self.__build()
+
+        self.__moving = False
         
     def __build(self):
         """
@@ -41,3 +43,10 @@ class AchievementScreen(Screen):
             self.get_application().go_back()
      
         return True
+
+    def on_mouse_drag(self, *args):
+        """
+        Evento de botão do mouse pressionado.
+        """
+        x, y, mouse_button = super().on_mouse_drag(*args)[0: 3]
+        if mouse_button == mouse.LEFT: self.__moving = True

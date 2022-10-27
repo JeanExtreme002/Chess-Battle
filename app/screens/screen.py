@@ -136,6 +136,18 @@ class Screen(ABC):
         """
         pass
 
+    def on_key_press(self, symbol, modifiers):
+        """
+        Evento de tecla pressionada.
+        """
+        return True
+
+    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
+        """
+        Evento de botão do mouse pressionado.
+        """
+        return x, self.get_true_y_position(y), button, modifiers
+
     def on_mouse_motion(self, x, y, *args):
         """
         Evento de movimentação do cursor.
@@ -144,15 +156,9 @@ class Screen(ABC):
 
     def on_mouse_release(self, x, y, button, modifiers):
         """
-        Evento de botão do mouse pressionado e liberado.
+        Evento de botão do mouse liberado.
         """
         return x, self.get_true_y_position(y), button, modifiers
-
-    def on_key_press(self, symbol, modifiers):
-        """
-        Evento de tecla pressionada.
-        """
-        return True
 
     def set_achievement(self, title):
         """
