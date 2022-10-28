@@ -137,6 +137,9 @@ class Application(window.Window):
         """
         Alterna para a tela de conquistas.
         """
+        for achievement_info in achievements.get_achievements():
+            self.__achievement_screen.add_achievement(*achievement_info)
+            
         self.__current_screen = self.__achievement_screen
 
     def __show_history_screen(self):

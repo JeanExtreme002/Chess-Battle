@@ -11,7 +11,7 @@ class Achievement(HighlightedWidget):
             fill = 0, opacity = 200, widget_group = widget_group
         )
 
-        self.__speed = size[1] / (screen.get_application().get_fps() * 0.5)
+        self.__velocity = size[1] / (screen.get_application().get_fps() * 0.5)
         self.__show_time = screen.get_application().get_fps() * 2.5
 
         self.__running = False
@@ -63,11 +63,11 @@ class Achievement(HighlightedWidget):
         """
         Move os objetos gráficos verticalmente.
         """
-        self.__frame_counter -= self.__speed
+        self.__frame_counter -= self.__velocity
 
-        self.__image.y += self.__speed * direction * 2
-        self.__title.y += self.__speed * direction * 2
-        self._highlight.y += self.__speed * direction * 2
+        self.__image.y += self.__velocity * direction * 2
+        self.__title.y += self.__velocity * direction * 2
+        self._highlight.y += self.__velocity * direction * 2
 
     def __show(self):
         """

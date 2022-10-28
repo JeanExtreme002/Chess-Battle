@@ -60,7 +60,7 @@ class UserAchievements(object):
             achievements.append([key, value["description"], value["time"]])
         achievements.sort(key = lambda value: value[-1])
 
-        for title, description, reg_time in achievements:
-            reg_time = time.strftime("%d/%m/%y às %H:%M",time.localtime(reg_time))
-            yield title, description, reg_time
+        for title, description, date in achievements:
+            date = time.strftime("%d/%m/%y às %H:%M",time.localtime(date))
+            yield title, description, date
 

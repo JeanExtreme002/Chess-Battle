@@ -637,10 +637,10 @@ class BoardScreen(Screen):
 
         # Conquista de usuário.
         if self.__mode == self.LOCAL_MODE:
-            self.get_application().add_achievement("Cara a cara, mano a mano!", "Iniciou pela primeira vez uma partida local.")
+            self.get_application().add_achievement("Cara a cara, mano a mano!", "Iniciou uma partida local.")
             
         if self.__mode == self.ONLINE_MODE:
-            self.get_application().add_achievement("Quebrando barreiras.", "Iniciou pela primeira vez uma partida online.")
+            self.get_application().add_achievement("Quebrando barreiras.", "Iniciou uma partida online (como host ou client).")
 
     def on_draw_screen(self, by_scheduler = False):
         """
