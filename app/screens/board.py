@@ -433,6 +433,7 @@ class BoardScreen(Screen):
         selected_piece = self.__game.get_piece(old_row, old_column)
         dest_piece = self.__game.get_piece(row, column)
 
+        moving_by_keyboard = self.__moving_by_keyboard
         self.__deselect_piece()
 
         # Caso a coordenada seja igual à coordenada da peça selecionada,
@@ -447,6 +448,10 @@ class BoardScreen(Screen):
         # Se a jogada ocorreu com sucesso, o tabuleiro é completamente atualizado.
         if self.__game.play(selected_piece, (row, column)):
             sent = True
+
+            # Conquista de usuário.
+            if moving_by_keyboard:
+                self.get_application().add_achievement("Jogador raíz é outro nível!", "Realizou um movimento com qualquer peça utilizando o teclado.")
             
             # Se o modo for online, envia a jogada para o outro jogador.
             if self.__mode == self.ONLINE_MODE and not received:

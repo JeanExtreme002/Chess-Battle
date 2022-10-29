@@ -254,7 +254,7 @@ class HomeScreen(Screen):
             if message:
                 self.__popup.delete_message()
 
-        # Conquista de jogador.
+        # Conquista de usuário.
         self.__key_buffer += chr(symbol)
         string = "".join(self.__key_buffer).upper()
         
