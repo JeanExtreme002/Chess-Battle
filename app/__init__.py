@@ -230,7 +230,7 @@ class Application(window.Window):
         if self.__connection:
             self.__connection.close()
             self.__connection = None
-            
+   
         self.__current_screen = self.__home_screen
 
     def on_draw(self, interval = None):
@@ -258,11 +258,23 @@ class Application(window.Window):
         """
         self.__current_screen.on_mouse_motion(*args)
 
+    def on_mouse_press(self, *args):
+        """
+        Evento de botão do mouse pressionado e movendo.
+        """
+        self.__current_screen.on_mouse_press(*args)
+
     def on_mouse_release(self, *args):
         """
         Evento de botão do mouse liberado.
         """
         self.__current_screen.on_mouse_release(*args)
+
+    def on_mouse_scroll(self, *args):
+        """
+        Evento de scroll do mouse.
+        """
+        self.__current_screen.on_mouse_scroll(*args)
 
     def resize(self, width, height):
         """

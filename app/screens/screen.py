@@ -177,7 +177,7 @@ class Screen(ABC):
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
         """
-        Evento de botão do mouse pressionado.
+        Evento de botão do mouse pressionado e movendo.
         """
         return x, self.get_true_y_position(y), button, modifiers
 
@@ -187,11 +187,23 @@ class Screen(ABC):
         """
         return x, self.get_true_y_position(y), *args
 
+    def on_mouse_press(self, x, y, button, modifiers):
+        """
+        Evento de botão do mouse pressionado.
+        """
+        return x, self.get_true_y_position(y), button, modifiers
+
     def on_mouse_release(self, x, y, button, modifiers):
         """
         Evento de botão do mouse liberado.
         """
         return x, self.get_true_y_position(y), button, modifiers
+
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        """
+        Evento de scroll do mouse.
+        """
+        return x, self.get_true_y_position(y), scroll_y
 
     def set_achievement(self, title):
         """
