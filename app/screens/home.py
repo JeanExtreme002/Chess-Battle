@@ -10,6 +10,7 @@ class HomeScreen(Screen):
     def __init__(self, application):
         super().__init__(application)
         self.__message = None
+        self.__key_buffer = []
         self.__build()
 
     def __build(self):
@@ -242,6 +243,8 @@ class HomeScreen(Screen):
         """
         # Caso o ESC seja apertado, significa que o usuário deseja sair desta tela.
         if symbol == key.ESCAPE:
+            self.__key_buffer = []
+            
             message = self.__popup.has_message()
             confirmation = self.__confirmation_popup.has_message()
 
@@ -250,6 +253,13 @@ class HomeScreen(Screen):
                 self.__set_dialog_box_message(self.__confirmation_popup, "Você realmente deseja sair?")
             if message:
                 self.__popup.delete_message()
+
+        # Conquista de jogador.
+        self.__key_buffer += chr(symbol)
+        string = "".join(self.__key_buffer).upper()
+        
+        if not string in "XADREZ": self.__key_buffer = []
+        if string == "XADREZ": self.get_application().add_achievement("Homem de bom gosto.", "Descobriu a EASTER EGG no menu do jogo!")
                 
         return True
 
