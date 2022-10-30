@@ -452,6 +452,12 @@ class BoardScreen(Screen):
             # Conquista de usuário.
             if moving_by_keyboard:
                 self.get_application().add_achievement("Jogador raíz é outro nível!", "Realizou um movimento com qualquer peça utilizando o teclado.")
+
+            if self.__first_movement and selected_piece.name == "knight":
+                if not self.__mode == self.ONLINE_MODE or not received:
+                    self.get_application().add_achievement("Na linha de Frente.", "Utilizou o cavalo como primeiro movimento do jogo.")
+
+            self.__first_movement = False
             
             # Se o modo for online, envia a jogada para o outro jogador.
             if self.__mode == self.ONLINE_MODE and not received:
@@ -635,10 +641,12 @@ class BoardScreen(Screen):
         self.__movement_receiver = receiver_func
         self.__player = int(not is_first_player) # WHITE = 0; BLACK = 1
 
-        self.__killstreak = 0
-
         self.__delete_destroyed_pieces()
         self.__update_piece_sprites()
+
+        # Atributos de conquistas.
+        self.__killstreak = 0
+        self.__first_movement = True
 
         # Conquista de usuário.
         if self.__mode == self.LOCAL_MODE:
