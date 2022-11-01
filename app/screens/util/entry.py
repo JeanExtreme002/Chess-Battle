@@ -25,27 +25,22 @@ class Entry(Widget):
         Cria todas as imagens e objetos gráficos
         necessários para desenhar o widget.
         """
-        self.__background_batch = self.screen.create_batch()
-        self.__text_batch = self.screen.create_batch()
-        
+
         self.__border = self.screen.create_rectangle(
             self.x - self.__border_size, self.y - self.__border_size,
             self.width + self.__border_size * 2,
             self.height + self.__border_size * 2,
-            batch = self.__background_batch,
             color = (0, 0, 0)
         )
 
         self.__background = self.screen.create_rectangle(
             self.x, self.y, self.width, self.height,
-            batch = self.__background_batch,
             color = (255, 255, 255)
         )
 
         self.__text = self.screen.create_text(
             self.__input_string, self.x + 5, self.y + self.height // 2,
             anchor_x = "left", anchor_y = "center",
-            batch = self.__text_batch,
             font_size = self.height * 0.4,
             color = (0, 0, 0, 255)
         )
@@ -92,8 +87,9 @@ class Entry(Widget):
         """
         Desenha o widget na tela.
         """
-        self.__background_batch.draw()
-        self.__text_batch.draw()
+        self.__border.draw()
+        self.__background.draw()
+        self.__text.draw()
 
     def get_text(self):
         """

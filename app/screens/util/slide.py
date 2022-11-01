@@ -26,7 +26,6 @@ class Slide(Widget):
         Cria todas as imagens e objetos gráficos
         necessários para desenhar o widget.
         """
-        self.__batch = self.screen.create_batch()
         self.__create_sprite()
 
     def __create_sprite(self):
@@ -35,7 +34,7 @@ class Slide(Widget):
         """
         self.__sprite = self.screen.create_sprite(
             self.__loaded_images[self.__index],
-            batch = self.__batch, x = self.x, y = self.y
+            x = self.x, y = self.y
         )
 
     def __delete_sprite(self):
@@ -58,7 +57,7 @@ class Slide(Widget):
         """
         Desenha o widget na tela.
         """
-        self.__batch.draw()
+        self.__sprite.draw()
 
     def set_velocity(self, velocity):
         """

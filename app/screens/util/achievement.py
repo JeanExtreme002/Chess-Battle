@@ -29,16 +29,12 @@ class Achievement(HighlightedWidget):
         Cria todas as imagens e objetos gráficos
         necessários para desenhar o widget.
         """
-        self.__batch = self.screen.create_batch()
-        
-
         image_size = self.height * 0.9
         
         image = self.screen.load_image(self.__image, (image_size, image_size))
         
         self.__image = self.screen.create_sprite(
-            image, batch = self.__batch,
-            x = self.x + (self.height - image_size) * 0.5,
+            image, x = self.x + (self.height - image_size) * 0.5,
             y = self.y + self.height * 0.5 - image_size * 0.5
         )
 
@@ -46,7 +42,6 @@ class Achievement(HighlightedWidget):
             str(), self.x + self.height,
             self.y + self.height * 0.5,
             anchor_x = "left", anchor_y = "center",
-            batch = self.__batch,
             font_name = "Comic Sans MS",
             font_size = self.__font_size,
             color = (255, 255, 255, 255)
@@ -100,7 +95,8 @@ class Achievement(HighlightedWidget):
         if self.__status == 0: return
         
         super().draw()
-        self.__batch.draw()
+        self.__image.draw()
+        self.__title.draw()
 
     def next(self):
         """

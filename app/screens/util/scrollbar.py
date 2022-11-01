@@ -19,18 +19,14 @@ class Scrollbar(Widget):
         Cria todas as imagens e objetos gráficos
         necessários para desenhar o widget.
         """
-        self.__batch = self.screen.create_batch()
-
         # Cria o background do scrollbar.
         self.__scrollbar_background = self.screen.create_rectangle(
-            self.x, self.y, self.width, self.height, color = (210, 210, 210),
-            batch = self.__batch
+            self.x, self.y, self.width, self.height, color = (210, 210, 210)
         )
 
         # Cria o scrollbar.
         self.__scrollbar = self.screen.create_rectangle(
-            self.x, self.y, self.width, self.__bar_height, color = (250, 250, 250),
-            batch = self.__batch
+            self.x, self.y, self.width, self.__bar_height, color = (250, 250, 250)
         )
 
     def __move(self, proportion):
@@ -61,7 +57,8 @@ class Scrollbar(Widget):
         """
         Desenha o widget na tela.
         """
-        self.__batch.draw()
+        self.__scrollbar_background.draw()
+        self.__scrollbar.draw()
 
     def get_max_value(self):
         """

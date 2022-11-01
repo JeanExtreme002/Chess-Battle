@@ -18,9 +18,7 @@ class Button(Widget):
         Cria todas as imagens e objetos gráficos
         necessários para desenhar o widget.
         """
-        self.__batch = self.screen.create_batch()
         self.__sprite = None
-        
         self.change_image(self.__images)
         
     def __load_images(self):
@@ -38,7 +36,7 @@ class Button(Widget):
         """
         self.__sprite = self.screen.create_sprite(
             self.__loaded_images[int(self.__activated)],
-            batch = self.__batch, x = self.x, y = self.y
+            x = self.x, y = self.y
         )
 
     def __delete_sprite(self):
@@ -77,4 +75,4 @@ class Button(Widget):
         """
         Desenha o widget na tela.
         """
-        self.__batch.draw()
+        self.__sprite.draw()

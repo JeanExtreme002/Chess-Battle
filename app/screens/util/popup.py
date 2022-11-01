@@ -20,22 +20,14 @@ class Popup(HighlightedWidget):
         # Cria a imagem de background da caixa de texto.
         self.__loaded_image = self.screen.load_image(self.__image, (self.width, self.height))
         
-        self.__background_batch = self.screen.create_batch()
-        
         self.__background = self.screen.create_sprite(
-            self.__loaded_image, batch = self.__background_batch,
-            x = self.x, y = self.y
+            self.__loaded_image, x = self.x, y = self.y
         )
-
-        # Cria um grupo para os textos.
-        self.__text_batch = self.screen.create_batch()
 
     def delete_message(self):
         """
         Apaga a mensagem.
         """
-        for text in self.__texts:
-            text.delete()
         self.__texts = []
 
     def draw(self, with_message_only = True):
@@ -46,9 +38,11 @@ class Popup(HighlightedWidget):
 
         super().draw()
         
-        self.__background_batch.draw()
-        self.__text_batch.draw()
+        self.__background.draw()
 
+        for text in self.__texts:
+            text.draw()
+            
         return True
 
     def has_message(self):
@@ -67,7 +61,7 @@ class Popup(HighlightedWidget):
         for line in lines:
             text = self.screen.create_text(
                 line, x = int(x), y = int(y + line_spacing * line_index),
-                batch = self.__text_batch, color = color, font_size = int(font_size),
+                color = color, font_size = int(font_size),
                 anchor_x = anchor[0], anchor_y = anchor[1]
             )
             self.__texts.append(text)

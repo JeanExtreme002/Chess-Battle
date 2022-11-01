@@ -16,8 +16,6 @@ class HighlightedWidget(Widget):
         Cria todas as imagens e objetos gráficos
         necessários para desenhar o widget.
         """
-        self.__background_batch = self.screen.create_batch()
-
         x = 0 if self.__fill == "expand" else self.x - self.__fill
         y = 0 if self.__fill == "expand" else self.y - self.__fill
         
@@ -25,8 +23,7 @@ class HighlightedWidget(Widget):
         height = self.screen.height if self.__fill == "expand" else self.height + self.__fill * 2
 
         self._highlight = self.screen.create_rectangle(
-            x, y, width, height, batch = self.__background_batch,
-            color = self.__color
+            x, y, width, height, color = self.__color
         )
         self._highlight.opacity = self.__opacity
 
@@ -34,4 +31,4 @@ class HighlightedWidget(Widget):
         """
         Desenha o widget na tela.
         """
-        self.__background_batch.draw()
+        self._highlight.draw()
