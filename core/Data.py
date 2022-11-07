@@ -6,6 +6,7 @@ class GameData():
     
     
     dir = r"C:\Users\victor.manoel\Downloads\POO\data"
+    game_id = len(os.listdir(dir))
     def oi(self):
         print("Hello world")
     def __init__(self):
