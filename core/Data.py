@@ -4,7 +4,10 @@ import shutil
 
 class GameData():
     
-    game_id = len(os.listdir(dir))
+    
+    dir = r"C:\Users\victor.manoel\Downloads\POO\data"
+    def oi(self):
+        print("Hello world")
     def __init__(self):
         temp = open(self.dir+"/temp.txt","w")
         temp.write("vamos")
