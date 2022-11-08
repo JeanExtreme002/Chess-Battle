@@ -167,6 +167,7 @@ class Application(window.Window):
         """
         Inicia o jogo, dada uma seleção (local ou online).
         """
+        self.__chess_game.new_game()
 
         # Inicia o jogo localmente.
         if selection == 1: return self.__start_local_game()

@@ -8,9 +8,7 @@ class ChessGame:
         self.database_path = database_path
         self.__white_player = Player(Color.White)
         self.__black_player = Player(Color.Black)
-        self.__current_player = self.__white_player
-        self.__white_player.played = True
-        self.__board = Board()
+        self.new_game()
 
     @property
     def white_player(self):
@@ -23,6 +21,11 @@ class ChessGame:
     @property
     def board(self):
         return self.__board
+
+    def new_game(self):
+        self.__current_player = self.__white_player
+        self.__white_player.played = True
+        self.__board = Board()
 
     def load_game(self, match:int, round:int): #Esperando database ficar pronto (ou quase isso)...
         return NotImplemented
