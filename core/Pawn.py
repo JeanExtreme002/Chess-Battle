@@ -39,7 +39,7 @@ class Pawn(Piece):
             return self._captures.copy()
         if self.color == Color.White:
             for square in range(self.x - 1, self.x + 2, 2):
-                if 0 <= square < 7:
+                if 0 <= square <= 7:
                     self._captures.append([self.y + 1, square])
         else:
             for square in range(self.x - 1, self.x + 2, 2):
