@@ -36,7 +36,8 @@ class SoundPlayer():
         sounds = []
 
         for filename in paths.get_sound_list(*path):
-            sounds.append(media.load(filename))
+            try: sounds.append(media.load(filename))
+            except: print("Failed loading", filename)
         return sounds
 
     def __play_sound(self, sound):
@@ -92,55 +93,78 @@ class SoundPlayer():
         """
         Reproduz som de ataque.
         """
-        sound = random.choice(self.__loaded_sounds["effects"]["attacking"])
+        sounds = self.__loaded_sounds["effects"]["attacking"]
+        if not sounds: return
+        
+        sound = random.choice(sounds)
         self.__play_sound(sound)
 
     def play_dropping_sound(self):
         """
         Reproduz som de largar a peça selecionada.
         """
-        sound = random.choice(self.__loaded_sounds["effects"]["dropping"])
+        sounds = self.__loaded_sounds["effects"]["dropping"]
+        if not sounds: return
+        
+        sound = random.choice(sounds)
         self.__play_sound(sound)
 
     def play_dropping_knight_sound(self):
         """
         Reproduz som de largar a peça selecionada.
         """
-        sound = random.choice(self.__loaded_sounds["effects"]["dropping_knight"])
+        sounds = self.__loaded_sounds["effects"]["dropping_knight"]
+        if not sounds: return
+        
+        sound = random.choice(sounds)
         self.__play_sound(sound)
 
     def play_getting_sound(self):
         """
         Reproduz som de selecionar peça.
         """
-        sound = random.choice(self.__loaded_sounds["effects"]["getting"])
+        sounds = self.__loaded_sounds["effects"]["getting"]
+        if not sounds: return
+        
+        sound = random.choice(sounds)
         self.__play_sound(sound)
 
     def play_getting_knight_sound(self):
         """
         Reproduz som de selecionar peça.
         """
-        sound = random.choice(self.__loaded_sounds["effects"]["getting_knight"])
+        sounds = self.__loaded_sounds["effects"]["getting_knight"]
+        if not sounds: return
+        
+        sound = random.choice(sounds)
         self.__play_sound(sound)
 
     def play_invalid_movement_sound(self):
         """
         Reproduz som de movimento inválido.
         """
-        sound = random.choice(self.__loaded_sounds["effects"]["invalid_movement"])
+        sounds = self.__loaded_sounds["effects"]["invalid_movement"]
+        if not sounds: return
+        
+        sound = random.choice(sounds)
         self.__play_sound(sound)
         
     def play_movement_sound(self):
         """
         Reproduz som de movimento.
         """
-        sound = random.choice(self.__loaded_sounds["effects"]["movement"])
+        sounds = self.__loaded_sounds["effects"]["movement"]
+        if not sounds: return
+        
+        sound = random.choice(sounds)
         self.__play_sound(sound)
 
     def play_music(self):
         """
         Reproduz uma música.
         """
+        if not self.__loaded_sounds["music"] and not self.__played_musics: return
+        
         # Verifica se todas as músicas já foram reproduzidas. Se sim,
         # todas as músicas ficarão disponíveis novamente.
         if len(self.__loaded_sounds["music"]) == 0:
@@ -160,13 +184,19 @@ class SoundPlayer():
         """
         Reproduz som de início de jogo.
         """
-        sound = random.choice(self.__loaded_sounds["effects"]["starting"])
+        sounds = self.__loaded_sounds["effects"]["starting"]
+        if not sounds: return
+        
+        sound = random.choice(sounds)
         self.__play_sound(sound)
     
     def play_victory_sound(self):
         """
         Reproduz som de vitória.
         """
-        sound = random.choice(self.__loaded_sounds["effects"]["victory"])
+        sounds = self.__loaded_sounds["effects"]["victory"]
+        if not sounds: return
+        
+        sound = random.choice(sounds)
         self.__play_sound(sound)
         
