@@ -18,7 +18,7 @@ class Paths(object):
     settings_filename = os.path.join(data_path, "0002.userdata")
 
     __image_extensions = (".png", ".jpg", ".jpeg")
-    __sound_extensions = (".mp3",)
+    __sound_extensions = (".mp3", ".wav")
 
     def __init__(self):
         for key, value in self.__class__.__dict__.items():
