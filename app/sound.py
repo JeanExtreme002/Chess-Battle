@@ -16,6 +16,7 @@ class SoundPlayer():
             "effects": {
                 "starting": self.__load_sounds("effects", "starting"),
                 "attacking": self.__load_sounds("effects", "attacking"),
+                "defeat": self.__load_sounds("effects", "defeat"),
                 "dropping": self.__load_sounds("effects", "dropping"),
                 "dropping_knight": self.__load_sounds("effects", "dropping_knight"),
                 "getting": self.__load_sounds("effects", "getting"),
@@ -40,6 +41,15 @@ class SoundPlayer():
             except: print("Failed loading", filename)
         return sounds
 
+    def __play_random_sound(self, sound_list):
+        """
+        Reproduz um som aleatório de uma lista de sons.
+        """
+        if not sound_list: return
+        
+        sound = random.choice(sound_list)
+        self.__play_sound(sound)
+        
     def __play_sound(self, sound):
         """
         Reproduz um determinado som.
@@ -94,70 +104,56 @@ class SoundPlayer():
         Reproduz som de ataque.
         """
         sounds = self.__loaded_sounds["effects"]["attacking"]
-        if not sounds: return
-        
-        sound = random.choice(sounds)
-        self.__play_sound(sound)
+        self.__play_random_sound(sounds)
+
+    def play_defeat_sound(self):
+        """
+        Reproduz som de derrota.
+        """
+        sounds = self.__loaded_sounds["effects"]["victory"]
+        self.__play_random_sound(sounds)
 
     def play_dropping_sound(self):
         """
         Reproduz som de largar a peça selecionada.
         """
         sounds = self.__loaded_sounds["effects"]["dropping"]
-        if not sounds: return
-        
-        sound = random.choice(sounds)
-        self.__play_sound(sound)
+        self.__play_random_sound(sounds)
 
     def play_dropping_knight_sound(self):
         """
         Reproduz som de largar a peça selecionada.
         """
         sounds = self.__loaded_sounds["effects"]["dropping_knight"]
-        if not sounds: return
-        
-        sound = random.choice(sounds)
-        self.__play_sound(sound)
+        self.__play_random_sound(sounds)
 
     def play_getting_sound(self):
         """
         Reproduz som de selecionar peça.
         """
         sounds = self.__loaded_sounds["effects"]["getting"]
-        if not sounds: return
-        
-        sound = random.choice(sounds)
-        self.__play_sound(sound)
+        self.__play_random_sound(sounds)
 
     def play_getting_knight_sound(self):
         """
         Reproduz som de selecionar peça.
         """
         sounds = self.__loaded_sounds["effects"]["getting_knight"]
-        if not sounds: return
-        
-        sound = random.choice(sounds)
-        self.__play_sound(sound)
+        self.__play_random_sound(sounds)
 
     def play_invalid_movement_sound(self):
         """
         Reproduz som de movimento inválido.
         """
         sounds = self.__loaded_sounds["effects"]["invalid_movement"]
-        if not sounds: return
-        
-        sound = random.choice(sounds)
-        self.__play_sound(sound)
+        self.__play_random_sound(sounds)
         
     def play_movement_sound(self):
         """
         Reproduz som de movimento.
         """
         sounds = self.__loaded_sounds["effects"]["movement"]
-        if not sounds: return
-        
-        sound = random.choice(sounds)
-        self.__play_sound(sound)
+        self.__play_random_sound(sounds)
 
     def play_music(self):
         """
@@ -185,18 +181,12 @@ class SoundPlayer():
         Reproduz som de início de jogo.
         """
         sounds = self.__loaded_sounds["effects"]["starting"]
-        if not sounds: return
-        
-        sound = random.choice(sounds)
-        self.__play_sound(sound)
+        self.__play_random_sound(sounds)
     
     def play_victory_sound(self):
         """
         Reproduz som de vitória.
         """
         sounds = self.__loaded_sounds["effects"]["victory"]
-        if not sounds: return
-        
-        sound = random.choice(sounds)
-        self.__play_sound(sound)
+        self.__play_random_sound(sounds)
         

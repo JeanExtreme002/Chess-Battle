@@ -1,6 +1,7 @@
 from .screen import Screen
-from .util import ConfirmationPopup, MediaController
+from .util import ConfirmationPopup, MediaController, Popup
 from pyglet.window import mouse, key
+import random
 
 class BoardScreen(Screen):
     """
@@ -20,16 +21,31 @@ class BoardScreen(Screen):
         (220, 220, 220, 255),
         (220, 0, 0, 255)
     ]
+
+    __DEFEAT_MESSAGES = [
+        "Infelizmente, você perdeu...",
+        "Você perdeu. Talvez na próxima...",
+        "Você foi derrotado! Mais sorte na próxima vez...",
+        "Seu adversário o derrotou!",
+        "Você perdeu... Praticando um pouco mais, você consegue!",
+        "Foi uma boa partida! Porém, você perdeu...",
+        "Você perdeu. Falta de habilidade? Pratique mais!",
+        "Seu rei foi eliminado. Você perdeu!"
+    ]
+
+    __VICTORY_MESSAGES = [
+        "Parabéns. Você venceu a partida!",
+        "Foi um ótimo jogo. Parabéns pela vitória!",
+        "Ótima jogada! Parabéns pela vitória!",
+        "Você venceu! Foi uma ótima partida!",
+        "Mais uma para o histórico. Parabéns!",
+        "Vitória sensacional. Parabéns!",
+        "Que bela jogada! Parabéns pela vitória!"
+    ]
     
     def __init__(self, application):
         super().__init__(application)
-
-        self.__mode = None
-        self.__game = None
-        self.__movement_sender = None
-        self.__movement_receiver = None
-        self.__player = False
-
+        
         self.__moving_by_mouse = False
         self.__moving_by_keyboard = False
 
@@ -143,7 +159,7 @@ class BoardScreen(Screen):
                 )
                 self.__square_shapes.append(square)
                 
-        # Cria um popup de confirmação.
+        # Cria um popup para mensagens e um popup de confirmação.
         popup_filename = application.paths.get_image("general", "popup", "popup.png")
 
         cancel_button_filename = application.paths.get_image("general", "popup", "buttons", "cancel.png")
@@ -151,6 +167,10 @@ class BoardScreen(Screen):
         
         confirm_button_filename = application.paths.get_image("general", "popup", "buttons", "confirm.png")
         activated_confirm_button_filename = application.paths.get_image("general", "popup", "buttons", "activated_confirm.png")
+
+        self.__popup = Popup(
+            self, popup_x, popup_y, (popup_width, popup_height), popup_filename
+        )
 
         self.__confirmation_popup = ConfirmationPopup(
             self, popup_x, popup_y,
@@ -340,6 +360,29 @@ class BoardScreen(Screen):
             self.__replay_speed = 0
             self.__replay_index += 1        
 
+    def __finish_game(self, color):
+        """
+        Encerra a partida, reproduzindo um som
+        e definindo uma mensagem ao jogador.
+        """
+        self.__finished = True
+        title = "JOGO ENCERRADO"
+
+        # Reproduz um som de vitória ou derrota.
+        if self.__mode == self.ONLINE_MODE and color.value != self.__player:
+            self.sound_player.play_defeat_sound()
+        else: self.sound_player.play_victory_sound()
+
+        # Define uma mensagem para ser mostrado ao jogador.
+        if self.__mode == self.ONLINE_MODE:
+            message_type = self.__VICTORY_MESSAGES if color.value == self.__player else self.__DEFEAT_MESSAGES
+            message = random.choice(message_type)
+        else:
+            message = "As peças {} ganharam o jogo!"
+            message = message.format("brancas" if color.value == 0 else "pretas")
+        
+        self.__set_dialog_box_message(self.__popup, title, message)
+            
     def __get_coord_on_board(self, x, y):
         """
         Retorna a posição da casa do tabuleiro
@@ -634,11 +677,14 @@ class BoardScreen(Screen):
         Define um novo jogo.
         """
         self.sound_player.play_start_sound()
+
+        self.__finished = False
         
         self.__game = game
         self.__mode = mode
         self.__movement_sender = sender_func
         self.__movement_receiver = receiver_func
+        
         self.__player = int(not is_first_player) # WHITE = 0; BLACK = 1
 
         self.__delete_destroyed_pieces()
@@ -659,8 +705,14 @@ class BoardScreen(Screen):
         """
         Evento para desenhar a tela.
         """
+        winner = self.__game.get_winner()
+
+        # Verifica se a partida finalizou.
+        if not self.__finished and winner:
+            self.__finish_game(winner)
+        
         # Verifica se houve alguma jogada realizada pelo outro jogador.
-        if self.__mode == self.ONLINE_MODE and self.__request_frame_counter == 0:
+        if not winner and self.__mode == self.ONLINE_MODE and self.__request_frame_counter == 0:
             movement = self.__movement_receiver()
 
             if movement:
@@ -680,11 +732,17 @@ class BoardScreen(Screen):
             self.__replay_controller.draw()
         
         self.__confirmation_popup.draw()
+        self.__popup.draw()
 
     def on_key_press(self, symbol, modifiers):
         """
         Evento de tecla pressionada.
         """
+        # Sai da tela do tabuleiro se o mesmo tiver sido finalizado.
+        if self.__finished:
+            self.__popup.delete_message()
+            return self.get_application().go_back()
+        
         piece_selected = self.__moving_by_keyboard or self.__moving_by_mouse
 
         # Caso o ESC seja apertado, significa que o usuário deseja sair
@@ -746,6 +804,11 @@ class BoardScreen(Screen):
         """
         Evento de botão do mouse pressionado e liberado.
         """
+        # Sai da tela do tabuleiro se o mesmo tiver sido finalizado.
+        if self.__finished:
+            self.__popup.delete_message()
+            return self.get_application().go_back()
+        
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
         if mouse_button != mouse.LEFT: return
 

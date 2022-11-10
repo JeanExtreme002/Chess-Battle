@@ -3,6 +3,9 @@ from .Piece import Piece
 from .Board import Board
 from .Color import Color
 
+class FinishedGameError(Exception):
+    pass
+
 class ChessGame:
     def __init__(self, database_path: str):
         self.database_path = database_path
@@ -25,6 +28,7 @@ class ChessGame:
     def new_game(self):
         self.__current_player = self.__white_player
         self.__white_player.played = True
+        self.__winner = None
         self.__board = Board()
 
     def load_game(self, match:int, round:int): #Esperando database ficar pronto (ou quase isso)...
@@ -42,9 +46,6 @@ class ChessGame:
     def get_player(self) -> Player:
         return self.__current_player
 
-    def get_time(self) -> str: #Esperando implementarem o tempo...
-        return NotImplemented
-
     def get_piece(self, x:int, y:int) -> Piece: #0 ≤ x, y ≤ 7
         try:
             piece = self.__board.pecas[x][y]
@@ -56,13 +57,19 @@ class ChessGame:
 
         return piece
 
-    def get_status(self) -> str:
-        pass
+    def get_winner(self):
+        return self.__winner
 
     def play(self, piece:Piece, to:tuple[int, int]) -> bool:
+        if self.__winner:
+            raise FinishedGameError("A partida já encerrou")
+        
         if not (list(to) in piece.legal_moves(self.__board.pecas)):
             #Se o movimento não é legal...
             return False
+
+        target_piece = self.__board.pecas[to[0]][to[1]]
+        if target_piece and target_piece.name == "king": self.__winner = piece.color
 
         self.__board.pecas = piece.move(list(to), self.__board.pecas)
         self.__change_player()
