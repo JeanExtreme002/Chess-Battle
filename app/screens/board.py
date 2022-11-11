@@ -25,11 +25,11 @@ class BoardScreen(Screen):
     __DEFEAT_MESSAGES = [
         "Infelizmente, você perdeu...",
         "Você perdeu. Talvez na próxima...",
-        "Você foi derrotado! Mais sorte na próxima vez...",
+        "Você foi derrotado! Mais sorte na próxima.",
         "Seu adversário o derrotou!",
-        "Você perdeu... Praticando um pouco mais, você consegue!",
-        "Foi uma boa partida! Porém, você perdeu...",
-        "Você perdeu. Falta de habilidade? Pratique mais!",
+        "Você perdeu... Vença-o na próxima!",
+        "Foi uma boa partida! Porém, você perdeu.",
+        "Você perdeu. Pratique mais!",
         "Seu rei foi eliminado. Você perdeu!"
     ]
 
