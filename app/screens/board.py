@@ -368,6 +368,11 @@ class BoardScreen(Screen):
         self.__finished = True
         title = "JOGO ENCERRADO"
 
+        # Conquista de usuário.
+        if self.__mode == self.ONLINE_MODE:
+            if color.value == self.__player: self.get_application().add_achievement("Vida longa ao rei!", "Ganhou uma partida no modo online.")
+            else: self.get_application().add_achievement("O inverno está chegando.", "Perdeu uma partida no modo online.")
+
         # Reproduz um som de vitória ou derrota.
         if self.__mode == self.ONLINE_MODE and color.value != self.__player:
             self.sound_player.play_defeat_sound()
