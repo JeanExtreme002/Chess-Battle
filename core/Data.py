@@ -8,6 +8,7 @@ class GameData():
     def __init__(self, directory):
         self.__directory = directory
         self.__file = None
+        self.__closed = True
 
     def __get_game_id(self):
         return len([filename for filename in os.listdir(self.__directory) if filename.endswith(".replay")])
