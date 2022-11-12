@@ -12,7 +12,7 @@ class Paths(object):
     image_path = "images"
 
     data_path = "data"
-    database_path = os.path.join(data_path, "database")
+    replay_path = os.path.join(data_path, "replay")
 
     achievements_filename = os.path.join(data_path, "0001.userdata")
     settings_filename = os.path.join(data_path, "0002.userdata")

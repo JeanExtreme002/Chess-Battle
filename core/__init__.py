@@ -2,16 +2,16 @@ from .Player import Player
 from .Piece import Piece
 from .Board import Board
 from .Color import Color
+from .Data import GameData
 
 class FinishedGameError(Exception):
     pass
 
 class ChessGame:
-    def __init__(self, database_path: str):
-        self.database_path = database_path
+    def __init__(self, replay_path: str):
+        self.__game_data = GameData(replay_path)
         self.__white_player = Player(Color.White)
         self.__black_player = Player(Color.Black)
-        self.new_game()
 
     @property
     def white_player(self):
@@ -25,17 +25,21 @@ class ChessGame:
     def board(self):
         return self.__board
 
+    def close(self):
+        self.__game_data.close()
+
+    def start_replay(self): # Falta implementar, para fazer o modo de jogo ser REPLAY, não permitindo o uso do método PLAY
+        return NotImplemented
+
     def new_game(self):
         self.__current_player = self.__white_player
         self.__white_player.played = True
         self.__winner = None
         self.__board = Board()
+        self.__game_data.open()
 
-    def load_game(self, match:int, round:int): #Esperando database ficar pronto (ou quase isso)...
-        return NotImplemented
-
-    def get_history(self) -> list: #Mesma coisa do de cima...
-        return NotImplemented
+    def get_history(self) -> list:
+        return self.__game_data.get_game_list()
 
     def __change_player(self):
         self.__white_player.played = not self.__white_player.played
@@ -69,9 +73,15 @@ class ChessGame:
             return False
 
         target_piece = self.__board.pecas[to[0]][to[1]]
-        if target_piece and target_piece.name == "king": self.__winner = piece.color
+        
+        if target_piece and target_piece.name == "king":
+            self.__winner = piece.color
 
         self.__board.pecas = piece.move(list(to), self.__board.pecas)
         self.__change_player()
 
+        self.__game_data.save(self.__board.pecas)
+
+        if self.__winner: self.__game_data.close(self.__winner)
+        
         return True

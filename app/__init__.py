@@ -231,7 +231,8 @@ class Application(window.Window):
         if self.__connection:
             self.__connection.close()
             self.__connection = None
-   
+
+        self.__chess_game.close()
         self.__current_screen = self.__home_screen
 
     def on_draw(self, interval = None):
