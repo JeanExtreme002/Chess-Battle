@@ -14,12 +14,12 @@ class Connection(object):
         self.__address = tuple(address)
         self.__hosting = host
 
-    def __coordinates_to_string(self, origin, dest):
+    def __coordinates_to_string(self, origin, dest, promotion = 0):
         """
         Recebe duas tuplas XY, indicando origem e destino,
         e retorna uma string dessas coordenadas.
         """
-        return "{}{}{}{}".format(*origin, *dest)
+        return "{}{}{}{}{}".format(*origin, *dest, promotion)
 
     def __get_connection(self):
         """
@@ -38,13 +38,13 @@ class Connection(object):
 
     def __string_to_coordinates(self, string):
         """
-        Recebe uma string e retorna duas tuplas XY,
-        indicando origem e destino.
+        Recebe uma string e retorna duas tuplas XY, indicando
+        origem e destino, e uma peça de promoção, caso haja.
         """
-        if len(string) == 4:
+        if len(string) == 5:
             origin = (int(string[0]), int(string[1]))
             dest = (int(string[2]), int(string[3]))
-            return origin, dest
+            return origin, dest, int(string[4])
 
     def close(self):
         """
@@ -134,12 +134,12 @@ class Connection(object):
             
         except timeout: pass
 
-    def send(self, origin, dest):
+    def send(self, origin, dest, promotion = 0):
         """
         Envia as coordenadas de origem e destino.
         """
         try:
-            string = self.__coordinates_to_string(origin, dest)
+            string = self.__coordinates_to_string(origin, dest, promotion)
             return self.__send_data(string)
 
         except ConnectionResetError:
