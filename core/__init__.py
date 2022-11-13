@@ -70,6 +70,7 @@ class ChessGame:
 
     def set_promotion(self, piece_name):
         self.__board.set_promotion(piece_name)
+        self.__change_player()
 
     def get_player(self) -> Player:
         return self.__current_player
@@ -105,12 +106,10 @@ class ChessGame:
             self.__winner = piece.color
 
         self.__board.pecas = piece.move(list(to), self.__board.pecas)
-        #self.__change_player()
         self.__defense_update()
 
-        self.__game_data.save(self.__board.pecas)
-
         if not self.has_promotion():
+            self.__game_data.save(self.__board.pecas)
             self.__change_player()
 
         if self.__winner:
