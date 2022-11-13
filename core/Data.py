@@ -60,7 +60,7 @@ class GameData():
                 if filename.endswith(".replay") and "_{}".format(game_id) in filename:
                     filename = os.path.join(self.__directory, filename)
                     break
-        else: filename = os.path.join(self.__directory, "temp.replay".format(game_id))
+        else: filename = os.path.join(self.__directory, str(os.getpid()) + "_temp.replay".format(game_id))
                     
         self.__read_mode = bool(not game_id is None)
         self.__filename = filename
