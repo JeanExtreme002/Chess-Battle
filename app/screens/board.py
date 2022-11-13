@@ -537,7 +537,10 @@ class BoardScreen(Screen):
             # destruída. Caso contrário, será de movimento.
             if sent and dest_piece:
                 self.__add_destroyed_piece(dest_piece)
-                self.sound_player.play_attacking_sound()
+
+                # Se a peça atacada for o rei, outro som, de vitória ou derrota, será reproduzido.
+                if dest_piece.name != "king":
+                    self.sound_player.play_attacking_sound()
 
                 # Conquista de usuário.
                 if self.__mode == self.ONLINE_MODE and not received:

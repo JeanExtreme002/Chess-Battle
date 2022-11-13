@@ -110,7 +110,7 @@ class SoundPlayer():
         """
         Reproduz som de derrota.
         """
-        sounds = self.__loaded_sounds["effects"]["victory"]
+        sounds = self.__loaded_sounds["effects"]["defeat"]
         self.__play_random_sound(sounds)
 
     def play_dropping_sound(self):
