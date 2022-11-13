@@ -31,7 +31,7 @@ class GameData():
 
         # Renomeia o arquivo temporário.
         if not self.__read_mode and not winner is None:
-            new_filename = "{}_{}_{}x{}_{}.replay".format( # WINNER_NxM_GAMEID.replay
+            new_filename = "{}_{}_{}x{}_{}.replay".format( # NAME_WINNER_NxM_GAMEID.replay
                 self.__game_name, winner.value,
                 *self.__score, self.__get_game_id()
             ) 
