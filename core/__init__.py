@@ -113,9 +113,4 @@ class ChessGame:
         if self.__winner:
             self.__game_data.close(self.__winner)
 
-        self.__game_data.save(self.__board.pecas)
-
-        if self.__winner:
-            self.__game_data.close(self.__winner)
-        
         return True
