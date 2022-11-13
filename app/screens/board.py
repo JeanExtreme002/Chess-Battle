@@ -740,6 +740,12 @@ class BoardScreen(Screen):
         if self.__mode == self.ONLINE_MODE:
             self.get_application().add_achievement("Quebrando barreiras.", "Iniciou uma partida online (como host ou client).")
 
+    def on_close(self):
+        """
+        Evento para fechar a tela.
+        """
+        self.on_key_press(key.ESCAPE, None)
+
     def on_draw_screen(self, by_scheduler = False):
         """
         Evento para desenhar a tela.

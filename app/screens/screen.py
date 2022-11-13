@@ -153,6 +153,12 @@ class Screen(ABC):
         # Retorna a imagem com a resolução deseja.
         return Screen._images[filename][size]["image"]
 
+    def on_close(self):
+        """
+        Evento para fechar a janela.
+        """
+        self.__application.close()
+        
     def on_draw(self, by_scheduler = False):
         """
         Evento para desenhar a tela.

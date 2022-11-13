@@ -234,6 +234,12 @@ class Application(window.Window):
 
         self.__chess_game.close()
         self.__current_screen = self.__home_screen
+    
+    def on_close(self):
+        """
+        Evento para fechar a janela.
+        """
+        self.__current_screen.on_close()
 
     def on_draw(self, interval = None):
         """
