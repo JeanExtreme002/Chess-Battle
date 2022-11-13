@@ -867,7 +867,13 @@ class BoardScreen(Screen):
             if any(results):
                 index = results.index(True)
                 self.__set_promotion(index)
-                self.__movement_sender((0, 0), (0, 0), index + 1)
+
+                # Envia a promoção caso o jogo seja online.
+                if self.__mode == self.ONLINE_MODE:
+                    self.__movement_sender((0, 0), (0, 0), index + 1)
+
+                # Conquista de usuário.
+                self.get_application().add_achievement("Soldado promovido.", "Realizou a promoção de um peão em qualquer modo de jogo.")
 
             # Caso necessária a promoção, não será possível efetuar outra ação.
             return
