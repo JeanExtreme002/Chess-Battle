@@ -1,5 +1,5 @@
 from .screen import Screen
-from .util import ConfirmationPopup, MediaController, Popup
+from .util import ConfirmationPopup, MediaController, Popup, PromotionSelection
 from pyglet.window import mouse, key
 import random
 
@@ -42,6 +42,8 @@ class BoardScreen(Screen):
         "Vitória sensacional. Parabéns!",
         "Que bela jogada! Parabéns pela vitória!"
     ]
+
+    __PROMOTION_PIECES = ["bishop", "knight", "queen", "rook"]
     
     def __init__(self, application):
         super().__init__(application)
@@ -110,6 +112,12 @@ class BoardScreen(Screen):
         popup_height = popup_width * 0.7
         popup_x = self.width / 2 - popup_width / 2
         popup_y = self.height / 2 - popup_height / 2
+
+        # Obtém o tamanho e a posição da seleção de promoção.
+        promotion_selection_width = self.width * 0.7
+        promotion_selection_height = promotion_selection_width * 0.4
+        promotion_selection_x = self.width / 2 - promotion_selection_width / 2
+        promotion_selection_y = self.height / 2 - promotion_selection_height / 2
 
         # Obtém o tamanho e a posição do controlador de replay.
         replay_controller_width = self.width * 0.2
@@ -180,6 +188,19 @@ class BoardScreen(Screen):
                 (confirm_button_filename, activated_confirm_button_filename)
             )
         )
+
+        # Cria widget para selecionar peças para eventuais promoções.
+        promotion_images = []
+
+        for piece_name in self.__PROMOTION_PIECES:
+            promotion_images.append(application.paths.get_image("board", "pieces", "white_{}.png".format(piece_name)))
+
+        self.__promotion_selection = PromotionSelection(
+            self, promotion_selection_x, promotion_selection_y,
+            (promotion_selection_width, promotion_selection_height),
+            images = promotion_images
+        )
+        self.__promotion_selection.set_message("Escolha uma peça para promover o peão.")
 
         # Cria um controlador para um eventual replay.
         previous_button_filename = application.paths.get_image("general", "media_controller", "buttons", "previous.png")
@@ -689,6 +710,8 @@ class BoardScreen(Screen):
         self.__mode = mode
         self.__movement_sender = sender_func
         self.__movement_receiver = receiver_func
+
+        self.__promotion_avaiable = False
         
         self.__player = int(not is_first_player) # WHITE = 0; BLACK = 1
 
@@ -727,11 +750,6 @@ class BoardScreen(Screen):
         self.__request_frame_counter += 1
         self.__request_frame_counter %= self.__request_interval
 
-        # Verifica se é necessário selecionar uma peça para promover um peão.
-        if self.__game.has_promotion():
-            if self.__mode == self.LOCAL_MODE or self.__game.get_player().color.value == self.__player:
-                print("PROMOTION", self.__request_frame_counter)
-
         # Desenha os objetos na tela.   
         self.__background_image.blit(0, 0)
         self.__batch.draw()
@@ -740,7 +758,13 @@ class BoardScreen(Screen):
 
         if self.__mode == self.REPLAY_MODE:
             self.__replay_controller.draw()
-        
+
+        # Verifica se é necessário selecionar uma peça para promover um peão.
+        if self.__game.has_promotion() and (self.__mode == self.LOCAL_MODE or self.__game.get_player().color.value == self.__player):
+            self.__promotion_selection.draw()
+            self.__promotion_avaiable = True
+        else: self.__promotion_avaiable = False
+         
         self.__confirmation_popup.draw()
         self.__popup.draw()
 
@@ -752,6 +776,9 @@ class BoardScreen(Screen):
         if self.__finished:
             self.__popup.delete_message()
             return self.get_application().go_back()
+
+        # Verifica se é necessário realizar alguma promoção antes de qualquer ação.
+        if self.__promotion_avaiable: return
         
         piece_selected = self.__moving_by_keyboard or self.__moving_by_mouse
 
@@ -821,6 +848,17 @@ class BoardScreen(Screen):
         
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
         if mouse_button != mouse.LEFT: return
+
+        # Verifica se é necessário realizar alguma promoção.
+        if self.__promotion_avaiable:
+            results = self.__promotion_selection.check(x, y)
+
+            # Verifica se o jogador selecionou uma peça para realizar a promoção.
+            if any(results):
+                index = results.index(True)
+                piece_name = self.__PROMOTION_PIECES[index]
+                self.__game.set_promotion(piece_name)
+                self.__update_piece_sprites()
 
         # Qualquer ação será realizada somente se não houver mensagens sendo mostrada na tela.
         if self.__confirmation_popup.has_message():
