@@ -649,6 +649,14 @@ class BoardScreen(Screen):
             line_spacing = int(self.width * 0.025)
         )
 
+    def __set_promotion(self, index):
+        """
+        Define uma promoção para o peão.
+        """
+        piece_name = self.__PROMOTION_PIECES[index]
+        self.__game.set_promotion(piece_name)
+        self.__update_piece_sprites()
+
     def __update_piece_sprites(self):
         """
         Atualiza o tabuleiro, criando toda as imagens das peças.
@@ -744,8 +752,10 @@ class BoardScreen(Screen):
             movement = self.__movement_receiver()
 
             if movement:
-                self.__select_piece(*movement[0], received = True)
-                self.__move_piece(*movement[1], received = True)
+                if movement[2] == 0:
+                    self.__select_piece(*movement[0], received = True)
+                    self.__move_piece(*movement[1], received = True)
+                else: self.__set_promotion(movement[2] - 1)
 
         self.__request_frame_counter += 1
         self.__request_frame_counter %= self.__request_interval
@@ -856,9 +866,11 @@ class BoardScreen(Screen):
             # Verifica se o jogador selecionou uma peça para realizar a promoção.
             if any(results):
                 index = results.index(True)
-                piece_name = self.__PROMOTION_PIECES[index]
-                self.__game.set_promotion(piece_name)
-                self.__update_piece_sprites()
+                self.__set_promotion(index)
+                self.__movement_sender((0, 0), (0, 0), index + 1)
+
+            # Caso necessária a promoção, não será possível efetuar outra ação.
+            return
 
         # Qualquer ação será realizada somente se não houver mensagens sendo mostrada na tela.
         if self.__confirmation_popup.has_message():

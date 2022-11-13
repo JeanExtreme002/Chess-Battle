@@ -123,12 +123,12 @@ class Application(window.Window):
 
         return self.__finish_online_match_by_error()
 
-    def __send_movement(self, origin, dest):
+    def __send_movement(self, origin, dest, promotion = 0):
         """
         Envia a jogada realizada para o outro jogador.
         """
         if self.__connection.is_connected():
-            self.__connection.send(origin, dest)
+            self.__connection.send(origin, dest, promotion = promotion)
             return True
 
         return self.__finish_online_match_by_error()
