@@ -46,7 +46,7 @@ class Board():
         self.pecas[piece.y][piece.x] = piece
 
     def check_promotion(self):
-        for i in range(8):
+        for i in range(0, 8, 7):
             for j in range(8):
                 piece = self.pecas[i][j]
                 if piece and piece.name == "pawn" and piece.promotion:

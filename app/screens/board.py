@@ -727,6 +727,11 @@ class BoardScreen(Screen):
         self.__request_frame_counter += 1
         self.__request_frame_counter %= self.__request_interval
 
+        # Verifica se é necessário selecionar uma peça para promover um peão.
+        if self.__game.has_promotion():
+            if self.__mode == self.LOCAL_MODE or self.__game.get_player().color.value == self.__player:
+                print("PROMOTION", self.__request_frame_counter)
+
         # Desenha os objetos na tela.   
         self.__background_image.blit(0, 0)
         self.__batch.draw()
