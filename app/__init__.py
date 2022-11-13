@@ -146,6 +146,7 @@ class Application(window.Window):
         """
         Alterna para a tela de histórico de partidas.
         """
+        self.__history_screen.set_history(self.__chess_game.get_history())
         self.__current_screen = self.__history_screen
 
     def __show_settings_screen(self):
@@ -167,7 +168,7 @@ class Application(window.Window):
         """
         Inicia o jogo, dada uma seleção (local ou online).
         """
-        self.__chess_game.new_game()
+        self.__chess_game.new_game("LOCAL" if selection == 1 else "ONLINE")
 
         # Inicia o jogo localmente.
         if selection == 1: return self.__start_local_game()

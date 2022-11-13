@@ -31,7 +31,10 @@ class GameData():
 
         # Renomeia o arquivo temporário.
         if not self.__read_mode and not winner is None:
-            new_filename = "{}_{}x{}_{}.replay".format(winner.value, *self.__score, self.__get_game_id()) # WINNER_NxM_GAMEID.replay
+            new_filename = "{}_{}_{}x{}_{}.replay".format( # WINNER_NxM_GAMEID.replay
+                self.__game_name, winner.value,
+                *self.__score, self.__get_game_id()
+            ) 
             new_filename = os.path.join(self.__directory, new_filename)
             os.rename(self.__filename, new_filename)
 
@@ -43,16 +46,17 @@ class GameData():
         games = []
 
         for filename in os.listdir(self.__directory):
-            if filename.endswith(".replay") and filename.count("_") == 2:
+            if filename.endswith(".replay") and filename.count("_") == 3:
                 data = filename.rstrip(".replay").split("_")
-                winner = "WHITE" if data[0] == "0" else "BLACK"
-                score = data[1].split("x")
-                game_id = data[2]
+                name = data[0]
+                winner = "WHITE" if data[1] == "0" else "BLACK"
+                score = data[2].split("x")
+                game_id = data[3]
                 
-                games.append([winner, score[0], score[1], game_id])
+                games.append([name, winner, score[0], score[1], game_id])
         return games
 
-    def open(self, game_id = None):
+    def open(self, game_id = None, game_name = "game"):
         if self.__file: raise io.UnsupportedOperation("file is already open")
         
         if game_id:
@@ -60,11 +64,13 @@ class GameData():
                 if filename.endswith(".replay") and "_{}".format(game_id) in filename:
                     filename = os.path.join(self.__directory, filename)
                     break
+            else: raise FileNotFoundError()
         else: filename = os.path.join(self.__directory, str(os.getpid()) + ".temp".format(game_id))
                     
         self.__read_mode = bool(not game_id is None)
         self.__filename = filename
         self.__closed = False
+        self.__game_name = game_name
 
         self.__file = open(self.__filename, "r" if self.__read_mode else "w")
     
