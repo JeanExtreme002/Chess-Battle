@@ -45,6 +45,20 @@ class Board():
     def add_piece(self, piece):
         self.pecas[piece.y][piece.x] = piece
 
+    def check_promotion(self):
+        for i in range(8):
+            for j in range(8):
+                piece = self.pecas[i][j]
+                if piece and piece.name == "pawn" and piece.promotion:
+                    return piece
+
+    def set_promotion(self, piece_name):
+        ChosenPiece = {"bishop": Bishop, "knight": Knight, "rook": Rook, "queen": Queen}.get(piece_name)
+        if not ChooenPiece: raise ValueError("peça inválida para promoção")
+
+        piece = self.check_promotion()
+        self.pecas[piece.x][piece.y] = ChosenPiece(piece.color, piece.x, piece.y)
+
     def imprimir(self):
         # for i in self.pecas:
         #     print(i.r_id)

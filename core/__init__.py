@@ -7,6 +7,9 @@ from .Data import GameData
 class FinishedGameError(Exception):
     pass
 
+class NoPromotionError(Exception):
+    pass
+
 class ChessGame:
     def __init__(self, replay_path: str):
         self.__game_data = GameData(replay_path)
@@ -47,6 +50,12 @@ class ChessGame:
 
         self.__current_player =  self.__white_player or self.__black_player
 
+    def has_promotion(self):
+        return bool(self.__board.check_promotion())
+
+    def set_promotion(self, piece_name):
+        self.__board.set_promotion(piece_name)
+
     def get_player(self) -> Player:
         return self.__current_player
 
@@ -67,6 +76,9 @@ class ChessGame:
     def play(self, piece:Piece, to:tuple[int, int]) -> bool:
         if self.__winner:
             raise FinishedGameError("A partida já encerrou")
+
+        if self.has_promotion():
+            raise NoPromotionError("Promova o peão antes de jogar")
         
         if not (list(to) in piece.legal_moves(self.__board.pecas)):
             #Se o movimento não é legal...
@@ -78,9 +90,10 @@ class ChessGame:
             self.__winner = piece.color
 
         self.__board.pecas = piece.move(list(to), self.__board.pecas)
-        self.__change_player()
-
         self.__game_data.save(self.__board.pecas)
+
+        if not self.has_promotion():
+            self.__change_player()
 
         if self.__winner: self.__game_data.close(self.__winner)
         
