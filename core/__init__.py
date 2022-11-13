@@ -66,7 +66,7 @@ class ChessGame:
                     player.set_defended_pos(*m)
 
     def has_promotion(self):
-        return bool(self.__board.check_promotion())
+        return bool(self.__board.check_promotion()) and not self.get_winner()
 
     def set_promotion(self, piece_name):
         self.__board.set_promotion(piece_name)
