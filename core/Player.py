@@ -7,6 +7,7 @@ class Player:
 
         self.color = color
         self.__played = False
+        self.__defense = [[False for _ in range(8)] for _ in range(8)]
 
     def __bool__(self):
         return self.__played
@@ -21,3 +22,14 @@ class Player:
             raise ValueError("The \"played\" attribute must be a bool.")
 
         self.__played = value
+
+    @property
+    def defense(self):
+        return self.__defense
+
+    @defense.deleter
+    def defense(self):
+        self.__defense = [[False for _ in range(8)] for _ in range(8)]
+
+    def set_defended_pos(self, x:int, y:int):
+        self.__defense[x][y] = True

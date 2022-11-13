@@ -50,6 +50,21 @@ class ChessGame:
 
         self.__current_player =  self.__white_player or self.__black_player
 
+    def __defense_update(self):
+        board = self.__board.pecas
+        for p in (self.__white_player, self.__black_player):
+            del p.defense
+
+        for x in range(8):
+            for y in range(8):
+                peca = self.get_piece(x, y)
+                if peca == None:
+                    continue
+
+                player = self.__white_player if peca.color == Color.White else self.__black_player
+                for m in peca.legal_moves(board):
+                    player.set_defended_pos(*m)
+
     def has_promotion(self):
         return bool(self.__board.check_promotion())
 
@@ -90,11 +105,12 @@ class ChessGame:
             self.__winner = piece.color
 
         self.__board.pecas = piece.move(list(to), self.__board.pecas)
+        self.__change_player()
+        self.__defense_update()
 
-        if not self.has_promotion():
-            self.__game_data.save(self.__board.pecas)
-            self.__change_player()
+        self.__game_data.save(self.__board.pecas)
 
-        if self.__winner: self.__game_data.close(self.__winner)
-        
+        if self.__winner:
+            self.__game_data.close(self.__winner)
+
         return True
