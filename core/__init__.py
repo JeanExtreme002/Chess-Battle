@@ -35,6 +35,8 @@ class ChessGame:
         return NotImplemented
 
     def new_game(self, name = "game"):
+        self.close()
+        
         self.__current_player = self.__white_player
         self.__white_player.played = True
         self.__winner = None

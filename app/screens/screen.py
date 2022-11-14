@@ -211,6 +211,17 @@ class Screen(ABC):
         """
         return x, self.get_true_y_position(y), scroll_y
 
+    def print_screen(self):
+        """
+        Tira um print da tela do jogo e salva em imagem.
+        """
+        screenshot_id = len(self.__application.paths.get_screenshot_list()) + 1
+        
+        filename = "screenshot_{}.png".format(screenshot_id)
+        filename = self.__application.paths.get_screenshot(filename)
+        
+        image.get_buffer_manager().get_color_buffer().save(filename)
+
     def set_achievement(self, title):
         """
         Mostra uma conquista obtida na tela.

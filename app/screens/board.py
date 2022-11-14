@@ -791,6 +791,8 @@ class BoardScreen(Screen):
         """
         Evento de tecla pressionada.
         """
+        if symbol == key.F12: return self.print_screen()
+        
         # Sai da tela do tabuleiro se o mesmo tiver sido finalizado.
         if self.__finished:
             self.__popup.delete_message()

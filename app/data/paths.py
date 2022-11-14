@@ -12,7 +12,9 @@ class Paths(object):
     image_path = "images"
 
     data_path = "data"
+    
     replay_path = os.path.join(data_path, "replay")
+    screenshot_path = os.path.join(data_path, "screenshot")
 
     achievements_filename = os.path.join(data_path, "0001.userdata")
     settings_filename = os.path.join(data_path, "0002.userdata")
@@ -56,7 +58,7 @@ class Paths(object):
     
     def get_image(self, *path):
         """
-        Retorna o nome do arquivo de imagem com os separadores corretos.
+        Retorna o nome do arquivo de imagem com o diretório base e os separadores corretos.
         """
         return self.__get_file(self.image_path, *path)
 
@@ -74,19 +76,41 @@ class Paths(object):
         """
         Retorna um arquivo de imagem aleatório, de um dado diretório.
         """
-        filenames = list(self.get_image_list(*folders))
+        filenames = self.get_image_list(*folders)
+        return random.choice(filenames)
+
+    def get_random_screenshot(self):
+        """
+        Retorna uma screenshot aleatória.
+        """
+        filenames = self.get_screenshot_list()
         return random.choice(filenames)
 
     def get_random_sound(self, *folders):
         """
         Retorna um arquivo de som aleatório, de um dado diretório.
         """
-        filenames = list(self.get_sound_list(*folders))
+        filenames = self.get_sound_list(*folders)
         return random.choice(filenames)
+
+    def get_screenshot(self, filename):
+        """
+        Retorna o nome do arquivo de screenshot com o diretório base e os separadores corretos.
+        """
+        return self.__get_file(self.screenshot_path, filename)
+
+    def get_screenshot_list(self, shuffle = False):
+        """
+        Retorna lista de todas as screenshots.
+        """
+        images = self.__get_file_list(self.screenshot_path, self.__image_extensions)
+            
+        if shuffle: random.shuffle(images)
+        return images
 
     def get_sound(self, *path):
         """
-        Retorna o nome do arquivo de som com os separadores corretos.
+        Retorna o nome do arquivo de som com o diretório base e os separadores corretos.
         """
         return self.__get_file(self.sound_path, *path)
 

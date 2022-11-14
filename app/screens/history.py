@@ -9,6 +9,7 @@ class HistoryScreen(Screen):
     def __init__(self, application):
         super().__init__(application)
         self.__game_list = []
+        self.__index = 0
         self.__build()
         
     def __build(self):
@@ -36,11 +37,27 @@ class HistoryScreen(Screen):
         frame_image = self.load_image(frame_filename, (frame_width, frame_height))
         self.__frame = self.create_sprite(frame_image, frame_x, frame_y, batch = self.__batch)
 
+        # Cria texto para modo de jogo.
+        self.__mode_text = self.create_text(
+            str(), x = frame_x + frame_width / 2, y = frame_y + frame_height * 0.25,
+            color = (30, 30, 30, 255), font_size = int(self.width * 0.02), font_name = "Comic Sans MS",
+            anchor_x = "center", anchor_y = "center", batch = self.__text_batch
+        )
+
+    def __change_history(self):
+        """
+        Troca o jogo em exibição.
+        """
+        game = self.__game_list[self.__index]
+        self.__mode_text.text = "JOGO " + game[0]
+
     def set_history(self, game_list):
         """
         Define os jogos disponíveis para replay.
         """
         self.__game_list = game_list
+        self.__index = 0
+        self.__change_history()
 
     def on_draw_screen(self, by_scheduler = False):
         """
@@ -54,6 +71,8 @@ class HistoryScreen(Screen):
         """
         Evento de tecla pressionada.
         """
+        if symbol == key.F12: return self.print_screen()
+        
         # Caso o ESC seja apertado, significa que o usuário deseja sair desta tela.
         if symbol == key.ESCAPE:
             self.get_application().go_back()

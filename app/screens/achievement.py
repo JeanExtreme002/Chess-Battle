@@ -142,6 +142,8 @@ class AchievementScreen(Screen):
         """
         Evento de tecla pressionada.
         """
+        if symbol == key.F12: return self.print_screen()
+        
         # Caso o ESC seja apertado, significa que o usuário deseja sair desta tela.
         if symbol == key.ESCAPE:
             self.get_application().go_back()
