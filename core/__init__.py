@@ -71,19 +71,57 @@ class ChessGame:
 
         self.__game_data.close()
 
+    def __get_difference_between_piece_lists(self, list_1, list_2):
+        list_1.sort(key = lambda piece: piece.name)
+        list_2.sort(key = lambda piece: piece.name)
+
+        for index in range(len(list_2)):
+            if list_1[index] != list_2[index]: return list_1[index]
+        return list_1[-1]
+
+    def __update_game_by_replay(self):
+        new_board = self.__game_data.read()
+        self.__board.pecas = new_board
+
+        white = []
+        black = []
+
+        new_white = []
+        new_black = []
+
+        for piece in [piece for row in self.__board.pecas for piece in row]:
+            if piece.color == Color.BLACK: black.append(piece)
+            else: white.append(piece)
+            
+        for piece in [piece for row in new_board for piece in row]:
+            if piece.color == Color.BLACK: new_black.append(piece)
+            else: new_white.append(piece)
+
+        if len(white) != len(new_white):
+            self.__attacked = True
+            piece = self.__get_difference_between_piece_lists(white, new_white)
+            self.__destroyed_pieces.append(piece)
+            
+        elif len(black) != len(new_black):
+            self.__attacked = True
+            piece = self.__get_difference_between_piece_lists(black, new_black)
+            self.__destroyed_pieces.append(piece)
+
+        else: self.__attacked = False
+        
     def back(self):
         if not self.__replaying:
             raise GameModeError("Você deve iniciar o modo replay para usar esse método")
         print("BACK")
         #self.__game_data.back()
-        #self.__board.pecas = self.__game_data.read()
+        #self.__update_game_by_replay()
 
     def next(self):
         if not self.__replaying:
             raise GameModeError("Você deve iniciar o modo replay para usar esse método")
         print("NEXT")
         #self.__game_data.next()
-        #self.__board.pecas = self.__game_data.read()
+        #self.__update_game_by_replay()
 
     def start_replay(self, game_id):
         self.close()
@@ -91,7 +129,7 @@ class ChessGame:
         self.__replaying = True
         print("REPLAY INICIADO")
         #self.__game_data.open(game_id)
-        #self.__board.pecas = self.__game_data.read()
+        #self.__update_game_by_replay()
 
     def new_game(self, name = "game"):
         self.close()
