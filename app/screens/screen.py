@@ -221,6 +221,7 @@ class Screen(ABC):
         filename = self.__application.paths.get_screenshot(filename)
         
         image.get_buffer_manager().get_color_buffer().save(filename)
+        self.get_application().add_achievement("Congelando o tempo...", "Realizou uma captura de tela.")
 
     def set_achievement(self, title):
         """
