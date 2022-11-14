@@ -50,6 +50,10 @@ class Piece(ABC):
     def has_moved(self) -> bool:
         return self._has_moved
 
+    @property
+    def coords(self) -> tuple:
+        return self.x, self.y
+
     def _update_position(self, target: list[int, int]) -> None:
         """Moves a piece to a target"""
         self.x = target[1]
