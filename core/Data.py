@@ -89,6 +89,15 @@ class GameData():
         self.__game_name = game_name
 
         self.__file = open(self.__filename, "r" if self.__read_mode else "w")
+
+    def read(self) -> list:
+        return NotImplemented
+
+    def back(self):
+        return NotImplemented
+
+    def next(self):
+        return NotImplemented
     
     def save(self, board: list):
         if self.__read_mode or self.__closed: raise io.UnsupportedOperation("not writable")
