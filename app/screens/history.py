@@ -95,8 +95,8 @@ class HistoryScreen(Screen):
         white_piece_filename = application.paths.get_image("history", "white_piece.png")
         white_piece_image = self.load_image(white_piece_filename, (piece_size, piece_size))
         
-        self.__black_piece = self.create_sprite(black_piece_image, piece_x, piece_y, batch = self.__batch)
-        self.__white_piece = self.create_sprite(white_piece_image, piece_x, piece_y - piece_size * 1.5, batch = self.__batch)
+        self.__black_piece = self.create_sprite(black_piece_image, piece_x, piece_y)
+        self.__white_piece = self.create_sprite(white_piece_image, piece_x, piece_y - piece_size * 1.5)
 
         # Cria a borda para o tabuleiro.
         self.__board_border = self.create_rectangle(
@@ -182,6 +182,9 @@ class HistoryScreen(Screen):
         self.__text_batch.draw()
         
         if self.__game:
+            self.__black_piece.draw()
+            self.__white_piece.draw()
+            
             self.__board_border.draw()
             self.__board.draw()
 
