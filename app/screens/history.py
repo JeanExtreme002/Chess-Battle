@@ -48,8 +48,13 @@ class HistoryScreen(Screen):
         """
         Troca o jogo em exibição.
         """
+        if not self.__game_list: return self.__set_empty_history_message()
+        
         game = self.__game_list[self.__index]
         self.__mode_text.text = "JOGO " + game[0]
+
+    def __set_empty_history_message(self):
+        self.__mode_text.text = "Histórico Vazio"
 
     def set_history(self, game_list):
         """
