@@ -11,6 +11,9 @@ class FinishedGameError(Exception):
 class NoPromotionError(Exception):
     pass
 
+class GameModeError(Exception):
+    pass
+
 class ChessGame:
     def __init__(self, replay_path: str):
         self.__game_data = GameData(replay_path)
@@ -18,13 +21,18 @@ class ChessGame:
         self.__black_player = Player(Color.Black)
         self.__status = "normal"
         self.__check_legal_moves = {}
+        self.__replaying = False
 
     @property
     def white_player(self):
+        if self.__replaying:
+            raise GameModeError("Você não pode usar esse atributo no modo replay")
         return self.__white_player
 
     @property
     def black_player(self):
+        if self.__replaying:
+            raise GameModeError("Você não pode usar esse atributo no modo replay")
         return self.__black_player
 
     @property
@@ -36,10 +44,29 @@ class ChessGame:
         return self.__game_data.id
 
     def close(self):
+        self.__replaying = False
         self.__game_data.close()
 
-    def start_replay(self): # Falta implementar, para fazer o modo de jogo ser REPLAY, não permitindo o uso do método PLAY
-        return NotImplemented
+    def back(self):
+        if not self.__replaying:
+            raise GameModeError("Você deve iniciar o modo replay para usar esse método")
+        
+        self.__game_data.back()
+        self.__board.pecas = self.__game_data.read()
+
+    def next(self):
+        if not self.__replaying:
+            raise GameModeError("Você deve iniciar o modo replay para usar esse método")
+        
+        self.__game_data.back()
+        self.__board.pecas = self.__game_data.read()
+
+    def start_replay(self, game_id):
+        self.close()
+        self.__replaying = True
+        
+        self.__game_data.open(game_id)
+        self.__board.pecas = self.__game_data.read()
 
     def new_game(self, name = "game"):
         self.close()
@@ -123,15 +150,24 @@ class ChessGame:
 
         return not defended[self.__current_player.king.y][self.__current_player.king.x]
 
-
     def has_promotion(self):
+        if self.__replaying:
+            raise GameModeError("Você não pode usar esse método no modo replay")
         return bool(self.__board.check_promotion()) and not self.get_winner()
 
     def set_promotion(self, piece_name):
+        if self.__replaying:
+            raise GameModeError("Você não pode usar esse método no modo replay")
+        
+        if not self.__has_promotion():
+            NoPromotionError("Não há promoções disponíveis no momento")
+            
         self.__board.set_promotion(piece_name)
         self.__change_player()
 
     def get_player(self) -> Player:
+        if self.__replaying:
+            raise GameModeError("Você não pode usar esse método no modo replay")
         return self.__current_player
 
     def get_piece(self, x:int, y:int) -> Piece: #0 ≤ x, y ≤ 7
@@ -146,9 +182,14 @@ class ChessGame:
         return piece
 
     def get_winner(self):
+        if self.__replaying:
+            raise GameModeError("Você não pode usar esse método no modo replay")
         return self.__winner
 
     def play(self, piece:Piece, to:tuple[int, int]) -> bool:
+        if self.__replaying:
+            raise GameModeError("Você não pode usar esse método no modo replay")
+        
         if self.__winner:
             raise FinishedGameError("A partida já encerrou")
 
