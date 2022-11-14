@@ -32,6 +32,8 @@ class ChessGame:
         self.__status = "normal"
         self.__check_legal_moves = {}
         self.__replaying = False
+        self.__attacked = False
+        self.__destroyed_pieces = []
 
     @property
     def white_player(self):
@@ -53,30 +55,43 @@ class ChessGame:
     def id(self):
         return self.__game_data.id
 
+    @property
+    def attacked(self):
+        return self.__attacked
+
+    @property
+    def destroyed_pieces(self):
+        return self.__destroyed_pieces
+
     def close(self):
         self.__replaying = False
+        self.__attacked = False
+
+        self.__destroyed_pieces = []
+
         self.__game_data.close()
 
     def back(self):
         if not self.__replaying:
             raise GameModeError("Você deve iniciar o modo replay para usar esse método")
-        
-        self.__game_data.back()
-        self.__board.pecas = self.__game_data.read()
+        print("BACK")
+        #self.__game_data.back()
+        #self.__board.pecas = self.__game_data.read()
 
     def next(self):
         if not self.__replaying:
             raise GameModeError("Você deve iniciar o modo replay para usar esse método")
-        
-        self.__game_data.back()
-        self.__board.pecas = self.__game_data.read()
+        print("NEXT")
+        #self.__game_data.next()
+        #self.__board.pecas = self.__game_data.read()
 
     def start_replay(self, game_id):
         self.close()
+        self.new_game() # Provisório
         self.__replaying = True
-        
-        self.__game_data.open(game_id)
-        self.__board.pecas = self.__game_data.read()
+        print("REPLAY INICIADO")
+        #self.__game_data.open(game_id)
+        #self.__board.pecas = self.__game_data.read()
 
     def new_game(self, name = "game"):
         self.close()
@@ -174,7 +189,7 @@ class ChessGame:
         if self.__replaying:
             raise GameModeError("Você não pode usar esse método no modo replay")
         
-        if not self.__has_promotion():
+        if not self.has_promotion():
             NoPromotionError("Não há promoções disponíveis no momento")
             
         self.__board.set_promotion(piece_name)
@@ -231,8 +246,14 @@ class ChessGame:
 
         target_piece = self.__board.pecas[to[0]][to[1]]
         
-        if target_piece and target_piece.name == "king":
-            self.__winner = piece.color
+        if target_piece:
+            self.__attacked = True
+            self.__destroyed_pieces.append(target_piece)
+                
+            if target_piece.name == "king":
+                self.__winner = piece.color
+                
+        else: self.__attacked = False
 
         self.__board.pecas = piece.move(list(to), self.__board.pecas)
 

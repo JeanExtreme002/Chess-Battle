@@ -232,36 +232,6 @@ class BoardScreen(Screen):
             )
         )
 
-    def __add_destroyed_piece(self, piece):
-        """
-        Registra a dada peça destruída e cria sua imagem no placar.
-        """
-        color = "white" if piece.color.value == 0 else "black"
-        image = self.__destroyed_piece_images[color][piece.name]
-
-        sprite_list = self.__destroyed_piece_sprites[color]
-        index = len(sprite_list)
-
-        spacing_x = self.__destroyed_piece_size * 1.5
-        spacing_y = self.__destroyed_piece_size * 1.1
-
-        # Calcula a posição da peça destruída.
-        if color == "black":
-            x = self.__score_board_x + self.__score_board_width * 0.4 - self.__destroyed_piece_size
-            x -= spacing_x if index >= 8 else 0
-        else:
-            x = self.__score_board_x + self.__score_board_width * 0.6
-            x += spacing_x if index >= 8 else 0
-
-        y = self.__score_board_y + self.__score_board_height * 0.3 + spacing_y * (index % 8)
-
-        # Cria a imagem, adicionado-a à lista.
-        sprite = self.create_sprite(
-            image, batch = self.__piece_batch,
-            x = x, y = y
-        )
-        sprite_list.append(sprite)
-
     def __create_board_coordinates(self):
         """
         Cria as letras e números ao lado do tabuleiro,
@@ -291,6 +261,36 @@ class BoardScreen(Screen):
             anchor_x = "center", anchor_y = "center"
         )
         return text
+
+    def __create_destroyed_piece(self, piece):
+        """
+        Registra a dada peça destruída e cria sua imagem no placar.
+        """
+        color = "white" if piece.color.value == 0 else "black"
+        image = self.__destroyed_piece_images[color][piece.name]
+
+        sprite_list = self.__destroyed_piece_sprites[color]
+        index = len(sprite_list)
+
+        spacing_x = self.__destroyed_piece_size * 1.5
+        spacing_y = self.__destroyed_piece_size * 1.1
+
+        # Calcula a posição da peça destruída.
+        if color == "black":
+            x = self.__score_board_x + self.__score_board_width * 0.4 - self.__destroyed_piece_size
+            x -= spacing_x if index >= 8 else 0
+        else:
+            x = self.__score_board_x + self.__score_board_width * 0.6
+            x += spacing_x if index >= 8 else 0
+
+        y = self.__score_board_y + self.__score_board_height * 0.3 + spacing_y * (index % 8)
+
+        # Cria a imagem, adicionado-a à lista.
+        sprite = self.create_sprite(
+            image, batch = self.__piece_batch,
+            x = x, y = y
+        )
+        sprite_list.append(sprite)
 
     def __create_target_shadow(self, row, column):
         """
@@ -550,12 +550,10 @@ class BoardScreen(Screen):
             # Se havia peça na posição de destino, o som a ser reproduzido
             # será o de ataque, além de que a peça será registrada como
             # destruída. Caso contrário, será de movimento.
-            if sent and dest_piece:
-                self.__add_destroyed_piece(dest_piece)
-
+            if self.__game.attacked:
+                
                 # Se a peça atacada for o rei, outro som, de vitória ou derrota, será reproduzido.
-                if dest_piece.name != "king":
-                    self.sound_player.play_attacking_sound()
+                if dest_piece.name != "king": self.sound_player.play_attacking_sound()
 
                 # Conquista de usuário.
                 if self.__mode == self.ONLINE_MODE and not received:
@@ -572,6 +570,7 @@ class BoardScreen(Screen):
     
             # Atualiza o tabuleiro na tela.
             self.__update_piece_sprites()
+            self.__update_destroyed_piece_sprites()
 
         # Caso contrário, um som de movimento inválido será reproduzido.
         else: self.sound_player.play_invalid_movement_sound()
@@ -675,6 +674,15 @@ class BoardScreen(Screen):
         self.__game.set_promotion(piece_name)
         self.__update_piece_sprites()
 
+    def __update_destroyed_piece_sprites(self):
+        """
+        Atualiza o campo de peças destruídas.
+        """
+        self.__delete_destroyed_pieces()
+
+        for piece in self.__game.destroyed_pieces:
+            self.__create_destroyed_piece(piece)
+
     def __update_piece_sprites(self):
         """
         Atualiza o tabuleiro, criando toda as imagens das peças.
@@ -711,7 +719,7 @@ class BoardScreen(Screen):
         """
         if not self.__replay_controller.is_playing(): return
 
-        proportion = 1.1 - abs(self.__replay_velocity)
+        proportion = 1.5 - abs(self.__replay_velocity)
         
         if self.__replay_frame_counter >= self.get_application().get_fps() * proportion:
             if self.__replay_velocity < 0: self.__game.back()
