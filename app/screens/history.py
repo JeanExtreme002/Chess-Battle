@@ -8,6 +8,7 @@ class HistoryScreen(Screen):
     
     def __init__(self, application):
         super().__init__(application)
+        self.__game_list = []
         self.__build()
         
     def __build(self):
@@ -34,6 +35,12 @@ class HistoryScreen(Screen):
         frame_filename = application.paths.get_image("history", "frame.png")
         frame_image = self.load_image(frame_filename, (frame_width, frame_height))
         self.__frame = self.create_sprite(frame_image, frame_x, frame_y, batch = self.__batch)
+
+    def set_history(self, game_list):
+        """
+        Define os jogos disponíveis para replay.
+        """
+        self.__game_list = game_list
 
     def on_draw_screen(self, by_scheduler = False):
         """

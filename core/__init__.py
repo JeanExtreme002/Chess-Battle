@@ -37,16 +37,16 @@ class ChessGame:
     def start_replay(self): # Falta implementar, para fazer o modo de jogo ser REPLAY, não permitindo o uso do método PLAY
         return NotImplemented
 
-    def new_game(self):
+    def new_game(self, name = "game"):
         self.__current_player = self.__white_player
         self.__white_player.played = True
         self.__winner = None
         self.__board = Board()
         self.__game_data.open()
         self.__status = "normal"
-
+        self.__game_data.open(game_name = name)
         self.__white_player.king = self.__board.pecas[0][3]
-        self.__black_player.king = self.__board.pecas[7][3]
+        self.__black_player.king = self.__board.pecas[7][3]     
 
     def get_history(self) -> list:
         return self.__game_data.get_game_list()
