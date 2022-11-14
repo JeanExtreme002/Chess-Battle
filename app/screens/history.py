@@ -127,7 +127,9 @@ class HistoryScreen(Screen):
         # Define a quantidade de peças no tabuleiro.
         self.__black_piece_text.text = str(self.__game[2])
         self.__white_piece_text.text = str(self.__game[3])
-        
+
+        # Define a imagem do tabuleiro.
+        self.free_memory(save_original = False)
         self.__set_board_image()
 
     def __set_board_image(self):
@@ -206,7 +208,7 @@ class HistoryScreen(Screen):
         # Inicia o replay do jogo, utilizando o ID do mesmo.
         elif symbol in [key.ENTER, key.SPACE]:
             self.__replay_function(self.__game[4])
-     
+
         return True
 
     def on_mouse_motion(self, *args):
