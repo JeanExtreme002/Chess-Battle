@@ -5,7 +5,7 @@ from .Color import Color
 from .Data import GameData
 from copy import deepcopy
 
-#Se True, habilita o sistemade xeque
+#Se verdadeiro, habilita o sistema de xeque
 CHECK_ENGINE_ENABLED = False
 
 def check_locker(func):
