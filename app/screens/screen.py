@@ -124,7 +124,7 @@ class Screen(ABC):
         """
         return self.height - y - height
 
-    def load_image(self, filename, size = "original"):
+    def load_image(self, filename, size = "original", save = True):
         """
         Carrega uma imagem.
         """
@@ -148,10 +148,19 @@ class Screen(ABC):
             Screen._images[filename][size] = dict()
             Screen._images[filename][size]["image"] = img
 
-        Screen._images[filename]["original"]["users"].add(self)
+        # Obtém a imagem final, que será retornada pelo método.
+        final_image = Screen._images[filename][size]["image"] 
+
+        # Remove a imagem do dicionário se o usuário não deseja que a mesma seja salva.
+        if not save:
+            if len(Screen._images[filename]["original"]["users"]) == 0:
+                Screen._images.pop(filename)
+
+        # Registra a tela que está usando a imagem salva.
+        else: Screen._images[filename]["original"]["users"].add(self)
 
         # Retorna a imagem com a resolução deseja.
-        return Screen._images[filename][size]["image"]
+        return final_image
 
     def on_close(self):
         """

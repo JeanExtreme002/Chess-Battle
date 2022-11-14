@@ -129,7 +129,6 @@ class HistoryScreen(Screen):
         self.__white_piece_text.text = str(self.__game[3])
 
         # Define a imagem do tabuleiro.
-        self.free_memory(save_original = False)
         self.__set_board_image()
 
     def __set_board_image(self):
@@ -139,7 +138,7 @@ class HistoryScreen(Screen):
         game_id = self.__game[4]
         
         board_filename = self.get_application().paths.get_replay_image("{}.png".format(game_id))
-        board_image = self.load_image(board_filename, (self.__board_size, self.__board_size))
+        board_image = self.load_image(board_filename, (self.__board_size, self.__board_size), save = False)
 
         if not self.__board: self.__board = self.create_sprite(board_image, self.__board_x, self.__board_y)
         else: self.__board.image = board_image
