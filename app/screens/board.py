@@ -68,9 +68,8 @@ class BoardScreen(Screen):
         self.__request_interval = application.get_fps() * 0.2
         self.__request_frame_counter = 0
 
-        self.__replay_speed = 0.1
+        self.__replay_velocity = 0.1
         self.__replay_frame_counter = 0
-        self.__replay_index = 0
 
         self.__build()
         
@@ -364,22 +363,32 @@ class BoardScreen(Screen):
         Executa uma funcionalidade do modo replay.
         """
 
-        if actions[0] and self.__replay_index > 0:
-            self.__replay_speed = 0
-            self.__replay_index -= 1
+        if actions[0]:
+            self.__replay_velocity = 0
+            
+            if self.__replay_controller.is_playing():
+                self.__replay_controller.switch_play_button()
+            
+            self.__game.back()
+            self.__update_piece_sprites()
 
-        elif actions[1] and self.__replay_speed > -1:
-            self.__replay_speed -= 0.1
+        elif actions[1] and self.__replay_velocity > -1:
+            self.__replay_velocity -= 0.1
     
         elif actions[2]:
             self.__replay_controller.switch_play_button()
 
-        elif actions[3] and self.__replay_speed < 1:
-            self.__replay_speed += 0.1
+        elif actions[3] and self.__replay_velocity < 1:
+            self.__replay_velocity += 0.1
 
         elif actions[4]:
-            self.__replay_speed = 0
-            self.__replay_index += 1        
+            self.__replay_velocity = 0
+            
+            if self.__replay_controller.is_playing():
+                self.__replay_controller.switch_play_button()
+            
+            self.__game.next()
+            self.__update_piece_sprites()
 
     def __finish_game(self, color):
         """
@@ -695,6 +704,23 @@ class BoardScreen(Screen):
                     x = x, y = y
                 )
                 self.__piece_sprites[row][column] = sprite
+
+    def __update_board_by_replay_animation(self):
+        """
+        Atualiza o tabuleiro no modo replay.
+        """
+        if not self.__replay_controller.is_playing(): return
+
+        proportion = 1.1 - abs(self.__replay_velocity)
+        
+        if self.__replay_frame_counter >= self.get_application().get_fps() * proportion:
+            if self.__replay_velocity < 0: self.__game.back()
+            else: self.__game.next()
+
+            self.__update_piece_sprites()
+            self.__replay_frame_counter = 0
+
+        else: self.__replay_frame_counter += 1
         
     @property
     def LOCAL_MODE(self):
@@ -728,7 +754,7 @@ class BoardScreen(Screen):
         self.__movement_sender = sender_func
         self.__movement_receiver = receiver_func
 
-        self.__promotion_avaiable = False
+        self.__promotion_available = False
         
         self.__player = int(not is_first_player) # WHITE = 0; BLACK = 1
 
@@ -759,7 +785,7 @@ class BoardScreen(Screen):
         """
         Evento para desenhar a tela.
         """
-        winner = self.__game.get_winner()
+        winner = self.__game.get_winner() if self.__mode != self.REPLAY_MODE else None
         
         # Verifica se houve alguma jogada realizada pelo outro jogador.
         if not winner and self.__mode == self.ONLINE_MODE and self.__request_frame_counter == 0:
@@ -774,6 +800,10 @@ class BoardScreen(Screen):
         self.__request_frame_counter += 1
         self.__request_frame_counter %= self.__request_interval
 
+        # Atualiza o tabuleiro se estiver em modo replay.
+        if self.__mode == self.REPLAY_MODE:
+            self.__update_board_by_replay_animation()
+
         # Desenha os objetos na tela.   
         self.__background_image.blit(0, 0)
         self.__batch.draw()
@@ -784,10 +814,13 @@ class BoardScreen(Screen):
             self.__replay_controller.draw()
 
         # Verifica se é necessário selecionar uma peça para promover um peão.
-        if self.__game.has_promotion() and (self.__mode == self.LOCAL_MODE or self.__game.get_player().color.value == self.__player):
-            self.__promotion_selection.draw()
-            self.__promotion_avaiable = True
-        else: self.__promotion_avaiable = False
+        if self.__mode != self.REPLAY_MODE:
+            player_turn = self.__mode == self.LOCAL_MODE or self.__game.get_player().color.value == self.__player
+        
+            if self.__game.has_promotion() and player_turn:
+                self.__promotion_selection.draw()
+                self.__promotion_available = True
+            else: self.__promotion_available = False
 
         # Verifica se a partida finalizou.
         if not self.__finished and winner:
@@ -808,7 +841,7 @@ class BoardScreen(Screen):
             return self.get_application().go_back()
 
         # Verifica se é necessário realizar alguma promoção antes de qualquer ação.
-        if self.__promotion_avaiable: return
+        if self.__promotion_available: return
         
         piece_selected = self.__moving_by_keyboard or self.__moving_by_mouse
 
@@ -880,7 +913,7 @@ class BoardScreen(Screen):
         if mouse_button != mouse.LEFT: return
 
         # Verifica se é necessário realizar alguma promoção.
-        if self.__promotion_avaiable:
+        if self.__promotion_available:
             results = self.__promotion_selection.check(x, y)
 
             # Verifica se o jogador selecionou uma peça para realizar a promoção.

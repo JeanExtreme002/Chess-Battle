@@ -206,8 +206,7 @@ class Application(window.Window):
         """
         Inicia o jogo no modo replay.
         """
-        print("INICIANDO O REPLAY DO JOGO", game_id)
-        self.__chess_game.new_game()
+        self.__chess_game.start_replay(game_id)
         self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.REPLAY_MODE)
         self.__current_screen = self.__board_screen
 
