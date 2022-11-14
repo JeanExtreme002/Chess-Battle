@@ -3,6 +3,7 @@ from .Piece import Piece
 from .Board import Board
 from .Color import Color
 from .Data import GameData
+from copy import deepcopy
 
 class FinishedGameError(Exception):
     pass
@@ -15,6 +16,8 @@ class ChessGame:
         self.__game_data = GameData(replay_path)
         self.__white_player = Player(Color.White)
         self.__black_player = Player(Color.Black)
+        self.__status = "normal"
+        self.__check_legal_moves = {}
 
     @property
     def white_player(self):
@@ -40,6 +43,10 @@ class ChessGame:
         self.__winner = None
         self.__board = Board()
         self.__game_data.open()
+        self.__status = "normal"
+
+        self.__white_player.king = self.__board.pecas[0][3]
+        self.__black_player.king = self.__board.pecas[7][3]
 
     def get_history(self) -> list:
         return self.__game_data.get_game_list()
@@ -50,20 +57,67 @@ class ChessGame:
 
         self.__current_player =  self.__white_player or self.__black_player
 
-    def __defense_update(self):
-        board = self.__board.pecas
-        for p in (self.__white_player, self.__black_player):
-            del p.defense
+    def __gen_defense_table(self, player, board=None) -> list[[]]:
+        if board is None:
+            board = self.__board.pecas
+
+        new_defense_table = [[False for _ in range(8)] for _ in range(8)]
 
         for x in range(8):
             for y in range(8):
                 peca = self.get_piece(x, y)
-                if peca == None:
+                if peca == None or peca.color != player.color:
                     continue
 
-                player = self.__white_player if peca.color == Color.White else self.__black_player
                 for m in peca.legal_moves(board):
-                    player.set_defended_pos(*m)
+                    new_defense_table[m[0]][m[1]] = True
+
+        return new_defense_table
+
+    def __defense_update(self):
+        for p in (self.__white_player, self.__black_player):
+            p.defense = self.__gen_defense_table(p)
+
+    def __check_legal_moves_update(self):
+        play_color = self.__current_player.color
+        pkpx, pkpy = self.__current_player.king.x, self.__current_player.king.y
+        new_clm = {}
+
+        for x in range(8):
+            for y in range(8):
+                peca = self.get_piece(x, y)
+                if peca == None or peca.color != play_color:
+                    continue
+
+                for mov in peca.legal_moves(self.__board.pecas):
+                    if self.__simule_check_out(peca.coords, mov):
+                        new_clm[peca.coords] = new_clm.get(peca.coords, []) + [mov]
+
+        self.__check_legal_moves = new_clm
+
+    def __check_verify(self):
+        adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
+        king_pos = self.__current_player.king.x, self.__current_player.king.y
+        if adv_player.defense[king_pos[1]][king_pos[0]]:
+            self.__status = "xeque"
+        else:
+            self.__status = "normal"
+
+    def __simule_check_out(self, from_, to) -> bool:
+        adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
+
+        xi, yi = from_
+        xf, yf = to
+        board = deepcopy(self.__board.pecas)
+        piece = board[yi][xi]
+        board[yf][xf] = piece
+        piece.x = xf
+        piece.y = yf
+        board[yi][xi] = None
+        defended = self.__gen_defense_table(adv_player, board)
+
+        return not defended[self.__current_player.king.y][self.__current_player.king.x]
+
 
     def has_promotion(self):
         return bool(self.__board.check_promotion()) and not self.get_winner()
@@ -100,13 +154,26 @@ class ChessGame:
             #Se o movimento não é legal...
             return False
 
+        if self.__status == "xeque":
+            self.__check_legal_moves_update()
+            try:
+                mov = self.__check_legal_moves[piece.coords]
+                if not (to in mov):
+                    raise KeyError
+
+                self.__status = "normal"
+
+            except KeyError:
+                cor_msg = 'branco' if self.__current_player.color == Color.White else "preto"
+                print(f"Tire o rei {cor_msg} do xeque!")
+                return False
+
         target_piece = self.__board.pecas[to[0]][to[1]]
         
         if target_piece and target_piece.name == "king":
             self.__winner = piece.color
 
         self.__board.pecas = piece.move(list(to), self.__board.pecas)
-        self.__defense_update()
 
         if not self.has_promotion():
             self.__game_data.save(self.__board.pecas)
@@ -114,5 +181,8 @@ class ChessGame:
 
         if self.__winner:
             self.__game_data.close(self.__winner)
+
+        self.__defense_update()
+        self.__check_verify()
 
         return True

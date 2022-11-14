@@ -60,8 +60,6 @@ class Board():
         self.pecas[piece.y][piece.x] = ChosenPiece(piece.color, piece.x, piece.y)
 
     def imprimir(self):
-        # for i in self.pecas:
-        #     print(i.r_id)
         for i in range(8):
             for j in range(8):
                 if type(self.pecas[i][j]) == int:
