@@ -44,7 +44,6 @@ class ChessGame:
         self.__white_player.played = True
         self.__winner = None
         self.__board = Board()
-        self.__game_data.open()
         self.__status = "normal"
         self.__game_data.open(game_name = name)
         self.__white_player.king = self.__board.pecas[0][3]
