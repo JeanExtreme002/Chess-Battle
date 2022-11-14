@@ -153,32 +153,31 @@ class ChessGame:
         self.__current_player =  self.__white_player or self.__black_player
 
     @check_locker
-    def __gen_defense_table(self, player, board=None) -> list[[]]:
-        if board is None:
+    def __gen_defense_board(self, player, board=None) -> list[[]]:
+        if not board:
             board = self.__board.pecas
 
-        new_defense_table = [[False for _ in range(8)] for _ in range(8)]
+        new_defense_board = [[False for _ in range(8)] for _ in range(8)]
 
         for x in range(8):
             for y in range(8):
-                peca = self.get_piece(x, y)
+                peca = self.get_piece(x, y, board)
                 if peca == None or peca.color != player.color:
                     continue
 
                 for m in peca.legal_moves(board):
-                    new_defense_table[m[0]][m[1]] = True
+                    new_defense_board[m[0]][m[1]] = True
 
-        return new_defense_table
+        return new_defense_board
 
     @check_locker
     def __defense_update(self):
         for p in (self.__white_player, self.__black_player):
-            p.defense = self.__gen_defense_table(p)
+            p.defense = self.__gen_defense_board(p)
 
     @check_locker
     def __check_legal_moves_update(self):
         play_color = self.__current_player.color
-        pkpx, pkpy = self.__current_player.king.x, self.__current_player.king.y
         new_clm = {}
 
         for x in range(8):
@@ -187,7 +186,8 @@ class ChessGame:
                 if peca == None or peca.color != play_color:
                     continue
 
-                for mov in peca.legal_moves(self.__board.pecas):
+                lm = peca.legal_moves(self.__board.pecas)
+                for mov in lm:
                     if self.__simule_check_out(peca.coords, mov):
                         new_clm[peca.coords] = new_clm.get(peca.coords, []) + [mov]
 
@@ -208,15 +208,14 @@ class ChessGame:
 
         xi, yi = from_
         xf, yf = to
+        kx, ky = self.__current_player.king.coords
+
         board = deepcopy(self.__board.pecas)
         piece = board[yi][xi]
-        board[yf][xf] = piece
-        piece.x = xf
-        piece.y = yf
-        board[yi][xi] = None
-        defended = self.__gen_defense_table(adv_player, board)
+        piece.move(to, board)
+        defended = self.__gen_defense_board(adv_player, board)
 
-        return not defended[self.__current_player.king.y][self.__current_player.king.x]
+        return not defended[ky][kx]
 
     def has_promotion(self):
         if self.__replaying:
@@ -238,9 +237,12 @@ class ChessGame:
             raise GameModeError("Você não pode usar esse método no modo replay")
         return self.__current_player
 
-    def get_piece(self, x:int, y:int) -> Piece: #0 ≤ x, y ≤ 7
+    def get_piece(self, x:int, y:int, board:list[[]]=None) -> Piece: #0 ≤ x, y ≤ 7
+        if not board:
+            board = self.__board.pecas
+
         try:
-            piece = self.__board.pecas[x][y]
+            piece = board[x][y]
         except KeyError:
             return None
 
@@ -257,20 +259,25 @@ class ChessGame:
     def play(self, piece:Piece, to:tuple[int, int]) -> bool:
         if self.__replaying:
             raise GameModeError("Você não pode usar esse método no modo replay")
-        
+
+        if not isinstance(to, list):
+            to = list(to)
+
         if self.__winner:
             raise FinishedGameError("A partida já encerrou")
 
         if self.has_promotion():
             raise NoPromotionError("Promova o peão antes de jogar")
         
-        if not (list(to) in piece.legal_moves(self.__board.pecas)):
+        if not (to in piece.legal_moves(self.__board.pecas)):
             #Se o movimento não é legal...
             return False
 
         if self.__status == "xeque":
             self.__check_legal_moves_update()
             try:
+                print(piece.coords, to)
+                print(self.__check_legal_moves)
                 mov = self.__check_legal_moves[piece.coords]
                 if not (to in mov):
                     raise KeyError
