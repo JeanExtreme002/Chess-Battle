@@ -5,6 +5,16 @@ from .Color import Color
 from .Data import GameData
 from copy import deepcopy
 
+#Se verdadeiro, habilita o sistema de xeque
+CHECK_ENGINE_ENABLED = False
+
+def check_locker(func):
+    def wrap(*args, **kwargs):
+        if CHECK_ENGINE_ENABLED:
+            return func(*args, **kwargs)
+
+    return wrap
+
 class FinishedGameError(Exception):
     pass
 
@@ -89,6 +99,7 @@ class ChessGame:
 
         self.__current_player =  self.__white_player or self.__black_player
 
+    @check_locker
     def __gen_defense_table(self, player, board=None) -> list[[]]:
         if board is None:
             board = self.__board.pecas
@@ -106,10 +117,12 @@ class ChessGame:
 
         return new_defense_table
 
+    @check_locker
     def __defense_update(self):
         for p in (self.__white_player, self.__black_player):
             p.defense = self.__gen_defense_table(p)
 
+    @check_locker
     def __check_legal_moves_update(self):
         play_color = self.__current_player.color
         pkpx, pkpy = self.__current_player.king.x, self.__current_player.king.y
@@ -127,6 +140,7 @@ class ChessGame:
 
         self.__check_legal_moves = new_clm
 
+    @check_locker
     def __check_verify(self):
         adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
         king_pos = self.__current_player.king.x, self.__current_player.king.y
@@ -135,6 +149,7 @@ class ChessGame:
         else:
             self.__status = "normal"
 
+    @check_locker
     def __simule_check_out(self, from_, to) -> bool:
         adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
 
