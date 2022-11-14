@@ -95,7 +95,7 @@ class BoardScreen(Screen):
         self.__destroyed_piece_size = self.__square_size * 0.5
 
         # Obtém a posição do tabuleiro.
-        self.__board_y = (self.height - self.__board_size) / 2
+        self.__board_y = (self.height - self.__board_size) // 2
         self.__board_x = self.__board_y
 
         # Obtém o tamanho e a posição do placar e seus elementos.
@@ -388,6 +388,12 @@ class BoardScreen(Screen):
         """
         self.__finished = True
         title = "JOGO ENCERRADO"
+
+        # Salva uma imagem do estado final do tabuleiro.
+        self.print_screen(
+            region = (self.__board_x, self.__board_y, self.__board_size, self.__board_size),
+            filename = self.get_application().paths.get_replay_image("{}.png".format(self.__game.id))
+        )
 
         # Conquista de usuário.
         if self.__mode == self.ONLINE_MODE:
@@ -740,6 +746,9 @@ class BoardScreen(Screen):
         if self.__mode == self.ONLINE_MODE:
             self.get_application().add_achievement("Quebrando barreiras.", "Iniciou uma partida online (como host ou client).")
 
+        if self.__mode == self.REPLAY_MODE:
+            self.get_application().add_achievement("Voltando no tempo.", "Iniciou o replay de uma partida.")
+
     def on_close(self):
         """
         Evento para fechar a tela.
@@ -751,10 +760,6 @@ class BoardScreen(Screen):
         Evento para desenhar a tela.
         """
         winner = self.__game.get_winner()
-
-        # Verifica se a partida finalizou.
-        if not self.__finished and winner:
-            self.__finish_game(winner)
         
         # Verifica se houve alguma jogada realizada pelo outro jogador.
         if not winner and self.__mode == self.ONLINE_MODE and self.__request_frame_counter == 0:
@@ -783,6 +788,10 @@ class BoardScreen(Screen):
             self.__promotion_selection.draw()
             self.__promotion_avaiable = True
         else: self.__promotion_avaiable = False
+
+        # Verifica se a partida finalizou.
+        if not self.__finished and winner:
+            self.__finish_game(winner)
          
         self.__confirmation_popup.draw()
         self.__popup.draw()
@@ -866,7 +875,7 @@ class BoardScreen(Screen):
         if self.__finished:
             self.__popup.delete_message()
             return self.get_application().go_back()
-        
+
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
         if mouse_button != mouse.LEFT: return
 
@@ -900,7 +909,7 @@ class BoardScreen(Screen):
             if confirm: self.get_application().go_back()
 
         # Verifica se algum botão do controlador de replay foi pressionado.
-        if self.__game == self.REPLAY_MODE:
+        if self.__mode == self.REPLAY_MODE:
             buttons = self.__replay_controller.check(x, y)
             return self.__execute_replay_action(buttons)
 

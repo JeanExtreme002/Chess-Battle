@@ -93,9 +93,11 @@ class Application(window.Window):
         
         self.__board_screen = BoardScreen(self)
         self.__board_screen.set_board_coordinates(True)
+
+        self.__history_screen = HistoryScreen(self)
+        self.__history_screen.set_replay_function(self.__start_replay)
         
         self.__settings_screen = SettingsScreen(self)
-        self.__history_screen = HistoryScreen(self)
         self.__achievement_screen = AchievementScreen(self)
 
         if self.__initializing:
@@ -198,6 +200,15 @@ class Application(window.Window):
             self.__chess_game, self.__board_screen.ONLINE_MODE,
             self.__send_movement, self.__get_movement, selection == 2
         )
+        self.__current_screen = self.__board_screen
+
+    def __start_replay(self, game_id):
+        """
+        Inicia o jogo no modo replay.
+        """
+        print("INICIANDO O REPLAY DO JOGO", game_id)
+        self.__chess_game.new_game()
+        self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.REPLAY_MODE)
         self.__current_screen = self.__board_screen
 
     def add_achievement(self, title, description):

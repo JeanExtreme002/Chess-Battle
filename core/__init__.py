@@ -31,6 +31,10 @@ class ChessGame:
     def board(self):
         return self.__board
 
+    @property
+    def id(self):
+        return self.__game_data.id
+
     def close(self):
         self.__game_data.close()
 

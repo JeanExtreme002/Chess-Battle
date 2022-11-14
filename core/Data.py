@@ -1,5 +1,6 @@
 import io
 import os
+import time
 
 class GameData():
     
@@ -9,9 +10,14 @@ class GameData():
         self.__directory = directory
         self.__file = None
         self.__closed = True
+        self.__game_id = None
+
+    @property
+    def id(self):
+        return self.__game_id
 
     def __get_game_id(self):
-        return len([filename for filename in os.listdir(self.__directory) if filename.endswith(".replay")])
+        return str(os.getpid()) + "i" + str(len([filename for filename in os.listdir(self.__directory) if filename.endswith(".replay")]))
 
     def __get_piece_id(self, piece):
         if not piece: return "00"
@@ -33,7 +39,7 @@ class GameData():
         if not self.__read_mode and not winner is None:
             new_filename = "{}_{}_{}x{}_{}.replay".format( # NAME_WINNER_NxM_GAMEID.replay
                 self.__game_name, winner.value,
-                *self.__score, self.__get_game_id()
+                *self.__score, self.__game_id
             ) 
             new_filename = os.path.join(self.__directory, new_filename)
             os.rename(self.__filename, new_filename)
@@ -53,11 +59,18 @@ class GameData():
                 score = data[2].split("x")
                 game_id = data[3]
                 
-                games.append([name, winner, score[0], score[1], game_id])
+                date = os.path.getctime(os.path.join(self.__directory, filename))
+                date = time.strftime("%d/%m/%y às %H:%M", time.localtime(date))
+                
+                games.append([name, winner, score[0], score[1], game_id, date])
         return games
 
     def open(self, game_id = None, game_name = "game"):
+        self.__game_id = None
+        
         if self.__file: raise io.UnsupportedOperation("file is already open")
+
+        self.__read_mode = bool(not game_id is None)
         
         if game_id:
             for filename in os.listdir(self.__directory):
@@ -65,9 +78,12 @@ class GameData():
                     filename = os.path.join(self.__directory, filename)
                     break
             else: raise FileNotFoundError()
-        else: filename = os.path.join(self.__directory, str(os.getpid()) + ".temp".format(game_id))
+        else:
+            filename = os.path.join(self.__directory, str(os.getpid()) + ".temp".format(game_id))
+            game_id = self.__get_game_id()
+
+        self.__game_id = game_id
                     
-        self.__read_mode = bool(not game_id is None)
         self.__filename = filename
         self.__closed = False
         self.__game_name = game_name

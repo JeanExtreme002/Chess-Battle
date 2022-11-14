@@ -211,17 +211,32 @@ class Screen(ABC):
         """
         return x, self.get_true_y_position(y), scroll_y
 
-    def print_screen(self):
+    def print_screen(self, region = None, filename = None):
         """
         Tira um print da tela do jogo e salva em imagem.
         """
         screenshot_id = len(self.__application.paths.get_screenshot_list()) + 1
+
+        # Define um nome de arquivo caso não haja.
+        if not filename:
+            filename = "screenshot_{}.png".format(screenshot_id)
+            filename = self.__application.paths.get_screenshot(filename)
+
+        # Obtém a captura da tela.
+        screenshot = image.get_buffer_manager().get_color_buffer()
+
+        # Corta a imagem se for solicitado.
+        screenshot.x = int(region[0]) if region else screenshot.x
+        screenshot.y = int(region[1]) if region else screenshot.y
         
-        filename = "screenshot_{}.png".format(screenshot_id)
-        filename = self.__application.paths.get_screenshot(filename)
-        
-        image.get_buffer_manager().get_color_buffer().save(filename)
-        self.get_application().add_achievement("Congelando o tempo...", "Realizou uma captura de tela.")
+        screenshot.width = int(region[2]) if region else screenshot.width
+        screenshot.height = int(region[3]) if region else screenshot.height
+
+        # Salva a imagem em um arquivo.
+        screenshot.save(filename)
+
+        # Conquista de usuário.
+        if not region: self.get_application().add_achievement("Congelando o tempo...", "Realizou uma captura de tela.")
 
     def set_achievement(self, title):
         """

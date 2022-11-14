@@ -14,6 +14,8 @@ class Paths(object):
     data_path = "data"
     
     replay_path = os.path.join(data_path, "replay")
+    replay_images_path = os.path.join(replay_path, "images")
+    
     screenshot_path = os.path.join(data_path, "screenshot")
 
     achievements_filename = os.path.join(data_path, "0001.userdata")
@@ -92,6 +94,12 @@ class Paths(object):
         """
         filenames = self.get_sound_list(*folders)
         return random.choice(filenames)
+
+    def get_replay_image(self, filename):
+        """
+        Retorna o nome do arquivo de imagem de replay com o diretório base e os separadores corretos.
+        """
+        return self.__get_file(self.replay_images_path, filename)
 
     def get_screenshot(self, filename):
         """
