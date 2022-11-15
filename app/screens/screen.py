@@ -6,6 +6,7 @@ from pyglet import graphics
 from pyglet import shapes
 from pyglet import sprite
 from pyglet import text
+from pyglet import window
 
 # Configuração para habilitar o redimensionamento de imagens.
 gl.glEnable(gl.GL_TEXTURE_2D)
@@ -188,7 +189,7 @@ class Screen(ABC):
         """
         Evento de tecla pressionada.
         """
-        return True
+        if symbol == window.key.F12: self.print_screen()
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
         """

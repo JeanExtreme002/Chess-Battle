@@ -241,7 +241,7 @@ class HomeScreen(Screen):
         """
         Evento de tecla pressionada.
         """
-        if symbol == key.F12: return self.print_screen()
+        super().on_key_press(symbol, modifiers)
         
         # Caso o ESC seja apertado, significa que o usuário deseja sair desta tela.
         if symbol == key.ESCAPE:

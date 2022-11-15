@@ -724,8 +724,12 @@ class BoardScreen(Screen):
             else: self.__game.next()
 
             # Reproduz um som de movimento ou ataque.
-            if self.__replay_velocity >= 0 and self.__game.attacked: self.sound_player.play_attacking_sound()
-            elif self.__replay_velocity >= 0: self.sound_player.play_movement_sound()
+            if not self.__game.replay_on_end:
+                if self.__replay_velocity >= 0 and self.__game.attacked:
+                    self.sound_player.play_attacking_sound()
+                
+                elif self.__replay_velocity >= 0:
+                    self.sound_player.play_movement_sound()
 
             # Atualiza as sprites.
             self.__update_piece_sprites()
@@ -862,7 +866,7 @@ class BoardScreen(Screen):
         """
         Evento de tecla pressionada.
         """
-        if symbol == key.F12: return self.print_screen()
+        super().on_key_press(symbol, modifiers)
         
         # Sai da tela do tabuleiro se o mesmo tiver sido finalizado.
         if self.__finished:
