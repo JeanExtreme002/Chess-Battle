@@ -259,6 +259,8 @@ class ChessGame:
             NoPromotionError("Não há promoções disponíveis no momento")
             
         self.__board.set_promotion(piece_name)
+        self.__game_data.save(self.__board.pecas)
+        
         self.__change_player()
 
     def get_player(self) -> Player:
@@ -330,9 +332,9 @@ class ChessGame:
         else: self.__attacked = False
 
         self.__board.pecas = piece.move(list(to), self.__board.pecas)
+        self.__game_data.save(self.__board.pecas)
 
         if not self.has_promotion():
-            self.__game_data.save(self.__board.pecas)
             self.__change_player()
 
         if self.__winner:

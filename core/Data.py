@@ -88,9 +88,11 @@ class GameData():
                 game_id = data[3]
                 
                 date = os.path.getctime(os.path.join(self.__directory, filename))
-                date = time.strftime("%d/%m/%y às %H:%M", time.localtime(date))
+                fmtdate = time.strftime("%d/%m/%y às %H:%M", time.localtime(date))
                 
-                games.append([name, winner, score[0], score[1], game_id, date])
+                games.append([name, winner, score[0], score[1], game_id, fmtdate, date])
+
+        games.sort(key = lambda game: game[-1], reverse = True)
         return games
 
     def open(self, game_id = None, game_name = "game"):
