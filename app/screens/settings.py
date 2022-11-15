@@ -1,5 +1,5 @@
 from .screen import Screen
-from .util import Button, ConfirmationPopup, IPAddressEntry, WidgetGroup
+from .util import Button, ConfirmationPopup, IPAddressEntry, PortNumberEntry, WidgetGroup
 from pyglet.window import mouse, key
 
 class SettingsScreen(Screen):
@@ -18,6 +18,7 @@ class SettingsScreen(Screen):
         super().__init__(application)
 
         self.__selected_ip_entry = False
+        self.__selected_port_entry = False
         
         self.__build()
         self.__load_current_settings()
@@ -43,12 +44,18 @@ class SettingsScreen(Screen):
         sound_button_width = sound_button_height
         sound_button_x = label_x + label_width * 1.1
         sound_button_y = first_label_y + (label_height + label_height * 0.2) + sound_button_height * 0.5
-
+  
         # Obtém o tamanho e a posição da caixa de texto de endereço IP.
-        ip_entry_width = self.width * 0.23
-        ip_entry_height = ip_entry_width * 0.15
-        ip_entry_x = self.width / 2 - ip_entry_width / 2
+        ip_entry_width = self.width * 0.14
+        ip_entry_height = ip_entry_width * 0.20
+        ip_entry_x = self.width / 2 - (self.width * (0.14 + 0.06) + ip_entry_width * 0.08) / 2
         ip_entry_y = self.height * 0.6 - ip_entry_height
+
+        # Obtém o tamanho e a posição da caixa de texto de número PORT.
+        port_entry_width = self.width * 0.06
+        port_entry_height = ip_entry_height
+        port_entry_x = ip_entry_x + ip_entry_width * 1.08
+        port_entry_y = self.height * 0.6 - port_entry_height
 
         # Obtém o tamanho e a posição do botão de aplicar alterações.
         apply_button_width = self.width * 0.2
@@ -107,6 +114,14 @@ class SettingsScreen(Screen):
             widget_group = self.__widget_group
         )
 
+        # Cria caixa de texto para inserir o PORT do endereço.
+        self.__port_entry = PortNumberEntry(
+            self, port_entry_x, port_entry_y,
+            (port_entry_width, port_entry_height),
+            border = 2, default_text = "PORT",
+            widget_group = self.__widget_group
+        )
+
         # Cria botão para aplicar as configurações.
         apply_button_filename = application.paths.get_image("settings", "buttons", "apply.png")
         activated_apply_button_filename = application.paths.get_image("settings", "buttons", "activated_apply.png")
@@ -145,7 +160,7 @@ class SettingsScreen(Screen):
         self.sound_player.set_volume(self.__volume)
         self.sound_player.set_mute(self.__muted)
 
-        self.get_application().set_ip_address(self.__ip_entry.get_text())
+        self.get_application().set_ip_address(self.__ip_entry.get_text(), self.__port_entry.get_text())
         self.get_application().resize(*self.__resolutions[self.__resolution_index])
         self.get_application().save_settings()
 
@@ -154,15 +169,15 @@ class SettingsScreen(Screen):
         # Conquista de usuário.
         self.get_application().add_achievement("Do jeitinho que eu gosto.", "Alterou as configurações do jogo.")
 
-    def __change_ip_address(self, symbol):
+    def __change_entry_text(self, entry, symbol):
         """
-        Altera o endereço IP na caixa de entrada.
+        Altera o texto de uma caixa de entrada.
         """
         if symbol == key.BACKSPACE:
-            self.__ip_entry.delete_char()
+            entry.delete_char()
             self.__changed = True
                 
-        elif self.__ip_entry.add_char(chr(symbol)):
+        elif entry.add_char(chr(symbol)):
             self.__changed = True
 
     def __change_resolution(self):
@@ -208,9 +223,15 @@ class SettingsScreen(Screen):
         self.__muted = self.sound_player.is_muted()
 
         self.__ip_entry.clear()
+        self.__port_entry.clear()
 
-        for char in self.get_application().get_ip_address():
+        address, port = self.get_application().get_ip_address()
+        
+        for char in address:
             self.__ip_entry.add_char(char)
+
+        for char in str(port):
+            self.__port_entry.add_char(char)
         
         self.__changed = False
         self.__update_labels()
@@ -247,7 +268,9 @@ class SettingsScreen(Screen):
         self.__text_batch.draw()
         self.__confirmation_popup.draw()
         
-        if by_scheduler: self.__ip_entry.next()
+        if by_scheduler:
+            self.__ip_entry.next()
+            self.__port_entry.next()
 
     def on_key_press(self, symbol, modifiers):
         """
@@ -266,8 +289,9 @@ class SettingsScreen(Screen):
             elif not self.__confirmation_popup.has_message():
                 self.__set_dialog_box_message(self.__confirmation_popup, "Deseja sair sem salvar as alterações?")
 
-        # Insere o caractere na caixa de texto do endereço IP, se o mesmo foi selecionado.
-        if self.__selected_ip_entry: self.__change_ip_address(symbol)
+        # Insere o caractere na caixa de texto do endereço IP ou PORT, se o mesmo foi selecionado.
+        if self.__selected_ip_entry: self.__change_entry_text(self.__ip_entry, symbol)
+        if self.__selected_port_entry: self.__change_entry_text(self.__port_entry, symbol)
 
         return True
 
@@ -282,7 +306,9 @@ class SettingsScreen(Screen):
 
         self.__apply_button.check(x, y)
         self.__sound_button.check(x, y)
+        
         self.__ip_entry.check(x, y)
+        self.__port_entry.check(x, y)
 
         for label, text in self.__labels:
             if label.check(x, y):
@@ -309,8 +335,12 @@ class SettingsScreen(Screen):
                 self.__load_current_settings()
                 self.get_application().go_back()
 
+        # Verifica se uma das caixas de texto foi selecionada.
         self.__selected_ip_entry = self.__ip_entry.check(x, y)
+        self.__selected_port_entry = self.__port_entry.check(x, y)
+        
         self.__ip_entry.set_pipe(self.__selected_ip_entry)
+        self.__port_entry.set_pipe(self.__selected_port_entry)
 
         # Verifica se o usuário deseja alterar a resolução.
         if self.__labels[0][0].check(x, y):

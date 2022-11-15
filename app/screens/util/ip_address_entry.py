@@ -11,7 +11,7 @@ class IPAddressEntry(Entry):
         string = self.get_text()
 
         # Impede a entrada de caracteres inválidos.
-        if not char.isnumeric() and not char == ".":
+        if not char in "0123456789" and not char == ".":
             return False
 
         # Impede que exista mais de 3 pontos na string.

@@ -6,6 +6,7 @@ from .highlighted_widget import HighlightedWidget
 from .ip_address_entry import IPAddressEntry
 from .media_controller import MediaController
 from .popup import Popup
+from .port_number_entry import PortNumberEntry
 from .promotion_selection import PromotionSelection
 from .scrollbar import Scrollbar
 from .slide import Slide

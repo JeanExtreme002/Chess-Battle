@@ -227,7 +227,7 @@ class Application(window.Window):
         """
         Retorna o endereço IP do usuário.
         """
-        return self.__address[0]
+        return self.__address[0], self.__address[1]
 
     def get_sound_player(self):
         """
@@ -323,8 +323,9 @@ class Application(window.Window):
         settings.volume = self.__sound_player.get_volume()
         settings.muted = self.__sound_player.is_muted()
 
-    def set_ip_address(self, address):
+    def set_ip_address(self, address, port):
         """
         Define um endereço IP para o usuário.
         """
         self.__address[0] = address
+        self.__address[1] = int(port)
