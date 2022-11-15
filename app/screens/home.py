@@ -182,7 +182,7 @@ class HomeScreen(Screen):
         """
         Executa a ação de easter egg.
         """
-        url = "https://www.youtube.com/watch?v=-h4g-grP7Do"
+        url = "https://www.youtube.com/watch?v=bTS9XaoQ6mg"
         webbrowser.open(url)
         
     def __set_dialog_box_message(self, widget, *message):
@@ -272,7 +272,7 @@ class HomeScreen(Screen):
             self.__key_buffer = self.__key_buffer[-1:]
 
         if string in ["XADREZ", "CHESS"]:
-            self.get_application().add_achievement("Homem de bom gosto.", "Descobriu a EASTER EGG no menu do jogo!")
+            self.get_application().add_achievement("LMAO", "Descobriu a EASTER EGG no menu do jogo!")
             self.__run_easter_egg()
                 
         return True
