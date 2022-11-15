@@ -715,7 +715,7 @@ class BoardScreen(Screen):
         if not self.__replay_controller.is_playing(): return
         if self.__confirmation_popup.has_message(): return
         
-        proportion = 1.5 - abs(self.__replay_velocity)
+        proportion = 2 - abs(self.__replay_velocity)
 
         # Verifica se chegou o momento de atualizar, com base no FPS do jogo.
         if self.__replay_frame_counter >= self.get_application().get_fps() * proportion:
@@ -724,16 +724,18 @@ class BoardScreen(Screen):
             else: self.__game.next()
 
             # Reproduz um som de movimento ou ataque.
-            if self.__game.attacked: self.sound_player.play_attacking_sound()
-            else: self.sound_player.play_movement_sound()
+            if self.__replay_velocity >= 0 and self.__game.attacked: self.sound_player.play_attacking_sound()
+            elif self.__replay_velocity >= 0: self.sound_player.play_movement_sound()
 
             # Atualiza as sprites.
             self.__update_piece_sprites()
             self.__update_destroyed_piece_sprites()
 
             # Informa se o replay chegou ao fim, alterando o botão.
-            if self.__game.replay_ended and self.__replay_controller.is_playing():
-                self.__replay_controller.switch_play_button()
+            if self.__game.replay_on_begin or self.__game.replay_on_end:
+                if self.__replay_controller.is_playing():
+                    self.__replay_controller.switch_play_button()
+                    self.__replay_velocity = 0
                 
             self.__replay_frame_counter = 0
 
@@ -778,8 +780,12 @@ class BoardScreen(Screen):
         self.__request_interval = self.get_application().get_fps() * 0.2
         self.__request_frame_counter = 0
 
-        self.__replay_velocity = 0.1
+        self.__replay_velocity = 0
         self.__replay_frame_counter = 0
+
+        # Define a reprodução automática ao iniciar o jogo no modo replay.
+        if not self.__replay_controller.is_playing():
+            self.__replay_controller.switch_play_button()
 
         self.__delete_destroyed_pieces()
         self.__update_piece_sprites()

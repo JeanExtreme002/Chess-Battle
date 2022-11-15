@@ -64,9 +64,13 @@ class ChessGame:
         return [piece for piece in self.__destroyed_pieces if piece]
 
     @property
-    def replay_ended(self):
-        return self.__game_data.replay_ended
+    def replay_on_begin(self):
+        return self.__replay_steps == 0
 
+    @property
+    def replay_on_end(self):
+        return self.__game_data.replay_ended
+    
     def close(self):
         self.__replaying = False
         self.__attacked = False
@@ -80,7 +84,7 @@ class ChessGame:
         list_2.sort(key = lambda piece: piece.name)
 
         for index in range(len(list_2)):
-            if list_1[index] != list_2[index]: return list_1[index]
+            if not type(list_1[index]) is type(list_2[index]): return list_1[index]
         return list_1[-1]
 
     def __update_destroyed_pieces(self, new_board):
@@ -122,6 +126,10 @@ class ChessGame:
 
         self.__destroyed_pieces = self.__destroyed_pieces[:-1]
         self.__attacked = False
+
+        if self.replay_on_begin: return
+        
+        if self.__replay_steps > 0: self.__replay_steps -= 1
         
         self.__game_data.back()
         self.__board.pecas = self.__game_data.read()
@@ -133,7 +141,8 @@ class ChessGame:
         self.__game_data.next()
         new_board = self.__game_data.read()
 
-        if self.replay_ended: return
+        if self.replay_on_end: return
+        self.__replay_steps += 1
         
         self.__update_destroyed_pieces(new_board)
         self.__board.pecas = new_board
@@ -143,6 +152,7 @@ class ChessGame:
         self.__replaying = True
         self.__board = Board()
 
+        self.__replay_steps = 0
         self.__game_data.open(game_id)
         self.__board.pecas = self.__game_data.read()
 
