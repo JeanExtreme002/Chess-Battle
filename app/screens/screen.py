@@ -190,6 +190,7 @@ class Screen(ABC):
         Evento de tecla pressionada.
         """
         if symbol == window.key.F12: self.print_screen()
+        return True
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
         """
