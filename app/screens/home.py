@@ -1,6 +1,7 @@
 from .screen import Screen
 from .util import Button, ConfirmationPopup, Popup, Slide, WidgetGroup
 from pyglet.window import mouse, key
+import webbrowser
 
 class HomeScreen(Screen):
     """
@@ -177,6 +178,13 @@ class HomeScreen(Screen):
         
         return play_1, play_2, play_3, history, achievement, settings
 
+    def __run_easter_egg(self):
+        """
+        Executa a ação de easter egg.
+        """
+        url = "https://www.youtube.com/watch?v=-h4g-grP7Do"
+        webbrowser.open(url)
+        
     def __set_dialog_box_message(self, widget, *message):
         """
         Define uma mensagem a ser mostrada em
@@ -257,11 +265,15 @@ class HomeScreen(Screen):
                 self.__popup.delete_message()
 
         # Conquista de usuário.
-        self.__key_buffer += chr(symbol)
+        self.__key_buffer += chr(symbol) if symbol <= 512 else "#"
         string = "".join(self.__key_buffer).upper()
         
-        if not string in "XADREZ": self.__key_buffer = []
-        if string == "XADREZ": self.get_application().add_achievement("Homem de bom gosto.", "Descobriu a EASTER EGG no menu do jogo!")
+        if not string in "XADREZ" and not string in "CHESS":
+            self.__key_buffer = self.__key_buffer[-1:]
+
+        if string in ["XADREZ", "CHESS"]:
+            self.get_application().add_achievement("Homem de bom gosto.", "Descobriu a EASTER EGG no menu do jogo!")
+            self.__run_easter_egg()
                 
         return True
 
