@@ -31,6 +31,12 @@ class HistoryScreen(Screen):
         frame_x = self.width / 2 - frame_width / 2
         frame_y = self.height / 2 - frame_height / 2
 
+        # Obtém o tamanho e a posição da imagem de histórico vazio.
+        no_history_width = frame_width * 0.2
+        no_history_height = no_history_width * 1.28
+        no_history_x = self.width / 2 - no_history_width / 2
+        no_history_y = self.height / 2 - no_history_height * 0.3
+
         # Obtém o tamanho e a posição da imagem do tabuleiro.
         self.__board_size = frame_height * 0.4
         self.__board_x = int(frame_x + frame_width * 0.87 - self.__board_size)
@@ -54,6 +60,11 @@ class HistoryScreen(Screen):
         frame_image = self.load_image(frame_filename, (frame_width, frame_height))
         self.__frame = self.create_sprite(frame_image, frame_x, frame_y)
 
+        # Cria imagem para informar que o histórico está vazio.
+        no_history_filename = application.paths.get_image("history", "empty.png")
+        no_history_image = self.load_image(no_history_filename, (no_history_width, no_history_height))
+        self.__no_history = self.create_sprite(no_history_image, no_history_x, no_history_y)
+
         # Cria texto para modo de jogo.
         self.__mode_text = self.create_text(
             str(), x = frame_x + frame_width / 2, y = frame_y + frame_height * 0.25,
@@ -71,7 +82,7 @@ class HistoryScreen(Screen):
         # Cria texto para o resultado do jogo.
         self.__result_text = self.create_text(
             str(), x = result_x, y = result_y, font_name = "Arial Black",
-            color = (30, 30, 30, 255), font_size = int(self.width * 0.024),
+            color = (100, 71, 50, 255), font_size = int(self.width * 0.024),
             anchor_x = "center", anchor_y = "top", batch = self.__text_batch
         )
 
@@ -117,12 +128,8 @@ class HistoryScreen(Screen):
         self.__date_text.text = self.__game[5]
 
         # Define a mensagem de resultado do jogo.
-        if self.__game[1].upper() == "WHITE":
-            self.__result_text.text = "VITÓRIA"
-            self.__result_text.color = (0, 180, 0, 255)
-        else:
-            self.__result_text.text = "DERROTA"
-            self.__result_text.color = (180, 0, 0, 255)
+        if self.__game[1].upper() == "WHITE": self.__result_text.text = "VITÓRIA"
+        else: self.__result_text.text = "DERROTA"
 
         # Define a quantidade de peças no tabuleiro.
         self.__black_piece_text.text = str(self.__game[2])
@@ -180,13 +187,17 @@ class HistoryScreen(Screen):
         
         self.__batch.draw()
         self.__text_batch.draw()
-        
+
+        # Desenha as imagens e textos com as informações da partida.
         if self.__game:
             self.__black_piece.draw()
             self.__white_piece.draw()
             
             self.__board_border.draw()
             self.__board.draw()
+
+        # Se não houver jogo, desenha uma imagem de histórico vazio.
+        else: self.__no_history.draw()
 
     def on_key_press(self, symbol, modifiers):
         """

@@ -64,13 +64,6 @@ class BoardScreen(Screen):
         self.__key_input_buffer = [None, None]
         
         self.__board_coord_texts = []
-
-        self.__request_interval = application.get_fps() * 0.2
-        self.__request_frame_counter = 0
-
-        self.__replay_velocity = 0.1
-        self.__replay_frame_counter = 0
-
         self.__build()
         
     def __build(self):
@@ -720,7 +713,8 @@ class BoardScreen(Screen):
         Atualiza o tabuleiro no modo replay.
         """
         if not self.__replay_controller.is_playing(): return
-
+        if self.__confirmation_popup.has_message(): return
+        
         proportion = 1.5 - abs(self.__replay_velocity)
 
         # Verifica se chegou o momento de atualizar, com base no FPS do jogo.
@@ -780,6 +774,12 @@ class BoardScreen(Screen):
         self.__promotion_available = False
         
         self.__player = int(not is_first_player) # WHITE = 0; BLACK = 1
+
+        self.__request_interval = self.get_application().get_fps() * 0.2
+        self.__request_frame_counter = 0
+
+        self.__replay_velocity = 0.1
+        self.__replay_frame_counter = 0
 
         self.__delete_destroyed_pieces()
         self.__update_piece_sprites()
@@ -862,6 +862,9 @@ class BoardScreen(Screen):
         if self.__finished:
             self.__popup.delete_message()
             return self.get_application().go_back()
+
+        # Qualquer ação será realizada somente se não houver mensagem sendo mostrada na tela.
+        if self.__confirmation_popup.has_message(): return
 
         # Verifica se é necessário realizar alguma promoção antes de qualquer ação.
         if self.__promotion_available: return
@@ -954,7 +957,7 @@ class BoardScreen(Screen):
             # Caso necessária a promoção, não será possível efetuar outra ação.
             return
 
-        # Qualquer ação será realizada somente se não houver mensagens sendo mostrada na tela.
+        # Qualquer ação será realizada somente se não houver mensagem sendo mostrada na tela.
         if self.__confirmation_popup.has_message():
             cancel, confirm = self.__confirmation_popup.check(x, y)
 
