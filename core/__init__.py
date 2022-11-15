@@ -61,7 +61,11 @@ class ChessGame:
 
     @property
     def destroyed_pieces(self):
-        return self.__destroyed_pieces
+        return [piece for piece in self.__destroyed_pieces if piece]
+
+    @property
+    def replay_ended(self):
+        return self.__game_data.replay_ended
 
     def close(self):
         self.__replaying = False
@@ -79,22 +83,23 @@ class ChessGame:
             if list_1[index] != list_2[index]: return list_1[index]
         return list_1[-1]
 
-    def __update_game_by_replay(self):
-        new_board = self.__game_data.read()
-        self.__board.pecas = new_board
-
+    def __update_destroyed_pieces(self, new_board):
         white = []
         black = []
 
         new_white = []
         new_black = []
-
+        
         for piece in [piece for row in self.__board.pecas for piece in row]:
-            if piece.color == Color.BLACK: black.append(piece)
+            if not piece: continue
+            
+            if piece.color == Color.Black: black.append(piece)
             else: white.append(piece)
             
         for piece in [piece for row in new_board for piece in row]:
-            if piece.color == Color.BLACK: new_black.append(piece)
+            if not piece: continue
+            
+            if piece.color == Color.Black: new_black.append(piece)
             else: new_white.append(piece)
 
         if len(white) != len(new_white):
@@ -107,29 +112,39 @@ class ChessGame:
             piece = self.__get_difference_between_piece_lists(black, new_black)
             self.__destroyed_pieces.append(piece)
 
-        else: self.__attacked = False
+        else:
+            self.__destroyed_pieces.append(None)
+            self.__attacked = False
         
     def back(self):
         if not self.__replaying:
             raise GameModeError("Você deve iniciar o modo replay para usar esse método")
-        print("BACK")
-        #self.__game_data.back()
-        #self.__update_game_by_replay()
+
+        self.__destroyed_pieces = self.__destroyed_pieces[:-1]
+        self.__attacked = False
+        
+        self.__game_data.back()
+        self.__board.pecas = self.__game_data.read()
 
     def next(self):
         if not self.__replaying:
             raise GameModeError("Você deve iniciar o modo replay para usar esse método")
-        print("NEXT")
-        #self.__game_data.next()
-        #self.__update_game_by_replay()
+    
+        self.__game_data.next()
+        new_board = self.__game_data.read()
+
+        if self.replay_ended: return
+        
+        self.__update_destroyed_pieces(new_board)
+        self.__board.pecas = new_board
 
     def start_replay(self, game_id):
         self.close()
-        self.new_game() # Provisório
         self.__replaying = True
-        print("REPLAY INICIADO")
-        #self.__game_data.open(game_id)
-        #self.__update_game_by_replay()
+        self.__board = Board()
+
+        self.__game_data.open(game_id)
+        self.__board.pecas = self.__game_data.read()
 
     def new_game(self, name = "game"):
         self.close()
@@ -137,11 +152,15 @@ class ChessGame:
         self.__current_player = self.__white_player
         self.__white_player.played = True
         self.__winner = None
+        
         self.__board = Board()
         self.__status = "normal"
+        
         self.__game_data.open(game_name = name)
+        self.__game_data.save(self.__board.pecas)
+        
         self.__white_player.king = self.__board.pecas[0][3]
-        self.__black_player.king = self.__board.pecas[7][3]     
+        self.__black_player.king = self.__board.pecas[7][3] 
 
     def get_history(self) -> list:
         return self.__game_data.get_game_list()

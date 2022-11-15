@@ -371,6 +371,7 @@ class BoardScreen(Screen):
             
             self.__game.back()
             self.__update_piece_sprites()
+            self.__update_destroyed_piece_sprites()
 
         elif actions[1] and self.__replay_velocity > -1:
             self.__replay_velocity -= 0.1
@@ -389,6 +390,7 @@ class BoardScreen(Screen):
             
             self.__game.next()
             self.__update_piece_sprites()
+            self.__update_destroyed_piece_sprites()
 
     def __finish_game(self, color):
         """
@@ -720,12 +722,25 @@ class BoardScreen(Screen):
         if not self.__replay_controller.is_playing(): return
 
         proportion = 1.5 - abs(self.__replay_velocity)
-        
+
+        # Verifica se chegou o momento de atualizar, com base no FPS do jogo.
         if self.__replay_frame_counter >= self.get_application().get_fps() * proportion:
+            
             if self.__replay_velocity < 0: self.__game.back()
             else: self.__game.next()
 
+            # Reproduz um som de movimento ou ataque.
+            if self.__game.attacked: self.sound_player.play_attacking_sound()
+            else: self.sound_player.play_movement_sound()
+
+            # Atualiza as sprites.
             self.__update_piece_sprites()
+            self.__update_destroyed_piece_sprites()
+
+            # Informa se o replay chegou ao fim, alterando o botão.
+            if self.__game.replay_ended and self.__replay_controller.is_playing():
+                self.__replay_controller.switch_play_button()
+                
             self.__replay_frame_counter = 0
 
         else: self.__replay_frame_counter += 1
