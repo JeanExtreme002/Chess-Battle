@@ -225,9 +225,16 @@ class ChessGame:
     @check_locker
     def __check_verify(self):
         adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
-        king_pos = self.__current_player.king.x, self.__current_player.king.y
+        king_pos = self.__current_player.king.coords
+
         if adv_player.defense[king_pos[1]][king_pos[0]]:
-            self.__status = "xeque"
+            self.__check_legal_moves_update()
+            if not self.__check_legal_moves:
+                self.__status = "xeque-mate"
+                self.__winner = adv_player.color
+            else:
+                self.__status = "xeque"
+
         else:
             self.__status = "normal"
 
@@ -238,6 +245,8 @@ class ChessGame:
         xi, yi = from_
         xf, yf = to
         kx, ky = self.__current_player.king.coords
+        if (xi, yi) == (kx, ky):
+            kx, ky = xf, yf
 
         board = deepcopy(self.__board.pecas)
         piece = board[yi][xi]
@@ -263,6 +272,10 @@ class ChessGame:
         
         self.__change_player()
 
+    @property
+    def status(self):
+        return self.__status
+    
     def get_player(self) -> Player:
         if self.__replaying:
             raise GameModeError("Você não pode usar esse método no modo replay")
@@ -305,9 +318,8 @@ class ChessGame:
             return False
 
         if self.__status == "xeque":
-            self.__check_legal_moves_update()
             try:
-                print(piece.coords, to)
+                print(piece.coords[::-1], to)
                 print(self.__check_legal_moves)
                 mov = self.__check_legal_moves[piece.coords]
                 if not (to in mov):
