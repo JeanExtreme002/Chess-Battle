@@ -32,10 +32,10 @@ class HistoryScreen(Screen):
         frame_y = self.height / 2 - frame_height / 2
 
         # Obtém o tamanho e a posição da imagem de histórico vazio.
-        no_history_width = frame_width * 0.2
+        no_history_width = frame_width * 0.3
         no_history_height = no_history_width * 1.28
         no_history_x = self.width / 2 - no_history_width / 2
-        no_history_y = self.height / 2 - no_history_height * 0.3
+        no_history_y = frame_y + frame_height * 0.86 - no_history_height
 
         # Obtém o tamanho e a posição da imagem do tabuleiro.
         self.__board_size = frame_height * 0.4
@@ -137,6 +137,12 @@ class HistoryScreen(Screen):
 
         # Define a imagem do tabuleiro.
         self.__set_board_image()
+
+        # Mostra ao usuário qual o índice em que ele está na lista de histórico de partidas.
+        message = "Partida" if len(self.__game_list) == 1 else "Partidas"
+        message = "{} de {} {}".format(self.__index + 1, len(self.__game_list), message)
+        
+        self.get_application().set_message_to_title(message)
 
     def __set_board_image(self):
         """

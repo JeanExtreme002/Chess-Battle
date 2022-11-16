@@ -5,6 +5,7 @@ from .sound import SoundPlayer
 from pyglet import app
 from pyglet import canvas
 from pyglet import clock
+from pyglet import image
 from pyglet import window
 from threading import Thread
 import os, time
@@ -24,6 +25,13 @@ class Application(window.Window):
             resizable = False
         )
         self.__center_window()
+
+        self.__title = title
+        
+        icon_filename = paths.get_image("icon.png")
+        icon_image = image.load(icon_filename)
+        self.set_icon(icon_image)
+        
         self.paths = paths
 
         self.__address = settings.address
@@ -139,8 +147,14 @@ class Application(window.Window):
         """
         Alterna para a tela de conquistas.
         """
+        achievement_count = 0
+        
         for achievement_info in achievements.get_achievements():
             self.__achievement_screen.add_achievement(*achievement_info)
+            achievement_count += 1
+
+        message = "Conquista" if achievement_count == 1 else "Conquistas"
+        self.set_message_to_title("{} {}".format(achievement_count, message))
             
         self.__current_screen = self.__achievement_screen
 
@@ -156,6 +170,7 @@ class Application(window.Window):
         Alterna para a tela de configurações.
         """
         self.__current_screen = self.__settings_screen
+        self.set_message_to_title("Configurações")
 
     def __start_connection(self, host_mode):
         """
@@ -185,6 +200,7 @@ class Application(window.Window):
         """
         self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
         self.__current_screen = self.__board_screen
+        self.set_message_to_title("Jogo Local")
 
     def __start_online_game(self, selection):
         """
@@ -201,6 +217,7 @@ class Application(window.Window):
             self.__send_movement, self.__get_movement, selection == 2
         )
         self.__current_screen = self.__board_screen
+        self.set_message_to_title("Jogo Online")
 
     def __start_replay(self, game_id):
         """
@@ -209,6 +226,7 @@ class Application(window.Window):
         self.__chess_game.start_replay(game_id)
         self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.REPLAY_MODE)
         self.__current_screen = self.__board_screen
+        self.set_message_to_title("Replay da Partida \"#{}\"".format(game_id))
 
     def add_achievement(self, title, description):
         """
@@ -239,6 +257,8 @@ class Application(window.Window):
         """
         Volta uma tela para trás.
         """
+        self.set_caption(self.__title)
+            
         if self.__connection:
             self.__connection.close()
             self.__connection = None
@@ -329,3 +349,9 @@ class Application(window.Window):
         """
         self.__address[0] = address
         self.__address[1] = int(port)
+
+    def set_message_to_title(self, message):
+        """
+        Define uma mensagem ao lado do título do jogo.
+        """
+        self.set_caption(self.__title + " - " + message)
