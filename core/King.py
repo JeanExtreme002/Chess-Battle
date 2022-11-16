@@ -42,6 +42,9 @@ class King(Piece):
 
     def castle(self, situation: list[[]], rook: Rook) -> bool:
         """Checks if castle is possible"""
+        if rook.color != self.color:
+            return False
+            
         if not self.has_moved and not rook.has_moved and not self.is_checked:
             return self._free_spaces(situation, rook)
 
