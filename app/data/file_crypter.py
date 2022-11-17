@@ -1,5 +1,5 @@
 from ..crypter import Crypter
-import os, sys, uuid
+import sys, uuid
 
 class FileCrypter(Crypter):
     """
@@ -11,5 +11,5 @@ class FileCrypter(Crypter):
         """
         Recebe uma senha e retorna uma chave parcial.
         """
-        salt = sys.platform + os.getlogin() + str(uuid.getnode())
+        salt = sys.platform + str(uuid.getnode())
         return password + salt

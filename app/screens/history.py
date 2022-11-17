@@ -1,4 +1,5 @@
 from .screen import Screen
+from .util import Button, WidgetGroup
 from pyglet.window import mouse, key
 
 class HistoryScreen(Screen):
@@ -24,6 +25,7 @@ class HistoryScreen(Screen):
         
         self.__batch = self.create_batch()
         self.__text_batch = self.create_batch()
+        self.__widget_group = WidgetGroup()
 
         # Obtém o tamanho e a posição do frame de partida.
         frame_width = self.width * 0.5
@@ -36,6 +38,19 @@ class HistoryScreen(Screen):
         no_history_height = no_history_width * 1.28
         no_history_x = self.width / 2 - no_history_width / 2
         no_history_y = frame_y + frame_height * 0.86 - no_history_height
+
+        # Obtém o tamanho e a posição do botão de play.
+        play_button_width = self.width * 0.06
+        play_button_height = play_button_width
+        play_button_x = frame_x + frame_width * 1.1
+        play_button_y = self.height / 2 - play_button_height / 2
+
+        # Obtém o tamanho e a posição dos botões de controle.
+        control_button_width = play_button_width
+        control_button_height = control_button_width * 1.265
+        control_button_x = play_button_x
+        back_button_y = play_button_y - control_button_height * 1.5
+        next_button_y = play_button_y + play_button_height + control_button_height * 0.5
 
         # Obtém o tamanho e a posição da imagem do tabuleiro.
         self.__board_size = frame_height * 0.4
@@ -54,6 +69,35 @@ class HistoryScreen(Screen):
         # Cria o plano de fundo.
         background_filename = application.paths.get_image("history", "background.png")
         self.__background_image = self.load_image(background_filename, (self.width, self.height))
+
+        # Cria o botão de play.
+        play_button_filename = application.paths.get_image("history", "buttons", "play.png")
+        activated_play_button_filename = application.paths.get_image("history", "buttons", "activated_play.png")
+        
+        self.__play_button = Button(
+            self, play_button_x, play_button_y, (play_button_width, play_button_height),
+            (play_button_filename, activated_play_button_filename),
+            widget_group = self.__widget_group
+        )
+
+        # Cria os botões de controle da lista de histórico.
+        back_button_filename = application.paths.get_image("history", "buttons", "back.png")
+        activated_back_button_filename = application.paths.get_image("history", "buttons", "activated_back.png")
+
+        next_button_filename = application.paths.get_image("history", "buttons", "next.png")
+        activated_next_button_filename = application.paths.get_image("history", "buttons", "activated_next.png")
+        
+        self.__back_button = Button(
+            self, control_button_x, back_button_y, (control_button_width, control_button_height),
+            (back_button_filename, activated_back_button_filename),
+            widget_group = self.__widget_group
+        )
+        
+        self.__next_button = Button(
+            self, control_button_x, next_button_y, (control_button_width, control_button_height),
+            (next_button_filename, activated_next_button_filename),
+            widget_group = self.__widget_group
+        )
 
         # Cria o frame de partida.
         frame_filename = application.paths.get_image("history", "frame.png")
@@ -193,6 +237,7 @@ class HistoryScreen(Screen):
         
         self.__batch.draw()
         self.__text_batch.draw()
+        self.__widget_group.draw()
 
         # Desenha as imagens e textos com as informações da partida.
         if self.__game:
@@ -235,6 +280,9 @@ class HistoryScreen(Screen):
         Evento de movimentação do cursor.
         """
         x, y = super().on_mouse_motion(*args)[0: 2]
+        self.__play_button.check(x, y)
+        self.__back_button.check(x, y)
+        self.__next_button.check(x, y)
 
     def on_mouse_release(self, *args):
         """
@@ -242,3 +290,12 @@ class HistoryScreen(Screen):
         """
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
         if mouse_button != mouse.LEFT: return
+
+        if self.__play_button.check(x, y):
+            self.on_key_press(key.ENTER, None)
+            
+        elif self.__back_button.check(x, y):
+            self.on_key_press(key.UP, None)
+        
+        elif self.__next_button.check(x, y):
+            self.on_key_press(key.DOWN, None)
