@@ -32,18 +32,23 @@ class GameData():
         return str(os.getpid()) + "i" + str(len([filename for filename in os.listdir(self.__directory) if filename.endswith(".replay")]))
 
     def __get_piece_id(self, piece):
-        if not piece: return "00"
-        
-        piece_id = str(self.__PIECE_NAMES.index(piece.name) + 1) # ID de peça
-        piece_id += str(piece.color.value)                       # ID de cor
-        
-        return piece_id
+        if not piece: return chr(97)
+
+        piece_id = (self.__PIECE_NAMES.index(piece.name) + 1) * 2
+        piece_id += piece.color.value
+        return chr(piece_id + 97)
 
     def __get_piece_by_id(self, piece_id, x, y):
-        if piece_id == "00": return
+        piece_id = ord(piece_id) - 97
 
-        piece_name = self.__PIECE_NAMES[int(piece_id[0]) - 1]
-        color = (Color.White) if piece_id[1] == "0" else (Color.Black)
+        if piece_id == 0: return
+
+        if piece_id % 2 == 0:
+            piece_name = self.__PIECE_NAMES[piece_id // 2 - 1]
+            color = Color.White
+        else:
+            piece_name = self.__PIECE_NAMES[(piece_id - 1) // 2 - 1]
+            color = Color.Black
         
         PieceType = {
             "bishop": Bishop,
@@ -127,33 +132,33 @@ class GameData():
         
         board = [list() for i in range(8)]
         
-        string = self.__file.read(8 * 8 * 2 + 1).rstrip("\n")
+        string = self.__file.read(8 * 8 + 1).rstrip("\n")
 
         if not string:
             self.back()
             self.__finished = True
-            string = self.__file.read(8 * 8 * 2 + 1).rstrip("\n")
+            string = self.__file.read(8 * 8 + 1).rstrip("\n")
         else: self.__finished = False
             
         self.__file.seek(self.__lines)
         
         for index in range(8 * 8):
             x, y = index % 8, index // 8
-            board[y].append(self.__get_piece_by_id(string[index * 2: index * 2 + 2], x, y))
+            board[y].append(self.__get_piece_by_id(string[index], x, y))
         return board
 
     def back(self):
         if not self.__read_mode or self.__closed: raise io.UnsupportedOperation("not readable")
 
         if self.__lines <= 0: self.__lines = 0
-        else: self.__lines -= 8 * 8 * 2 + 2
+        else: self.__lines -= 8 * 8 + 2
 
         self.__file.seek(self.__lines)
 
     def next(self):
         if not self.__read_mode or self.__closed: raise io.UnsupportedOperation("not readable")
 
-        self.__lines += 8 * 8 * 2 + 2
+        self.__lines += 8 * 8 + 2
 
         self.__file.seek(self.__lines)
     
@@ -164,6 +169,8 @@ class GameData():
         
         for row in board:
             for piece in row:
+                id_ = self.__get_piece_id(piece)
+
                 self.__file.write(self.__get_piece_id(piece))
                 if piece: self.__score[piece.color.value] += 1
                 
