@@ -258,7 +258,8 @@ class Application(window.Window):
         Volta uma tela para trás.
         """
         self.set_caption(self.__title)
-            
+        self.__sound_player.stop_sound()
+        
         if self.__connection:
             self.__connection.close()
             self.__connection = None
