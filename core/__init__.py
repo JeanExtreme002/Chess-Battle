@@ -5,7 +5,7 @@ from .Color import Color
 from .Data import GameData
 from copy import deepcopy
 
-#Se verdadeiro, habilita o sistema de xeque
+# Se verdadeiro, habilita o sistema de xeque
 CHECK_ENGINE_ENABLED = False
 
 def check_locker(func):
@@ -16,12 +16,21 @@ def check_locker(func):
     return wrap
 
 class FinishedGameError(Exception):
+    """
+    Exceção relacionada ào fato do jogo ter encerrado.
+    """
     pass
 
 class NoPromotionError(Exception):
+    """
+    Exceção relacionada com eventos quanto não há promoção.
+    """
     pass
 
 class GameModeError(Exception):
+    """
+    Exceção para tentativas de operações em um modo de jogo inválido.
+    """
     pass
 
 class ChessGame:
@@ -30,49 +39,55 @@ class ChessGame:
     """
     
     def __init__(self, replay_path: str):
+        # Cria um objeto para salvar e reproduzir replays de jogos.
         self.__game_data = GameData(replay_path)
+
+        # Cria dois jogadores.
         self.__white_player = Player(Color.White)
         self.__black_player = Player(Color.Black)
+        
         self.__status = "normal"
         self.__check_legal_moves = {}
+        
         self.__replaying = False
-        self.__attacked = False
+
         self.__destroyed_pieces = []
+        self.__attacked = False
 
     @property
-    def white_player(self):
+    def white_player(self) -> Player:
         if self.__replaying:
             raise GameModeError("Você não pode usar esse atributo no modo replay")
         return self.__white_player
 
     @property
-    def black_player(self):
+    def black_player(self) -> Player:
         if self.__replaying:
             raise GameModeError("Você não pode usar esse atributo no modo replay")
         return self.__black_player
 
     @property
-    def board(self):
+    def board(self) -> Board:
         return self.__board
 
     @property
-    def id(self):
+    def id(self) -> str:
         return self.__game_data.id
 
     @property
-    def attacked(self):
+    def attacked(self) -> bool:
         return self.__attacked
 
     @property
-    def destroyed_pieces(self):
+    def destroyed_pieces(self) -> list:
         return [piece for piece in self.__destroyed_pieces if piece]
 
     @property
-    def replay_on_begin(self):
+    def replay_on_begin(self) -> bool:
         return self.__replay_steps == 0
 
     @property
-    def replay_on_end(self):
+    def replay_on_end(self) -> bool:
         return self.__game_data.replay_ended
     
     def close(self):
@@ -86,7 +101,7 @@ class ChessGame:
 
         self.__game_data.close()
 
-    def __get_difference_between_piece_lists(self, list_1, list_2):
+    def __get_difference_between_piece_lists(self, list_1: list[Piece], list_2: list[Piece]) -> Piece:
         """
         Método para o sistema de replay, para obter a diferença
         entre duas listas de peças.
@@ -98,7 +113,7 @@ class ChessGame:
             if not type(list_1[index]) is type(list_2[index]): return list_1[index]
         return list_1[-1]
 
-    def __update_destroyed_pieces(self, new_board):
+    def __update_destroyed_pieces(self, new_board: list[[]]):
         """
         Método para o sistema de replay, para atualizar a lista
         de peças destruídas, dado um nome tabuleiro.
@@ -181,7 +196,7 @@ class ChessGame:
         self.__update_destroyed_pieces(new_board)
         self.__board.pecas = new_board
 
-    def start_replay(self, game_id):
+    def start_replay(self, game_id: str):
         """
         Inicia o modo replay de um determinado jogo pelo seu ID.
         """
@@ -193,27 +208,30 @@ class ChessGame:
         self.__game_data.open(game_id)
         self.__board.pecas = self.__game_data.read()
 
-    def new_game(self, name = "game"):
+    def new_game(self, name = "Game"):
         """
         Inicia um novo jogo.
         """
         self.close()
-        
+
+        # Define como primeiro jogador o que possui as peças brancas.
         self.__current_player = self.__white_player
         self.__white_player.played = True
         self.__winner = None
-        
+
+        # Cria um novo tabuleiro.
         self.__board = Board()
         self.__status = "normal"
 
         # Salva o estado inicial do tabuleiro.
         self.__game_data.open(game_name = name)
         self.__game_data.save(self.__board.pecas)
-        
+
+        # Define o rei de cada jogador.
         self.__white_player.king = self.__board.pecas[0][3]
         self.__black_player.king = self.__board.pecas[7][3] 
 
-    def get_history(self) -> list:
+    def get_history(self) -> list[[]]:
         """
         Retorna uma lista com o histórico dos jogos realizados.
         """
@@ -229,7 +247,7 @@ class ChessGame:
         self.__current_player =  self.__white_player or self.__black_player
 
     @check_locker
-    def __gen_defense_board(self, player, board = None) -> list[[]]:
+    def __gen_defense_board(self, player: Player, board = None) -> list[[]]:
         if not board:
             board = self.__board.pecas
 
@@ -302,7 +320,7 @@ class ChessGame:
 
         return not defended[ky][kx]
 
-    def has_promotion(self):
+    def has_promotion(self) -> bool:
         """
         Verifica se existe promoção de algum peão no tabuleiro. (não disponível no modo replay)
         """
@@ -310,7 +328,7 @@ class ChessGame:
             raise GameModeError("Você não pode usar esse método no modo replay")
         return bool(self.__board.check_promotion()) and not self.get_winner()
 
-    def set_promotion(self, piece_name):
+    def set_promotion(self, piece_name: str):
         """
         Define um tipo de peça para promover o peão. (não disponível no modo replay)
         """
@@ -350,7 +368,7 @@ class ChessGame:
         try: return board[x][y]
         except KeyError: return None
 
-    def get_winner(self):
+    def get_winner(self) -> Color:
         """
         Retorna o vencedor do jogo se houver. (não disponível no modo replay)
         """

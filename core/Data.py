@@ -17,6 +17,7 @@ class GameData():
     
     def __init__(self, directory):
         self.__directory = directory
+        
         self.__file = None
         self.__closed = True
         self.__game_id = None
@@ -29,13 +30,13 @@ class GameData():
     def replay_ended(self):
         return self.__finished
 
-    def __get_game_id(self):
+    def __get_game_id(self) -> str:
         """
         Retorna o ID do jogo.
         """
         return str(os.getpid()) + "i" + str(len([filename for filename in os.listdir(self.__directory) if filename.endswith(".replay")]))
 
-    def __get_piece_id(self, piece = None):
+    def __get_piece_id(self, piece: Piece) -> str:
         """
         Retorna o ID da peça, mesmo se não houver uma peça.
         """
@@ -46,7 +47,7 @@ class GameData():
         
         return chr(piece_id + 97)
 
-    def __get_piece_by_id(self, piece_id, x, y):
+    def __get_piece_by_id(self, piece_id: str, x: int, y: int) -> Piece:
         """
         Retorna a peça através do seu ID.
         """
@@ -76,7 +77,7 @@ class GameData():
         }[piece_name]
         return PieceType(color, x, y)
 
-    def close(self, winner = None):
+    def close(self, winner: Color = None):
         """
         Fecha o arquivo. Caso tenha sido aberto em modo escrita,
         o jogo, antes salvo em um arquivo temporário, será salvo
@@ -103,7 +104,7 @@ class GameData():
         if not self.__read_mode and winner is None:
             os.remove(self.__filename)
 
-    def get_game_list(self):
+    def get_game_list(self) -> list[[]]:
         """
         Retorna uma lista com todos os jogos salvos e suas informações gerais.
         """
@@ -213,7 +214,7 @@ class GameData():
         self.__lines += 8 * 8 + 2
         self.__file.seek(self.__lines)
     
-    def save(self, board: list):
+    def save(self, board: list[[]]):
         """
         Salva um estado do tabuleiro. (somente no modo escrita)
         """
