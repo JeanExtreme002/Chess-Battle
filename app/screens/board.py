@@ -99,6 +99,14 @@ class BoardScreen(Screen):
         self.__score_board_x = score_board_area_x + score_board_area_width / 2 - self.__score_board_width / 2
         self.__score_board_y = self.__board_y
 
+        # Obtém o tamanho e a posição dos identificadores de jogador.
+        player_width = self.__score_board_width * 0.14
+        player_height = player_width
+        player_y = self.__score_board_y + self.__score_board_height * 0.18
+
+        white_player_x = self.__score_board_x + self.__score_board_width * 0.3 - player_width / 2
+        black_player_x = self.__score_board_x + self.__score_board_width * 0.7 - player_width / 2
+
         # Obtém o tamanho e a posição do popup.
         popup_width = self.width * 0.45
         popup_height = popup_width * 0.7
@@ -132,6 +140,16 @@ class BoardScreen(Screen):
             score_board_image, batch = self.__batch,
             x = self.__score_board_x, y = self.__score_board_y
         )  
+
+        # Cria as imagens dos identificadores de jogador.
+        white_player_filename = application.paths.get_image("board", "white.png")
+        white_player_image = self.load_image(white_player_filename, (player_width, player_height))
+
+        black_player_filename = application.paths.get_image("board", "black.png")
+        black_player_image = self.load_image(black_player_filename, (player_width, player_height))
+
+        self.__white_player_sprite = self.create_sprite(white_player_image, x = white_player_x, y = player_y)
+        self.__black_player_sprite = self.create_sprite(black_player_image, x = black_player_x, y = player_y)  
 
         # Cria a borda do tabuleiro.
         self.__board_border = self.create_rectangle(
@@ -402,7 +420,7 @@ class BoardScreen(Screen):
         # Conquista de usuário.
         if self.__mode == self.ONLINE_MODE:
             if color.value == self.__player: self.get_application().add_achievement("Vida longa ao rei!", "Ganhou uma partida no modo online.")
-            else: self.get_application().add_achievement("O inverno está chegando.", "Perdeu uma partida no modo online.")
+            else: self.get_application().add_achievement("Dias frios e chuvosos...", "Perdeu uma partida no modo online.")
 
         # Reproduz um som de vitória ou derrota.
         if self.__mode == self.ONLINE_MODE and color.value != self.__player:
@@ -682,6 +700,18 @@ class BoardScreen(Screen):
         """
         Atualiza o tabuleiro, criando toda as imagens das peças.
         """
+        # Troca a opacidade da image, indicando qual o turno do jogador.
+        if self.__mode != self.REPLAY_MODE:
+            if self.__game.get_player().color.value == 0:
+                self.__white_player_sprite.opacity = 255
+                self.__black_player_sprite.opacity = 120
+            else:
+                self.__white_player_sprite.opacity = 120
+                self.__black_player_sprite.opacity = 255
+        else:
+            self.__white_player_sprite.opacity = 255
+            self.__black_player_sprite.opacity = 255
+            
         for row in range(8):
             for column in range(8):
                 
@@ -840,6 +870,10 @@ class BoardScreen(Screen):
         # Desenha os objetos na tela.   
         self.__background_image.blit(0, 0)
         self.__batch.draw()
+        
+        self.__white_player_sprite.draw()
+        self.__black_player_sprite.draw()
+        
         self.__piece_batch.draw()
         self.__selected_piece_batch.draw()
 
