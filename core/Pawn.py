@@ -1,7 +1,5 @@
 from .Piece import Piece
-from .PromotionRoles import PromotionRoles
 from .Color import Color
-from typing import Optional
 
 
 class Pawn(Piece):
@@ -87,7 +85,7 @@ class Pawn(Piece):
             return True
         return False
 
-    def move(self, target: list[int, int], situation: list[[]], piece: Optional[PromotionRoles] = None) -> list[[]]:
+    def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
