@@ -36,6 +36,10 @@ alterar as jogadas dinamicamente..
 O jogo conta com um sistema de conquistas, no qual existem determinados eventos, espalhados pelo programa, que liberam conquistas para o jogador. Essas
 conquistas podem ser visualizadas novamente na tela de conquistas. Além disso, o jogo também conta com Easter Eggs. Em outras palavras, boa caçada!!
 
+## Título Informativo:
+Preste atenção ao título da janela em determinadas telas. Elas podem conter informações úteis como, por exemplo: na tela de histórico, o título da janela
+informa o índice do jogo e quantos jogos foram registrados.
+
 ## Criptografia:
 Com o objetivo de proteger a integridade do jogo, o tráfego dos dados, tal como o arquivo de configurações, é protegido utilizando o pacote 
 [crpytography](https://pypi.org/project/cryptography/). Talvez essa não seja a melhor solução para a proteção de dados, mas é suficiente para proteger 
