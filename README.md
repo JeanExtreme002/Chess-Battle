@@ -38,7 +38,7 @@ conquistas podem ser visualizadas novamente na tela de conquistas. Além disso, 
 
 ## Título Informativo:
 Preste atenção ao título da janela em determinadas telas. Elas podem conter informações úteis como, por exemplo: na tela de histórico, o título da janela
-informa o índice do jogo e quantos jogos foram registrados.
+informa o índice do jogo em questão e quantos jogos foram registrados.
 
 ## Criptografia:
 Com o objetivo de proteger a integridade do jogo, o tráfego dos dados, tal como o arquivo de configurações, é protegido utilizando o pacote 
