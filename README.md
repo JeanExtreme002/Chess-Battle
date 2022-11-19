@@ -30,7 +30,7 @@ Todas as partidas, modo local ou online, são salvas automaticamente após o té
 o replay de uma partida, acesse a tela de histórico e navegue pela lista, buscando o jogo que deseja. Após isso, inicie o replay.
 
 Através do controlador, localizado abaixo do placar do jogo, você poderá retroceder, avançar, pausar ou prosseguir com o jogo. No modo replay, não é possível
-alterar as jogadas dinamicamente..
+alterar as jogadas dinamicamente.
 
 ## Conquistas e Easter Eggs:
 O jogo conta com um sistema de conquistas, no qual existem determinados eventos, espalhados pelo programa, que liberam conquistas para o jogador. Essas
