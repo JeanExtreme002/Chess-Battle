@@ -133,7 +133,17 @@ class Screen(ABC):
         if not filename in Screen._images:
             Screen._images[filename] = dict()
             Screen._images[filename]["original"] = dict()
-            Screen._images[filename]["original"]["image"] = image.load(filename)
+
+            # Tenta carregar a imagem.
+            try: Screen._images[filename]["original"]["image"] = image.load(filename)
+
+            # Se não for possível, o dicionário criado anteriormente 
+            # para ela é apagado e a exceção é relançada.
+            except FileNotFoundError as error:
+                Screen._images.pop(filename)
+                raise error
+
+            # Cria dicionário para registrar as telas que fazem uso da mesma imagem.
             Screen._images[filename]["original"]["users"] = set()
         
         # Caso a imagem na resolução solicitada não tenha sido salva, uma cópia

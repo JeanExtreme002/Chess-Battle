@@ -165,9 +165,25 @@ class HistoryScreen(Screen):
         """
         Troca o jogo em exibição.
         """
-        if not self.__game_list: return self.__set_empty_history()
+        self.__game = None
 
+        # Verifica se a lista está vazia. Se sim, será
+        # mostrada a informação de histórico vazio.
+        if not self.__game_list:
+            return self.__set_empty_history()
+
+        # Obtém as informações do jogo pelo índice atual.
         self.__game = self.__game_list[self.__index]
+
+        # Define a imagem do tabuleiro.
+        try: self.__set_board_image()
+
+        # Se não houver imagem, o jogo em questão será indisponibilizado para replay.
+        except FileNotFoundError:
+            self.__game_list.pop(self.__index)
+            return self.__update_index(step = 0)
+
+        # Define o tipo do jogo e a data de quando foi realizado.
         self.__mode_text.text = "JOGO " + self.__game[0]
         self.__date_text.text = self.__game[5]
 
@@ -178,9 +194,6 @@ class HistoryScreen(Screen):
         # Define a quantidade de peças no tabuleiro.
         self.__black_piece_text.text = str(self.__game[2])
         self.__white_piece_text.text = str(self.__game[3])
-
-        # Define a imagem do tabuleiro.
-        self.__set_board_image()
 
         # Mostra ao usuário qual o índice em que ele está na lista de histórico de partidas.
         message = "Partida" if len(self.__game_list) == 1 else "Partidas"
@@ -214,6 +227,15 @@ class HistoryScreen(Screen):
         self.__board = None
         self.__game = None
 
+    def __update_index(self, step = 1):
+        """
+        Atualiza o índice atual da lista de partidas.
+        """
+        if len(self.__game_list) == 0: self.__index = 0
+        else: self.__index = (self.__index + step) % len(self.__game_list)
+        
+        self.__change_game()
+
     def set_history(self, game_list):
         """
         Define os jogos disponíveis para replay.
@@ -240,7 +262,7 @@ class HistoryScreen(Screen):
         self.__widget_group.draw()
 
         # Desenha as imagens e textos com as informações da partida.
-        if self.__game:
+        if self.__game and self.__board:
             self.__black_piece.draw()
             self.__white_piece.draw()
             
@@ -261,16 +283,11 @@ class HistoryScreen(Screen):
             self.get_application().go_back()
 
         # Troca o jogo em exibição.
-        elif symbol == key.DOWN:
-            self.__index = (self.__index + 1) % len(self.__game_list)
-            self.__change_game()
-            
-        elif symbol == key.UP:
-            self.__index = (self.__index - 1) % len(self.__game_list)
-            self.__change_game()
+        elif symbol == key.DOWN: self.__update_index(step = 1)
+        elif symbol == key.UP: self.__update_index(step = -1)
 
         # Inicia o replay do jogo, utilizando o ID do mesmo.
-        elif symbol in [key.ENTER, key.SPACE]:
+        elif symbol in [key.ENTER, key.SPACE] and self.__game_list:
             self.__replay_function(self.__game[4])
 
         return True
