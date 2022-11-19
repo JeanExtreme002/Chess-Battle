@@ -1,0 +1,38 @@
+# Sobre:
+Este é um projeto para a disciplina Programação Orientada a Objetos (MATA-55) — um jogo de Xadrez, com modo local e online, criado em Python 3 puro, 
+utilizando a biblioteca [pyglet](https://pyglet.org/), por recomendação do professor.
+
+## Preparando o ambiente:
+Para executar o jogo, é necessário ter instalado o Python 3.9, ou superior, e suas dependências, utilizando o comando abaixo.
+```
+pip install -r requirements.txt
+```
+# Features:
+
+## Controles:
+Para jogar, você pode utilizar o mouse, selecionando e movendo uma peça, clicando com o **Botão Esquerdo**. Também é possível jogar com o teclado, 
+utilizando o [sistema de notação algébrica de xadrez](https://pt.wikipedia.org/wiki/Nota%C3%A7%C3%A3o_alg%C3%A9brica_de_xadrez). Para tal, escolha 
+primeiramente a coluna e, logo em seguida, a linha da peça a ser movida. Faça o mesmo para a seleção do destino. Após isso, aperte ENTER ou SPACE
+para finalizar o movimento.
+
+Outras teclas úteis são **F12** para realizar capturas de tela (a imagem será salva no diretório `data/screenshots`) e **ESC** para voltar ao menu.
+
+## Modo Online:
+Para jogar online, abra a tela de configurações e altere, se necessário, o seu endereço IP e o número PORT. É necessário que um dos jogadores seja 
+o host da partida. Supondo que você seja o host, envie o seu endereço IP e número PORT ao outro jogador. Após isso, clique no botão "Play as Host". 
+Posteriormente, o outro jogador deverá clicar no botão "Play as Client". Dessa forma, a conexão estará estabelecida e a partida iniciará automaticamente.
+
+## Modo Replay:
+Todas as partidas, modo local ou online, são salvas automaticamente após o término do jogo, isto é: se não houver abandono durante o jogo. Para conferir 
+o replay de uma partida, acesse a tela de histórico e navegue pela lista, buscando o jogo que deseja. Após isso, inicie o replay.
+
+Através do controlador, localizado abaixo do placar do jogo, você poderá retroceder, avançar, pausar ou prosseguir com o jogo.
+
+## Conquistas e Easter Eggs:
+O jogo conta com um sistema de conquistas, onde existem determinados eventos, espalhados pelo aplicativo, que liberam conquistas para o jogador. Essas
+conquistas podem ser visualizadas novamente na tela de conquistas. Além disso, o jogo também conta com Easter Eggs. Em outras palavras, boa caçada!!
+
+## Criptografia:
+Com o objetivo de proteger a integridade do jogo, o tráfego dos dados, tal como o arquivo de configurações, é protegido utilizando o pacote 
+[crpytography](https://pypi.org/project/cryptography/). Talvez essa não seja a melhor solução para a proteção de dados, mas é suficiente para proteger 
+o jogo de cheats :)
