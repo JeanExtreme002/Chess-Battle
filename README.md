@@ -19,9 +19,9 @@ para finalizar o movimento.
 Outras teclas úteis são **F12** para realizar capturas de tela (a imagem será salva no diretório `data/screenshots`) e **ESC** para voltar ao menu.
 
 ## Modo Online:
-Para jogar online, abra a tela de configurações e altere, se necessário, o seu endereço IP e o número PORT. É necessário que um dos jogadores seja 
-o host da partida. Supondo que você seja o host, envie o seu endereço IP e número PORT ao outro jogador. Após isso, clique no botão "Play as Host". 
-Posteriormente, o outro jogador deverá clicar no botão "Play as Client". Dessa forma, a conexão estará estabelecida e a partida iniciará automaticamente.
+Para jogar online, abra a tela de configurações e altere, se necessário, o seu endereço IP e o número PORT.<br><br> 
+É necessário que um dos jogadores seja o host da partida. Supondo que você seja o host, envie o seu endereço IP e número PORT ao outro jogador. Após 
+isso, clique no botão "Play as Host". Posteriormente, o outro jogador deverá clicar no botão "Play as Client". Dessa forma, a conexão estará estabelecida e a partida iniciará automaticamente.
 
 ## Modo Replay:
 Todas as partidas, modo local ou online, são salvas automaticamente após o término do jogo, isto é: se não houver abandono durante o jogo. Para conferir 
