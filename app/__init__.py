@@ -260,7 +260,10 @@ class Application(window.Window):
         Volta uma tela para trás.
         """
         self.set_caption(self.__title)
-        self.__sound_player.stop_sound()
+
+        # Interrompe a reprodução de qualquer som ativo da partida finalizada.
+        if self.__current_screen is self.__board_screen:
+            self.__sound_player.stop_sound()
 
         # Encerra a conexão com o outro jogador, caso exista.
         if self.__connection:
