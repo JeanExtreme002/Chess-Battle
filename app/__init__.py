@@ -7,7 +7,6 @@ from pyglet import canvas
 from pyglet import clock
 from pyglet import image
 from pyglet import window
-from threading import Thread
 import os, time
 
 class Application(window.Window):
