@@ -29,7 +29,8 @@ isso, clique no botão "Play as Host". Posteriormente, o outro jogador deverá c
 Todas as partidas, modo local ou online, são salvas automaticamente após o término do jogo, isto é: se não houver abandono durante o jogo. Para conferir 
 o replay de uma partida, acesse a tela de histórico e navegue pela lista, buscando o jogo que deseja. Após isso, inicie o replay.
 
-Através do controlador, localizado abaixo do placar do jogo, você poderá retroceder, avançar, pausar ou prosseguir com o jogo.
+Através do controlador, localizado abaixo do placar do jogo, você poderá retroceder, avançar, pausar ou prosseguir com o jogo. No modo replay, não é possível
+alterar as jogadas dinâmicamente..
 
 ## Conquistas e Easter Eggs:
 O jogo conta com um sistema de conquistas, onde existem determinados eventos, espalhados pelo aplicativo, que liberam conquistas para o jogador. Essas
