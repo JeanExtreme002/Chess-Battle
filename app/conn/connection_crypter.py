@@ -1,16 +1,16 @@
 from ..crypter import Crypter
-import random
+import random, socket
 
 class ConnectionCrypter(Crypter):
     """
     Classe para encriptografar e descriptografar
     os dados trafegados pela conexão.
     """
-    def __init__(self, address, connection):
+    def __init__(self, address: list[str, int], connection: socket.socket):
         self.__connection = connection
         super().__init__(address)
 
-    def generate_key(self, address):
+    def generate_key(self, address: list[str, int]) -> str:
         """
         Recebe uma senha e retorna uma chave parcial.
         """

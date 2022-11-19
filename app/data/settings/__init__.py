@@ -1,4 +1,6 @@
+from ...crypter import Crypter
 from .default import default_settings
+from typing import Any
 import json
 
 __all__ = ("ApplicationSettings",)
@@ -9,17 +11,17 @@ class ApplicationSettings(object):
     configurações do aplicativo.
     """
 
-    def __init__(self, filename, crypter):
+    def __init__(self, filename: str, crypter: Crypter):
         self.__filename = filename
         self.__crypter = crypter
 
         self.__settings = default_settings
         self.__load_settings()
 
-    def __getattribute__(self, key):
+    def __getattribute__(self, key: str) -> Any:
         return super().__getattribute__(key) if key.startswith("_") else self.__settings[key]
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, key: str, value: Any):
         if key.startswith("_"):
             return super().__setattr__(key, value)
 

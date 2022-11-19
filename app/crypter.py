@@ -8,13 +8,13 @@ class Crypter(ABC):
     """
     Classe para criptografar e descriptografar strings.
     """
-    def __init__(self, password = str()):
+    def __init__(self, password: str = str()):
         key = self.generate_key(password)
         key = self.__get_key(key)
         
         self.__fernet = Fernet(key)
 
-    def __get_key(self, password):
+    def __get_key(self, password: str) -> bytes:
         """
         Gera uma chave de criptografia.
         """ 
@@ -22,7 +22,7 @@ class Crypter(ABC):
         digest.update(password.encode())
         return base64.urlsafe_b64encode(digest.finalize())
 
-    def decrypt(self, string):
+    def decrypt(self, string: str) -> str:
         """
         Descriptografa uma string.
         """
@@ -31,7 +31,7 @@ class Crypter(ABC):
         data = bytes(string, encoding = "UTF-8")
         return self.__fernet.decrypt(data).decode()
     
-    def encrypt(self, string):
+    def encrypt(self, string: str) -> str:
         """
         Criptografa a string, retornando uma string em bytes.
         """
@@ -40,7 +40,7 @@ class Crypter(ABC):
         data = bytes(string, encoding = "UTF-8")
         return self.__fernet.encrypt(data).decode()
 
-    def generate_key(self, password):
+    def generate_key(self, password: str) -> str:
         """
         Recebe uma senha e retorna uma chave parcial.
         """

@@ -29,7 +29,7 @@ class Scrollbar(Widget):
             self.x, self.y, self.width, self.__bar_height, color = (250, 250, 250)
         )
 
-    def __move(self, proportion):
+    def __move(self, proportion: float):
         """
         Move a barra de rolagem, dada uma porcentagem.
         """
@@ -41,7 +41,7 @@ class Scrollbar(Widget):
         
         self.__value = self.__max_value * proportion
 
-    def check(self, x, y, ignore_x = False):
+    def check(self, x: int, y: int, ignore_x: bool = False):
         """
         Verifica se o cursor se encontra na posição do scrollbar.
         """
@@ -60,26 +60,26 @@ class Scrollbar(Widget):
         self.__scrollbar_background.draw()
         self.__scrollbar.draw()
 
-    def get_max_value(self):
+    def get_max_value(self) -> float:
         """
         Retorna o valor máximo da barra de rolagem.
         """
         return self.__max_value
 
-    def get_value(self):
+    def get_value(self) -> float:
         """
         Retorna o valor atual da barra de rolagem.
         """
         return self.__value
 
-    def move(self, diff):
+    def move(self, diff: float):
         """
         Move a barra de rolagem, dada uma variação.
         """
         proportion = 1 if self.__max_value == 0 else ((self.__value + diff) / self.__max_value)
         self.__move(proportion)
 
-    def move_by_mouse(self, x, y, ignore_x = False):
+    def move_by_mouse(self, x: int, y: int, ignore_x: bool = False) -> bool:
         """
         Move a barra de rolagem, dada as coordenadas do cursor.
         """
@@ -91,7 +91,7 @@ class Scrollbar(Widget):
         
         return True
 
-    def set_max_value(self, value):
+    def set_max_value(self, value: float):
         """
         Define um valor máximo para a barra de rolagem.
         """

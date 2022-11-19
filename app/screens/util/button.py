@@ -1,4 +1,5 @@
 from .widget import Widget
+from typing import Tuple
 
 class Button(Widget):
     """
@@ -45,7 +46,7 @@ class Button(Widget):
         """
         if self.__sprite is not None: self.__sprite.delete()
 
-    def change_image(self, images):
+    def change_image(self, images: list[str, str]):
         """
         Troca as imagens do botão.
         """
@@ -54,7 +55,7 @@ class Button(Widget):
         self.__delete_sprite()
         self.__create_sprite()
 
-    def check(self, *cursor_pos):
+    def check(self, *cursor_pos: Tuple[int, int]) -> bool:
         """
         Verifica se o cursor se encontra na posição do botão.
         """

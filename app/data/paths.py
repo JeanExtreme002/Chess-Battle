@@ -1,3 +1,4 @@
+from typing import Any
 import random
 import os
 
@@ -28,18 +29,18 @@ class Paths(object):
         for key, value in self.__class__.__dict__.items():
             if key.endswith("path"): self.__initialize_directory(value)
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, key: str, value: Any):
         raise AttributeError("'{}' object has no attribute '{}'".format(
             self.__class__.__name__, key
         ))
 
-    def __get_file(self, base, *path):
+    def __get_file(self, base: str, *path: str) -> str:
         """
         Retorna o nome do arquivo com os separadores corretos.
         """
         return os.path.join(base, *path)
 
-    def __get_file_list(self, base, extensions, *folders):
+    def __get_file_list(self, base: str, extensions: list[str], *folders: str) -> list[str]:
         """
         Retorna lista de todos os arquivos presentes em
         um diretório, filtrando os arquivos pela sua extensão.
@@ -52,19 +53,19 @@ class Paths(object):
                 filenames.append(os.path.join(path, filename))
         return filenames
 
-    def __initialize_directory(self, path):
+    def __initialize_directory(self, path: str):
         """
         Cria um diretório se ele não existir.
         """
         if not os.path.exists(path): os.mkdir(path)
     
-    def get_image(self, *path):
+    def get_image(self, *path: str) -> str:
         """
         Retorna o nome do arquivo de imagem com o diretório base e os separadores corretos.
         """
         return self.__get_file(self.image_path, *path)
 
-    def get_image_list(self, *folders, shuffle = False):
+    def get_image_list(self, *folders: str, shuffle: bool = False) -> list[str]:
         """
         Retorna lista de todos os arquivos de imagem
         presentes em um dado diretório.
@@ -74,40 +75,40 @@ class Paths(object):
         if shuffle: random.shuffle(images)
         return images
 
-    def get_random_image(self, *folders):
+    def get_random_image(self, *folders: str) -> str:
         """
         Retorna um arquivo de imagem aleatório, de um dado diretório.
         """
         filenames = self.get_image_list(*folders)
         return random.choice(filenames)
 
-    def get_random_screenshot(self):
+    def get_random_screenshot(self) -> str:
         """
         Retorna uma screenshot aleatória.
         """
         filenames = self.get_screenshot_list()
         return random.choice(filenames)
 
-    def get_random_sound(self, *folders):
+    def get_random_sound(self, *folders: str) -> str:
         """
         Retorna um arquivo de som aleatório, de um dado diretório.
         """
         filenames = self.get_sound_list(*folders)
         return random.choice(filenames)
 
-    def get_replay_image(self, filename):
+    def get_replay_image(self, filename: str) -> str:
         """
         Retorna o nome do arquivo de imagem de replay com o diretório base e os separadores corretos.
         """
         return self.__get_file(self.replay_images_path, filename)
 
-    def get_screenshot(self, filename):
+    def get_screenshot(self, filename: str) -> str:
         """
         Retorna o nome do arquivo de screenshot com o diretório base e os separadores corretos.
         """
         return self.__get_file(self.screenshot_path, filename)
 
-    def get_screenshot_list(self, shuffle = False):
+    def get_screenshot_list(self, shuffle: bool = False) -> list[str]:
         """
         Retorna lista de todas as screenshots.
         """
@@ -116,13 +117,13 @@ class Paths(object):
         if shuffle: random.shuffle(images)
         return images
 
-    def get_sound(self, *path):
+    def get_sound(self, *path: str) -> str:
         """
         Retorna o nome do arquivo de som com o diretório base e os separadores corretos.
         """
         return self.__get_file(self.sound_path, *path)
 
-    def get_sound_list(self, *folders, shuffle = False):
+    def get_sound_list(self, *folders: str, shuffle: bool = False) -> list[str]:
         """
         Retorna lista de todos os arquivos de som
         presentes em um dado diretório.

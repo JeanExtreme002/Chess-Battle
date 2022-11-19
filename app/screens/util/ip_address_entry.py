@@ -4,7 +4,7 @@ class IPAddressEntry(Entry):
     """
     Classe para criar caixas de input para endereço IP.
     """
-    def add_char(self, char):
+    def add_char(self, char: str):
         """
         Adiciona um caractere ao final da caixa de texto.
         """

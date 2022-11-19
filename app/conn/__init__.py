@@ -1,5 +1,6 @@
 from .connection_crypter import ConnectionCrypter
 from socket import socket, timeout, AF_INET, SOCK_STREAM 
+from typing import Tuple
 
 class Connection(object):
     """
@@ -7,27 +8,27 @@ class Connection(object):
     """
     __checking_string = "Check"
     
-    def __init__(self, address, host = False):
+    def __init__(self, address: list[str, int], host: bool = False):
         self.__socket = None
         self.__connection = None
         
         self.__address = tuple(address)
         self.__hosting = host
 
-    def __coordinates_to_string(self, origin, dest, promotion = 0):
+    def __coordinates_to_string(self, origin: list[int, int], dest: list[int, int], promotion: int = 0) -> str:
         """
         Recebe duas tuplas XY, indicando origem e destino,
         e retorna uma string dessas coordenadas.
         """
         return "{}{}{}{}{}".format(*origin, *dest, promotion)
 
-    def __get_connection(self):
+    def __get_connection(self) -> socket:
         """
         Retorna o objeto de conexão.
         """
         return self.__connection if self.is_host() else self.__socket
 
-    def __send_data(self, string, encrypt = True):
+    def __send_data(self, string: str, encrypt: bool = True) -> bool:
         """
         Envia os dados para o receptor.
         """
@@ -36,7 +37,7 @@ class Connection(object):
         self.__get_connection().send(string.encode())
         return True
 
-    def __string_to_coordinates(self, string):
+    def __string_to_coordinates(self, string: str) -> Tuple[list[int, int], int]:
         """
         Recebe uma string e retorna duas tuplas XY, indicando
         origem e destino, e uma peça de promoção, caso haja.
@@ -56,7 +57,7 @@ class Connection(object):
         self.__connection = None
         self.__socket = None
 
-    def connect(self, timeout_in_seconds = 5, attempts = 1):
+    def connect(self, timeout_in_seconds: int = 5, attempts: int = 1):
         """
         Estabelece uma conexão.
         """
@@ -98,7 +99,7 @@ class Connection(object):
             if not self.is_host():
                 self.connect(timeout_in_seconds, attempts - 1)
             
-    def is_connected(self, attempts = 1):
+    def is_connected(self, attempts: int = 1) -> bool:
         """
         Verifica se está conectado.
         """
@@ -111,13 +112,13 @@ class Connection(object):
             except: pass
         return False
 
-    def is_host(self):
+    def is_host(self) -> bool:
         """
         Verifica se é um host ou client.
         """
         return self.__hosting
 
-    def recv(self):
+    def recv(self) -> Tuple[list[int, int], int]:
         """
         Retorna as coordenadas de origem e destino.
         """
@@ -134,7 +135,7 @@ class Connection(object):
             
         except timeout: pass
 
-    def send(self, origin, dest, promotion = 0):
+    def send(self, origin: list[int, int], dest: list[int, int], promotion: int = 0) -> bool:
         """
         Envia as coordenadas de origem e destino.
         """

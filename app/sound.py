@@ -2,12 +2,12 @@ from .data import paths
 from pyglet import media
 import random
 
-class SoundPlayer():
+class SoundPlayer(object):
     """
     Classe para reproduzir sons.
     """
     
-    def __init__(self, volume = 100, mute = False):
+    def __init__(self, volume: int = 100, mute: bool = False):
         self.__player = media.Player()
         self.set_volume(volume)
         self.set_mute(mute)
@@ -30,7 +30,7 @@ class SoundPlayer():
 
         self.__played_musics = []
 
-    def __load_sounds(self, *path):
+    def __load_sounds(self, *path: str) -> list[media.Source]:
         """
         Carrega todos os sons de um determinado diretório.
         """
@@ -41,16 +41,16 @@ class SoundPlayer():
             except: print("Failed loading", filename)
         return sounds
 
-    def __play_random_sound(self, sound_list):
+    def __play_random_sound(self, sound_list: list[media.Source]):
         """
         Reproduz um som aleatório de uma lista de sons.
         """
         if not sound_list: return
-        
+
         sound = random.choice(sound_list)
         self.__play_sound(sound)
         
-    def __play_sound(self, sound):
+    def __play_sound(self, sound: media.Source):
         """
         Reproduz um determinado som.
         """
@@ -58,25 +58,25 @@ class SoundPlayer():
         self.__player.queue(sound)
         self.__player.play()
 
-    def is_muted(self):
+    def is_muted(self) -> bool:
         """
         Verifica se o reprodutor está ativado ou não.
         """
         return self.__muted
 
-    def is_playing(self):
+    def is_playing(self) -> bool:
         """
         Verifica se algum som está sendo reproduzido.
         """
         return self.__player.playing
 
-    def get_volume(self):
+    def get_volume(self) -> int:
         """
         Retorna o volume do reprodutor.
         """
         return self.__volume
 
-    def set_mute(self, boolean):
+    def set_mute(self, boolean: bool):
         """
         Ativa ou desativa o reprodutor.
         """
@@ -85,7 +85,7 @@ class SoundPlayer():
         if boolean: self.__player.volume = 0
         else: self.__player.volume = self.__volume / 100
         
-    def set_volume(self, value):
+    def set_volume(self, value: int):
         """
         Define um volume para o reprodutor.
         """

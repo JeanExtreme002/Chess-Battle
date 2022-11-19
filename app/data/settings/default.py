@@ -3,7 +3,7 @@ import sys
 
 __all__ = ("default_settings",)
 
-def get_ip_address(remote_server = "8.8.8.8"):
+def get_ip_address(remote_server: str = "8.8.8.8") -> str:
     """
     Retorna o endereço IP privado.
     """

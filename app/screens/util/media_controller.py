@@ -51,7 +51,7 @@ class MediaController(HighlightedWidget):
             images = self.__images[5], widget_group = self.__widget_group
         )
 
-    def check(self, x, y):
+    def check(self, x: int, y: int) -> list[bool]:
         """
         Verifica se o cursor se encontra na posição de um dos botões.
         """
@@ -70,7 +70,7 @@ class MediaController(HighlightedWidget):
         super().draw()
         self.__widget_group.draw()
 
-    def is_playing(self):
+    def is_playing(self) -> bool:
         """
         Verifica se o botão de reprodução foi ativado.
         """

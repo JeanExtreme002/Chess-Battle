@@ -7,7 +7,7 @@ class FileCrypter(Crypter):
     dados de arquivos locais.
     """
 
-    def generate_key(self, password):
+    def generate_key(self, password: str) -> str:
         """
         Recebe uma senha e retorna uma chave parcial.
         """

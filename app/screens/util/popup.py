@@ -30,7 +30,7 @@ class Popup(HighlightedWidget):
         """
         self.__texts = []
 
-    def draw(self, with_message_only = True):
+    def draw(self, with_message_only: bool = True) -> bool:
         """
         Desenha o widget na tela, com a possível condição de que haja mensagem.
         """
@@ -45,13 +45,13 @@ class Popup(HighlightedWidget):
             
         return True
 
-    def has_message(self):
+    def has_message(self) -> bool:
         """
         Verifica se existe mensagem a ser exibida.
         """
         return len(self.__texts) > 0
 
-    def set_message(self, x, y, *lines, color = (0, 0, 0, 255), font_size = 16, anchor = ("center", "center"), line_spacing = 1):
+    def set_message(self, x: int, y: int, *lines: str, color: tuple[int] = (0, 0, 0, 255), font_size: int = 16, anchor: tuple[str] = ("center", "center"), line_spacing: int = 1):
         """
         Define uma mensagem a ser exibida.
         """

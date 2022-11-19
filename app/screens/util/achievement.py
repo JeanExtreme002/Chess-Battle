@@ -54,7 +54,7 @@ class Achievement(HighlightedWidget):
         if self.__frame_counter <= 0: self.__reset()
         else: self.__move(direction = -1)
 
-    def __move(self, direction = 1):
+    def __move(self, direction: int = 1):
         """
         Move os objetos gráficos verticalmente.
         """
@@ -105,7 +105,7 @@ class Achievement(HighlightedWidget):
         if self.__status == 1: self.__show()
         if self.__status == -1: self.__hide()
 
-    def set_achievement(self, title):
+    def set_achievement(self, title: str):
         """
         Define uma mensagem a ser exibida.
         """

@@ -4,7 +4,7 @@ class PortNumberEntry(Entry):
     """
     Classe para criar caixas de input para número PORT.
     """
-    def add_char(self, char):
+    def add_char(self, char: int):
         """
         Adiciona um caractere ao final da caixa de texto.
         """

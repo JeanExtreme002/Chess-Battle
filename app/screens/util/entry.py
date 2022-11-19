@@ -1,4 +1,5 @@
 from .widget import Widget
+from typing import Tuple
 
 class Entry(Widget):
     """
@@ -45,7 +46,7 @@ class Entry(Widget):
             color = (0, 0, 0, 255)
         )
 
-    def add_char(self, char):
+    def add_char(self, char: str):
         """
         Adiciona um caractere ao final da caixa de texto.
         """
@@ -53,7 +54,7 @@ class Entry(Widget):
         self.update_text()
         return True
 
-    def check(self, *cursor_pos):
+    def check(self, *cursor_pos: Tuple[int, int]):
         """
         Verifica se o cursor se encontra na posição da caixa de texto.
         """
@@ -91,7 +92,7 @@ class Entry(Widget):
         self.__background.draw()
         self.__text.draw()
 
-    def get_text(self):
+    def get_text(self) -> str:
         """
         Retorna o texto da caixa de texto.
         """
@@ -106,7 +107,7 @@ class Entry(Widget):
         
         self.update_text()
 
-    def set_pipe(self, boolean):
+    def set_pipe(self, boolean: bool):
         """
         Ativa ou desativa o pipe.
         """

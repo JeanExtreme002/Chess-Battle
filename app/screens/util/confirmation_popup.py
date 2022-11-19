@@ -35,7 +35,7 @@ class ConfirmationPopup(Popup):
             (self.__button_images[1][0], self.__button_images[1][1])
         )
 
-    def check(self, x, y):
+    def check(self, x: int, y: int) -> list[bool]:
         """
         Verifica se o cursor do mouse se
         encontra na posição dos botões.
@@ -44,7 +44,7 @@ class ConfirmationPopup(Popup):
         elif self.__confirm_button.check(x, y): return False, True
         return False, False
 
-    def draw(self, with_message_only = True):
+    def draw(self, with_message_only:bool = True) -> bool:
         """
         Desenha o widget na tela.
         """

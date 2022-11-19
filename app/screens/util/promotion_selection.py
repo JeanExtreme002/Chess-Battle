@@ -1,5 +1,6 @@
 from .button import Button
 from .highlighted_widget import HighlightedWidget
+from typing import Tuple
 
 class PromotionSelection(HighlightedWidget):
     """
@@ -59,7 +60,7 @@ class PromotionSelection(HighlightedWidget):
             (self.__images[3], self.__images[3])
         )
 
-    def check(self, *cursor_pos):
+    def check(self, *cursor_pos: Tuple[int, int]) -> list[bool]:
         """
         Verifica se o cursor se encontra na posição de um dos botões.
         """
@@ -84,7 +85,7 @@ class PromotionSelection(HighlightedWidget):
         self.__button_3.draw()
         self.__button_4.draw()
 
-    def set_message(self, message):
+    def set_message(self, message: str):
         """
         Define uma mensagem para o widget.
         """

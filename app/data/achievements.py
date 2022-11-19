@@ -1,3 +1,5 @@
+from ..crypter import Crypter
+from typing import Tuple
 import json, time
 
 __all__ = ("UserAchievements",)
@@ -8,14 +10,14 @@ class UserAchievements(object):
     as conquistas do jogador.
     """
 
-    def __init__(self, filename, crypter):
+    def __init__(self, filename: str, crypter: Crypter):
         self.__filename = filename
         self.__crypter = crypter
 
         self.__achievements = {}
         self.__load_achievements()
 
-    def __load_achievements(self):
+    def __load_achievements(self) -> list[list]:
         """
         Carrega as conquistas do arquivo.
         """
@@ -37,7 +39,7 @@ class UserAchievements(object):
             string = json.dumps(self.__achievements)
             file.write(self.__crypter.encrypt(string))
 
-    def add_achievement(self, title, description = ""):
+    def add_achievement(self, title: str, description: str = "") -> bool:
         """
         Adiciona uma nova conquista.
         """
@@ -50,7 +52,7 @@ class UserAchievements(object):
         self.__save_achievements()
         return True
 
-    def get_achievements(self):
+    def get_achievements(self) -> Tuple[str, str, str]:
         """
         Retorna a lista de todas as conquistas ordenada por data e hora.
         """

@@ -59,7 +59,7 @@ class Slide(Widget):
         """
         self.__sprite.draw()
 
-    def set_velocity(self, velocity):
+    def set_velocity(self, velocity: int):
         """
         Define uma velocidade de "fade effect".
         """

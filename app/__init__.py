@@ -1,3 +1,5 @@
+from core import ChessGame
+
 from .conn import Connection
 from .data import achievements, paths, settings
 from .screens import AchievementScreen, BoardScreen, HistoryScreen, HomeScreen, SettingsScreen, StartupScreen
@@ -7,6 +9,7 @@ from pyglet import canvas
 from pyglet import clock
 from pyglet import image
 from pyglet import window
+from typing import Union
 import os, time
 
 class Application(window.Window):
@@ -16,7 +19,7 @@ class Application(window.Window):
     
     __FRAMES_PER_SECOND = 60
     
-    def __init__(self, title, chess_game):
+    def __init__(self, title: str, chess_game: ChessGame):
         super().__init__(
             caption = title,
             width = settings.size[0],
@@ -114,7 +117,7 @@ class Application(window.Window):
         self.__current_screen = self.__home_screen
         self.__check_achivements()
 
-    def __finish_online_match_by_error(self):
+    def __finish_online_match_by_error(self) -> bool:
         """
         Encerra a partida online informando que houve um erro.
         """
@@ -123,7 +126,7 @@ class Application(window.Window):
 
         return False
 
-    def __get_movement(self):
+    def __get_movement(self) -> Union[list, bool]:
         """
         Retorna a jogada realizada pelo outro jogador, se houver.
         """
@@ -132,7 +135,7 @@ class Application(window.Window):
 
         return self.__finish_online_match_by_error()
 
-    def __send_movement(self, origin, dest, promotion = 0):
+    def __send_movement(self, origin: list[int, int], dest: list[int, int], promotion: int = 0) -> bool:
         """
         Envia a jogada realizada para o outro jogador.
         """
@@ -171,7 +174,7 @@ class Application(window.Window):
         self.__current_screen = self.__settings_screen
         self.set_message_to_title("Configurações")
 
-    def __start_connection(self, host_mode):
+    def __start_connection(self, host_mode: bool) -> bool:
         """
         Inicia uma conexão com outro jogador.
         """
@@ -180,7 +183,7 @@ class Application(window.Window):
         
         return self.__connection.is_connected()
         
-    def __start_game(self, selection):
+    def __start_game(self, selection: int):
         """
         Inicia o jogo, dada uma seleção (local ou online).
         """
@@ -201,7 +204,7 @@ class Application(window.Window):
         self.__current_screen = self.__board_screen
         self.set_message_to_title("Jogo Local")
 
-    def __start_online_game(self, selection):
+    def __start_online_game(self, selection: int):
         """
         Inicia o jogo no modo online.
         """
@@ -218,7 +221,7 @@ class Application(window.Window):
         self.__current_screen = self.__board_screen
         self.set_message_to_title("Jogo Online")
 
-    def __start_replay(self, game_id):
+    def __start_replay(self, game_id: str):
         """
         Inicia o jogo no modo replay.
         """
@@ -229,32 +232,32 @@ class Application(window.Window):
         self.__current_screen = self.__board_screen
         self.set_message_to_title("Replay da Partida \"#{}\"".format(game_id))
 
-    def add_achievement(self, title, description):
+    def add_achievement(self, title: str, description: str):
         """
         Adiciona uma nova conquista de usuário.
         """
         if achievements.add_achievement(title, description):
             self.__current_screen.set_achievement(title)
   
-    def get_fps(self):
+    def get_fps(self) -> float:
         """
         Retorna a taxa de frames por segundo do aplicativo.
         """
         return self.__FRAMES_PER_SECOND
 
-    def get_ip_address(self):
+    def get_ip_address(self) -> list[str, int]:
         """
         Retorna o endereço IP do usuário.
         """
         return self.__address[0], self.__address[1]
 
-    def get_sound_player(self):
+    def get_sound_player(self) -> SoundPlayer:
         """
         Retorna o reprodutor de som.
         """
         return self.__sound_player
 
-    def go_back(self, *error_message):
+    def go_back(self, *error_message: str):
         """
         Volta uma tela para trás.
         """
@@ -325,7 +328,7 @@ class Application(window.Window):
         """
         self.__current_screen.on_mouse_scroll(*args)
 
-    def resize(self, width, height):
+    def resize(self, width: int, height: int):
         """
         Altera o tamanho da tela do aplicativo.
         """
@@ -353,7 +356,7 @@ class Application(window.Window):
         settings.volume = self.__sound_player.get_volume()
         settings.muted = self.__sound_player.is_muted()
 
-    def set_ip_address(self, address, port):
+    def set_ip_address(self, address: str, port: int):
         """
         Define um endereço IP para o usuário.
         """
