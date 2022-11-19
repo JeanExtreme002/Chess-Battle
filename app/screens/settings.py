@@ -1,5 +1,5 @@
 from .screen import Screen
-from .util import Button, ConfirmationPopup, IPAddressEntry, PortNumberEntry, WidgetGroup
+from .util import Button, ConfirmationPopup, Entry, IPAddressEntry, PortNumberEntry, WidgetGroup
 from pyglet.window import mouse, key
 
 class SettingsScreen(Screen):
@@ -160,7 +160,7 @@ class SettingsScreen(Screen):
         self.sound_player.set_volume(self.__volume)
         self.sound_player.set_mute(self.__muted)
 
-        self.get_application().set_ip_address(self.__ip_entry.get_text(), self.__port_entry.get_text())
+        self.get_application().set_ip_address(self.__ip_entry.get_text(), int(self.__port_entry.get_text()))
         self.get_application().resize(*self.__resolutions[self.__resolution_index])
         self.get_application().save_settings()
 
