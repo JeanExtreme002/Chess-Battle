@@ -16,7 +16,9 @@ utilizando o [sistema de notação algébrica de xadrez](https://pt.wikipedia.or
 primeiramente a coluna e, logo em seguida, a linha da peça a ser movida. Faça o mesmo para a seleção do destino. Após isso, aperte ENTER ou SPACE
 para finalizar o movimento.
 
-Outras teclas úteis são **F12** para realizar capturas de tela (a imagem será salva no diretório `data/screenshots`) e **ESC** para voltar ao menu.
+Outras teclas úteis são: **F12** para capturas de tela e **ESC** para voltar ao menu.
+
+*Observação: a captura de tela será salva no diretório `data/screenshots`.* 
 
 ## Modo Online:
 Para jogar online, abra a tela de configurações e altere, se necessário, o seu endereço IP e o número PORT.<br><br> 
