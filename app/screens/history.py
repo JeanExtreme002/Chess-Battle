@@ -1,6 +1,7 @@
 from .screen import Screen
 from .util import Button, WidgetGroup
 from pyglet.window import mouse, key
+from typing import Callable
 
 class HistoryScreen(Screen):
     """
@@ -227,7 +228,7 @@ class HistoryScreen(Screen):
         self.__board = None
         self.__game = None
 
-    def __update_index(self, step = 1):
+    def __update_index(self, step: int = 1):
         """
         Atualiza o índice atual da lista de partidas.
         """
@@ -236,7 +237,7 @@ class HistoryScreen(Screen):
         
         self.__change_game()
 
-    def set_history(self, game_list):
+    def set_history(self, game_list: list[list[str]]):
         """
         Define os jogos disponíveis para replay.
         """
@@ -244,13 +245,13 @@ class HistoryScreen(Screen):
         self.__index = 0
         self.__change_game()
 
-    def set_replay_function(self, function):
+    def set_replay_function(self, function: Callable):
         """
         Define uma função de replay.
         """
         self.__replay_function = function
 
-    def on_draw_screen(self, by_scheduler = False):
+    def on_draw_screen(self, by_scheduler: bool = False):
         """
         Evento para desenhar a tela.
         """

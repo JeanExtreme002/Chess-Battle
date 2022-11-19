@@ -1,6 +1,7 @@
 from .screen import Screen
 from .util import Button, ConfirmationPopup, Popup, Slide, WidgetGroup
 from pyglet.window import mouse, key
+from typing import Callable
 import webbrowser
 
 class HomeScreen(Screen):
@@ -164,7 +165,7 @@ class HomeScreen(Screen):
             widget_group = self.__widget_group
         )
 
-    def __check_buttons(self, x, y):
+    def __check_buttons(self, x: int, y: int):
         """
         Retorna os botões no qual o cursor se encontra.
         """
@@ -185,7 +186,7 @@ class HomeScreen(Screen):
         url = "https://www.youtube.com/watch?v=bTS9XaoQ6mg"
         webbrowser.open(url)
         
-    def __set_dialog_box_message(self, widget, *message):
+    def __set_dialog_box_message(self, widget: Popup, *message: str):
         """
         Define uma mensagem a ser mostrada em
         um widget de caixa de mensagem.
@@ -196,38 +197,38 @@ class HomeScreen(Screen):
             line_spacing = int(self.width * 0.025)
         )
 
-    def set_popup_message(self, *message):
+    def set_popup_message(self, *message: str):
         """
         Define uma mensagem a ser mostrada na tela.
         """
         if not message[0]: return self.__popup.delete_message()
         self.__set_dialog_box_message(self.__popup, *message)
 
-    def set_achievement_function(self, func):
+    def set_achievement_function(self, func: Callable):
         """
         Define uma função para o botão de conquistas.
         """
         self.__achievement_function = func
 
-    def set_history_function(self, func):
+    def set_history_function(self, func: Callable):
         """
         Define uma função para o botão de histórico de partidas.
         """
         self.__history_function = func
 
-    def set_play_function(self, func):
+    def set_play_function(self, func: Callable):
         """
         Define uma função para o botão de jogar.
         """
         self.__play_function = func
 
-    def set_settings_function(self, func):
+    def set_settings_function(self, func: Callable):
         """
         Define uma função para o botão de configurações.
         """
         self.__settings_function = func
 
-    def on_draw_screen(self, by_scheduler = False):
+    def on_draw_screen(self, by_scheduler: bool = False):
         """
         Evento para desenhar a tela.
         """

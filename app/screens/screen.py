@@ -50,13 +50,13 @@ class Screen(ABC):
     def sound_player(self):
         return self.__application.get_sound_player()
 
-    def create_batch(self, *args, **kwargs):
+    def create_batch(self, *args, **kwargs) -> graphics.Batch:
         """
         Cria um batch.
         """
         return graphics.Batch(*args, **kwargs)
 
-    def create_rectangle(self, x, y, width, height, **kwargs):
+    def create_rectangle(self, x: int, y: int, width: int, height: int, **kwargs) -> shapes.Rectangle:
         """
         Cria um retângulo, com a posição Y invertida.
         """
@@ -71,21 +71,21 @@ class Screen(ABC):
         )
         return shape
 
-    def create_sprite(self, img, x, y, **kwargs):
+    def create_sprite(self, img: image.TextureRegion, x: int, y: int, **kwargs) -> sprite.Sprite:
         """
         Cria uma imagem, com a posição Y invertida.
         """
         y = self.get_true_y_position(y, img.height)
         return sprite.Sprite(img, x = x, y = y, **kwargs)
 
-    def create_text(self, string, x, y, **kwargs):
+    def create_text(self, string: str, x: int, y: int, **kwargs) -> text.Label:
         """
         Cria um texto, com a posição Y invertida.
         """
         y = self.get_true_y_position(y)
         return text.Label(string, x = x, y = y, **kwargs)
 
-    def free_memory(self, save_original = True):
+    def free_memory(self, save_original: bool = True):
         """
         Método para apagar todas as imagens utilizadas pela tela.
         """
@@ -119,13 +119,13 @@ class Screen(ABC):
         """
         return self.__application
 
-    def get_true_y_position(self, y, height = 0):
+    def get_true_y_position(self, y: int, height: int = 0):
         """
         Calcula a posição Y invertida.
         """
         return self.height - y - height
 
-    def load_image(self, filename, size = "original", save = True):
+    def load_image(self, filename: str, size: tuple[int, int] = "original", save: bool = True) -> image.TextureRegion:
         """
         Carrega uma imagem.
         """
@@ -179,7 +179,7 @@ class Screen(ABC):
         """
         self.__application.close()
         
-    def on_draw(self, by_scheduler = False):
+    def on_draw(self, by_scheduler: bool = False):
         """
         Evento para desenhar a tela.
         """
@@ -189,7 +189,7 @@ class Screen(ABC):
         Screen._achievement_widget.draw()
 
     @abstractmethod
-    def on_draw_screen(self, by_scheduler = False):
+    def on_draw_screen(self, by_scheduler: bool = False):
         """
         Método chamado pelo evento on_draw para desenhar a tela.
         """
@@ -232,7 +232,7 @@ class Screen(ABC):
         """
         return x, self.get_true_y_position(y), scroll_y
 
-    def print_screen(self, region = None, filename = None):
+    def print_screen(self, region: tuple[int, int, int, int] = None, filename: str = None):
         """
         Tira um print da tela do jogo e salva em imagem.
         """
@@ -259,7 +259,7 @@ class Screen(ABC):
         # Conquista de usuário.
         if not region: self.get_application().add_achievement("Congelando o tempo...", "Realizou uma captura de tela.")
 
-    def set_achievement(self, title):
+    def set_achievement(self, title: str):
         """
         Mostra uma conquista obtida na tela.
         """

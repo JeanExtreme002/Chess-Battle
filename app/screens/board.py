@@ -1,6 +1,7 @@
 from .screen import Screen
 from .util import ConfirmationPopup, MediaController, Popup, PromotionSelection
 from pyglet.window import mouse, key
+from typing import Callable, Union
 import random
 
 class BoardScreen(Screen):
@@ -262,7 +263,7 @@ class BoardScreen(Screen):
             text = self.__create_board_coord_text(chr(ord("8") - row), x, y)
             self.__board_coord_texts.append(text)
 
-    def __create_board_coord_text(self, string, x, y):
+    def __create_board_coord_text(self, string: str, x: int, y: int):
         """
         Cria o texto de uma coordenada do tabuleiro.
         """
@@ -303,7 +304,7 @@ class BoardScreen(Screen):
         )
         sprite_list.append(sprite)
 
-    def __create_target_shadow(self, row, column):
+    def __create_target_shadow(self, row: int, column: int):
         """
         Cria uma sombra para uma dada casa do tabuleiro,
         identificando o destino da peça selecionada.
@@ -369,7 +370,7 @@ class BoardScreen(Screen):
         self.__selected_piece_index = None
         self.__selected_piece_position = None
 
-    def __execute_replay_action(self, actions):
+    def __execute_replay_action(self, actions: list[bool]):
         """
         Executa uma funcionalidade do modo replay.
         """
@@ -433,7 +434,7 @@ class BoardScreen(Screen):
         
         self.__set_dialog_box_message(self.__popup, title, message)
             
-    def __get_coord_on_board(self, x, y):
+    def __get_coord_on_board(self, x: int, y: int) -> Union[int, int]:
         """
         Retorna a posição da casa do tabuleiro
         em que o cursor se encontra no momento.
@@ -451,7 +452,7 @@ class BoardScreen(Screen):
                 if pos_x <= x <= pos_x + step and pos_y <= y <= pos_y + step:
                     return index_y, index_x
 
-    def __get_piece_image_pos(self, x, y):
+    def __get_piece_image_pos(self, x: int, y: int) -> Union[int, int]:
         """
         Retorna a posição na tela da imagem de peça, dadas
         as coordenadas da mesma no tabuleiro.
@@ -460,7 +461,7 @@ class BoardScreen(Screen):
         pos_y = self.__board_y + self.__square_size * y
         return pos_x, pos_y
 
-    def __is_key_input_buffer_full(self):
+    def __is_key_input_buffer_full(self) -> bool:
         """
         Verifica se o buffer de teclas de coordenadas está cheio.
         """
@@ -468,7 +469,7 @@ class BoardScreen(Screen):
             if key is None: return False
         return True
 
-    def __is_mouse_on_board(self, x, y):
+    def __is_mouse_on_board(self, x: int, y: int) -> bool:
         """
         Verifica se o cursor está dentro do campo do tabuleiro.
         """
@@ -497,7 +498,7 @@ class BoardScreen(Screen):
                 piece_image = self.load_image(piece_filename, (size, size))
                 self.__destroyed_piece_images[color][name] = piece_image
 
-    def __load_piece_images(self, size):
+    def __load_piece_images(self, size: int):
         """
         Carrega as imagens das peças do jogo,
         salvando-as em um dicionário.
@@ -517,7 +518,7 @@ class BoardScreen(Screen):
                 piece_image = self.load_image(piece_filename, (size, size))
                 self.__piece_images[color][name] = piece_image
 
-    def __move_piece(self, row, column, received = False):
+    def __move_piece(self, row: int, column: int, received: bool = False):
         """
         Move a peça selecionada para uma posição XY, se possível.
         """
@@ -598,7 +599,7 @@ class BoardScreen(Screen):
         if piece.name == "knight": self.sound_player.play_getting_knight_sound()
         else: self.sound_player.play_getting_sound() 
 
-    def __replay_to(self, direction = 1):
+    def __replay_to(self, direction: int = 1):
         """
         Avança ou retrocede o jogo no modo replay.
         """
@@ -614,7 +615,7 @@ class BoardScreen(Screen):
         # Caso haja um erro, o mesmo será alertado.
         except: self.__replay_error = True
 
-    def __select_coordinate(self, index, axis_y = False, target = False):
+    def __select_coordinate(self, index: int, axis_y: bool = False, target: bool = False):
         """
         Seleciona uma coordenada do tabuleiro.
         """
@@ -623,7 +624,7 @@ class BoardScreen(Screen):
         text = self.__board_coord_texts[index + (8 if axis_y else 0)]
         text.color = self.__COORD_TEXT_COLOR[2 if target else 1]
 
-    def __select_piece(self, row, column, piece_on = False, received = False):
+    def __select_piece(self, row: int, column: int, piece_on: bool = False, received: bool = False):
         """
         Seleciona uma peça do tabuleiro.
         """
@@ -649,7 +650,7 @@ class BoardScreen(Screen):
         self.__selected_piece_index = (row, column)
         self.__selected_piece_position = (sprite.x, sprite.y)
 
-    def __select_piece_by_keyboard(self, row, column):
+    def __select_piece_by_keyboard(self, row: int, column: int):
         """
         Define uma peça a ser selecionada, para que a mesma
         possa ser movida através do teclado.
@@ -671,7 +672,7 @@ class BoardScreen(Screen):
         # Seleciona a peça.
         self.__select_piece(row, column)
 
-    def __select_piece_by_mouse(self, row, column):
+    def __select_piece_by_mouse(self, row: int, column: int):
         """
         Define uma peça a ser selecionada, para que a mesma
         possa ser movida livremente com o cursor.
@@ -680,7 +681,7 @@ class BoardScreen(Screen):
         self.__moving_by_mouse = True
         self.__select_piece(row, column, True)
         
-    def __set_dialog_box_message(self, widget, *message):
+    def __set_dialog_box_message(self, widget: Popup, *message: str):
         """
         Define uma mensagem a ser mostrada em
         um widget de caixa de mensagem.
@@ -691,7 +692,7 @@ class BoardScreen(Screen):
             line_spacing = int(self.width * 0.025)
         )
 
-    def __set_promotion(self, index):
+    def __set_promotion(self, index: int):
         """
         Define uma promoção para o peão.
         """
@@ -795,14 +796,14 @@ class BoardScreen(Screen):
     def REPLAY_MODE(self):
         return self.__REPLAY_MODE
 
-    def set_board_coordinates(self, boolean = True):
+    def set_board_coordinates(self, boolean: bool = True):
         """
         Mostra ou esconde as coordenadas do tabuleiro.
         """
         self.__delete_board_coordinates()
         if boolean: self.__create_board_coordinates()
 
-    def set_new_game(self, game, mode, sender_func = None, receiver_func = None, is_first_player = False):
+    def set_new_game(self, game, mode, sender_func: Callable = None, receiver_func: Callable = None, is_first_player: bool = False):
         """
         Define um novo jogo.
         """
@@ -853,7 +854,7 @@ class BoardScreen(Screen):
         """
         self.on_key_press(key.ESCAPE, None)
 
-    def on_draw_screen(self, by_scheduler = False):
+    def on_draw_screen(self, by_scheduler: bool = False):
         """
         Evento para desenhar a tela.
         """

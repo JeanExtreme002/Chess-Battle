@@ -57,7 +57,7 @@ class AchievementScreen(Screen):
         self.__achievement_image = self.load_image(self.__achievement_filename, (self.__achievement_width, self.__achievement_height))
         self.__achievements = []
 
-    def __move_by_mouse(self, x, y):
+    def __move_by_mouse(self, x: int, y: int):
         """
         Move a lista através do mouse, utilizando a barra de rolagem.
         """
@@ -68,7 +68,7 @@ class AchievementScreen(Screen):
             self.__moving = True
             self.__move_list(self.__start + page_y)
 
-    def __move_list(self, velocity = 1):
+    def __move_list(self, velocity: int = 1):
         """
         Move a lista de conquistas verticalmente.
         """
@@ -82,7 +82,7 @@ class AchievementScreen(Screen):
             for widget in achievement:
                 widget.y += velocity
 
-    def add_achievement(self, title, description, date):
+    def add_achievement(self, title: str, description: str, date: str):
         """
         Adiciona mais uma conquista para a lista.
         """
@@ -129,7 +129,7 @@ class AchievementScreen(Screen):
         self.__scrollbar.set_max_value(self.__scrollbar_value - self.height * 0.5)
         self.__achievements.append([background, title, description, date])
 
-    def on_draw_screen(self, by_scheduler = False):
+    def on_draw_screen(self, by_scheduler: bool = False):
         """
         Evento para desenhar a tela.
         """

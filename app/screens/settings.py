@@ -169,7 +169,7 @@ class SettingsScreen(Screen):
         # Conquista de usuário.
         self.get_application().add_achievement("Do jeitinho que eu gosto.", "Alterou as configurações do jogo.")
 
-    def __change_entry_text(self, entry, symbol):
+    def __change_entry_text(self, entry: Entry, symbol):
         """
         Altera o texto de uma caixa de entrada.
         """
@@ -259,7 +259,7 @@ class SettingsScreen(Screen):
         
         self.__sound_button.change_image(images)
 
-    def on_draw_screen(self, by_scheduler = False):
+    def on_draw_screen(self, by_scheduler: bool = False):
         """
         Evento para desenhar a tela.
         """
