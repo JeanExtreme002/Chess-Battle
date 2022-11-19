@@ -3,7 +3,8 @@ Este é um projeto para a disciplina Programação Orientada a Objetos (MATA-55)
 utilizando a biblioteca [pyglet](https://pyglet.org/), por recomendação do professor.
 
 ## Preparando o ambiente:
-Para executar o jogo, é necessário ter instalado o Python 3.9, ou superior, e suas dependências, utilizando o comando abaixo.
+Para executar o jogo, é necessário ter instalado o Python 3.9, ou superior.<br><br> 
+Instale as suas dependências utilizando o comando abaixo:
 ```
 pip install -r requirements.txt
 ```
