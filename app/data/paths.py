@@ -16,7 +16,7 @@ class Paths(object):
     replay_path = os.path.join(data_path, "replay")
     replay_images_path = os.path.join(replay_path, "images")
     
-    screenshot_path = os.path.join(data_path, "screenshot")
+    screenshot_path = os.path.join(data_path, "screenshots")
 
     achievements_filename = os.path.join(data_path, "0001.userdata")
     settings_filename = os.path.join(data_path, "0002.userdata")
