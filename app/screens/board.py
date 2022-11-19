@@ -380,9 +380,7 @@ class BoardScreen(Screen):
             if self.__replay_controller.is_playing():
                 self.__replay_controller.switch_play_button()
             
-            self.__game.back()
-            self.__update_piece_sprites()
-            self.__update_destroyed_piece_sprites()
+            self.__replay_to(direction = -1)
 
         elif actions[1] and self.__replay_velocity > -1:
             self.__replay_velocity -= 0.1
@@ -399,9 +397,7 @@ class BoardScreen(Screen):
             if self.__replay_controller.is_playing():
                 self.__replay_controller.switch_play_button()
             
-            self.__game.next()
-            self.__update_piece_sprites()
-            self.__update_destroyed_piece_sprites()
+            self.__replay_to(direction = 1)
 
     def __finish_game(self, color):
         """
@@ -602,6 +598,22 @@ class BoardScreen(Screen):
         if piece.name == "knight": self.sound_player.play_getting_knight_sound()
         else: self.sound_player.play_getting_sound() 
 
+    def __replay_to(self, direction = 1):
+        """
+        Avança ou retrocede o jogo no modo replay.
+        """
+        try:
+            # Altera o estado do tabuleiro.
+            if direction >= 0: self.__game.next()
+            else: self.__game.back()
+                
+            # Atualiza as sprites.
+            self.__update_piece_sprites()
+            self.__update_destroyed_piece_sprites()
+
+        # Caso haja um erro, o mesmo será alertado.
+        except: self.__replay_error = True
+
     def __select_coordinate(self, index, axis_y = False, target = False):
         """
         Seleciona uma coordenada do tabuleiro.
@@ -750,8 +762,8 @@ class BoardScreen(Screen):
         # Verifica se chegou o momento de atualizar, com base no FPS do jogo.
         if self.__replay_frame_counter >= self.get_application().get_fps() * proportion:
             
-            if self.__replay_velocity < 0: self.__game.back()
-            else: self.__game.next()
+            if self.__replay_velocity < 0: self.__replay_to(direction = -1)
+            else: self.__replay_to(direction = 1)
 
             # Reproduz um som de movimento ou ataque.
             if not self.__game.replay_on_end:
@@ -760,10 +772,6 @@ class BoardScreen(Screen):
                 
                 elif self.__replay_velocity >= 0:
                     self.sound_player.play_movement_sound()
-
-            # Atualiza as sprites.
-            self.__update_piece_sprites()
-            self.__update_destroyed_piece_sprites()
 
             # Informa se o replay chegou ao fim, alterando o botão.
             if self.__game.replay_on_begin or self.__game.replay_on_end:
@@ -816,6 +824,7 @@ class BoardScreen(Screen):
 
         self.__replay_velocity = 0
         self.__replay_frame_counter = 0
+        self.__replay_error = False
 
         # Define a reprodução automática ao iniciar o jogo no modo replay.
         if not self.__replay_controller.is_playing():
@@ -848,6 +857,10 @@ class BoardScreen(Screen):
         """
         Evento para desenhar a tela.
         """
+        if self.__mode == self.REPLAY_MODE and self.__replay_error:
+            return self.get_application().go_back("ERRO AO CARREGAR O REPLAY", "Parece que o arquivo está corrompido.")
+
+        # Obtém o vencedor da partida, caso haja.
         winner = self.__game.get_winner() if self.__mode != self.REPLAY_MODE else None
         
         # Verifica se houve alguma jogada realizada pelo outro jogador.

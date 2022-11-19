@@ -223,7 +223,9 @@ class Application(window.Window):
         """
         Inicia o jogo no modo replay.
         """
-        self.__chess_game.start_replay(game_id)
+        try: self.__chess_game.start_replay(game_id)
+        except: return self.go_back("ERRO AO CARREGAR O REPLAY", "Parece que o arquivo está corrompido.")
+        
         self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.REPLAY_MODE)
         self.__current_screen = self.__board_screen
         self.set_message_to_title("Replay da Partida \"#{}\"".format(game_id))
@@ -253,18 +255,23 @@ class Application(window.Window):
         """
         return self.__sound_player
 
-    def go_back(self):
+    def go_back(self, *error_message):
         """
         Volta uma tela para trás.
         """
         self.set_caption(self.__title)
         self.__sound_player.stop_sound()
-        
+
+        # Encerra a conexão com o outro jogador, caso exista.
         if self.__connection:
             self.__connection.close()
             self.__connection = None
 
+        # Encerra qualquer jogo aberto.
         self.__chess_game.close()
+
+        # Retorna para a tela de menu, mostrando uma mensagem de erro, caso haja.
+        if error_message: self.__home_screen.set_popup_message(*error_message)
         self.__current_screen = self.__home_screen
     
     def on_close(self):
