@@ -17,10 +17,18 @@ class SoundPlayer(object):
                 "starting": self.__load_sounds("effects", "starting"),
                 "attacking": self.__load_sounds("effects", "attacking"),
                 "defeat": self.__load_sounds("effects", "defeat"),
-                "dropping": self.__load_sounds("effects", "dropping"),
+                "dropping_bishop": self.__load_sounds("effects", "dropping_bishop"),
+                "dropping_king": self.__load_sounds("effects", "dropping_king"),
                 "dropping_knight": self.__load_sounds("effects", "dropping_knight"),
-                "getting": self.__load_sounds("effects", "getting"),
+                "dropping_pawn": self.__load_sounds("effects", "dropping_pawn"),
+                "dropping_queen": self.__load_sounds("effects", "dropping_queen"),
+                "dropping_rook": self.__load_sounds("effects", "dropping_rook"),
+                "getting_bishop": self.__load_sounds("effects", "getting_bishop"),
+                "getting_king": self.__load_sounds("effects", "getting_king"),
                 "getting_knight": self.__load_sounds("effects", "getting_knight"),
+                "getting_pawn": self.__load_sounds("effects", "getting_pawn"),
+                "getting_queen": self.__load_sounds("effects", "getting_queen"),
+                "getting_rook": self.__load_sounds("effects", "getting_rook"),
                 "invalid_movement": self.__load_sounds("effects", "invalid_movement"),
                 "movement": self.__load_sounds("effects", "movement"),
                 "victory": self.__load_sounds("effects", "victory")
@@ -113,32 +121,88 @@ class SoundPlayer(object):
         sounds = self.__loaded_sounds["effects"]["defeat"]
         self.__play_random_sound(sounds)
 
-    def play_dropping_sound(self):
+    def play_dropping_bishop_sound(self):
         """
-        Reproduz som de largar a peça selecionada.
+        Reproduz som de largar o bispo.
         """
-        sounds = self.__loaded_sounds["effects"]["dropping"]
+        sounds = self.__loaded_sounds["effects"]["dropping_bishop"]
+        self.__play_random_sound(sounds)
+
+    def play_dropping_king_sound(self):
+        """
+        Reproduz som de largar o rei.
+        """
+        sounds = self.__loaded_sounds["effects"]["dropping_king"]
         self.__play_random_sound(sounds)
 
     def play_dropping_knight_sound(self):
         """
-        Reproduz som de largar a peça selecionada.
+        Reproduz som de largar o cavalo.
         """
         sounds = self.__loaded_sounds["effects"]["dropping_knight"]
         self.__play_random_sound(sounds)
 
-    def play_getting_sound(self):
+    def play_dropping_pawn_sound(self):
         """
-        Reproduz som de selecionar peça.
+        Reproduz som de largar o peão.
         """
-        sounds = self.__loaded_sounds["effects"]["getting"]
+        sounds = self.__loaded_sounds["effects"]["dropping_pawn"]
+        self.__play_random_sound(sounds)
+
+    def play_dropping_queen_sound(self):
+        """
+        Reproduz som de largar a rainha.
+        """
+        sounds = self.__loaded_sounds["effects"]["dropping_queen"]
+        self.__play_random_sound(sounds)
+
+    def play_dropping_rook_sound(self):
+        """
+        Reproduz som de largar a torre.
+        """
+        sounds = self.__loaded_sounds["effects"]["dropping_rook"]
+        self.__play_random_sound(sounds)
+
+    def play_getting_bishop_sound(self):
+        """
+        Reproduz som de selecionar o bispo.
+        """
+        sounds = self.__loaded_sounds["effects"]["getting_bishop"]
+        self.__play_random_sound(sounds)
+
+    def play_getting_king_sound(self):
+        """
+        Reproduz som de selecionar o rei.
+        """
+        sounds = self.__loaded_sounds["effects"]["getting_king"]
         self.__play_random_sound(sounds)
 
     def play_getting_knight_sound(self):
         """
-        Reproduz som de selecionar peça.
+        Reproduz som de selecionar o cavalo.
         """
         sounds = self.__loaded_sounds["effects"]["getting_knight"]
+        self.__play_random_sound(sounds)
+
+    def play_getting_pawn_sound(self):
+        """
+        Reproduz som de selecionar o peão.
+        """
+        sounds = self.__loaded_sounds["effects"]["getting_pawn"]
+        self.__play_random_sound(sounds)
+
+    def play_getting_queen_sound(self):
+        """
+        Reproduz som de selecionar a rainha.
+        """
+        sounds = self.__loaded_sounds["effects"]["getting_queen"]
+        self.__play_random_sound(sounds)
+
+    def play_getting_rook_sound(self):
+        """
+        Reproduz som de selecionar a torre.
+        """
+        sounds = self.__loaded_sounds["effects"]["getting_rook"]
         self.__play_random_sound(sounds)
 
     def play_invalid_movement_sound(self):

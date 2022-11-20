@@ -589,15 +589,23 @@ class BoardScreen(Screen):
         """
         Reproduz som de largar peça.
         """
-        if piece.name == "knight": self.sound_player.play_dropping_knight_sound()
-        else: self.sound_player.play_dropping_sound() 
+        if piece.name == "bishop": self.sound_player.play_dropping_bishop_sound()
+        elif piece.name == "king": self.sound_player.play_dropping_king_sound()
+        elif piece.name == "knight": self.sound_player.play_dropping_knight_sound()
+        elif piece.name == "pawn": self.sound_player.play_dropping_pawn_sound()
+        elif piece.name == "queen": self.sound_player.play_dropping_queen_sound()
+        elif piece.name == "rook": self.sound_player.play_dropping_rook_sound()
 
     def __play_getting_piece_sound(self, piece):
         """
         Reproduz som de selecionar peça.
         """
-        if piece.name == "knight": self.sound_player.play_getting_knight_sound()
-        else: self.sound_player.play_getting_sound() 
+        if piece.name == "bishop": self.sound_player.play_getting_bishop_sound()
+        elif piece.name == "king": self.sound_player.play_getting_king_sound() 
+        elif piece.name == "knight": self.sound_player.play_getting_knight_sound()
+        elif piece.name == "pawn": self.sound_player.play_getting_pawn_sound()
+        elif piece.name == "queen": self.sound_player.play_getting_queen_sound()
+        elif piece.name == "rook": self.sound_player.play_getting_rook_sound()
 
     def __replay_to(self, direction: int = 1):
         """
@@ -979,7 +987,7 @@ class BoardScreen(Screen):
             self.__replay_controller.check(x, y)
 
         # Atualiza a posição da imagem da peça selecionada.
-        if self.__moving_by_mouse:
+        if self.__moving_by_mouse and self.__selected_piece:
             piece = self.__selected_piece
             piece.x = x - piece.width // 2
             piece.y = self.get_true_y_position(y - piece.height // 2, piece.height)
