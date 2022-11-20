@@ -10,5 +10,6 @@ from .port_number_entry import PortNumberEntry
 from .promotion_selection import PromotionSelection
 from .scrollbar import Scrollbar
 from .slide import Slide
+from .snow import Snow
 from .widget import Widget
 from .widget_group import WidgetGroup

@@ -26,5 +26,6 @@ default_settings = {
     "size": (1280, 720),
     "volume": 100,
     "muted": False,
-    "address": [get_ip_address(), 5000]
+    "address": [get_ip_address(), 5000],
+    "defeated": False
 }

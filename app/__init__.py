@@ -100,6 +100,7 @@ class Application(window.Window):
         self.__home_screen.set_settings_function(self.__show_settings_screen)
         self.__home_screen.set_history_function(self.__show_history_screen)
         self.__home_screen.set_achievement_function(self.__show_achievement_screen)
+        self.__home_screen.set_defeat_theme(settings.defeated)
         
         self.__board_screen = BoardScreen(self)
         self.__board_screen.set_board_coordinates(True)
@@ -113,7 +114,7 @@ class Application(window.Window):
         if self.__initializing:
             self.__current_screen.free_memory()
             self.__initializing = False
-            
+
         self.__current_screen = self.__home_screen
         self.__check_achivements()
 
@@ -188,7 +189,7 @@ class Application(window.Window):
         Inicia o jogo, dada uma seleção (local ou online).
         """
         self.__chess_game.new_game("LOCAL" if selection == 1 else "ONLINE")
-
+        
         # Inicia o jogo localmente.
         if selection == 1: return self.__start_local_game()
 
@@ -200,6 +201,8 @@ class Application(window.Window):
         """
         Inicia o jogo no modo local.
         """
+        self.__home_screen.set_defeat_theme(False)
+        
         self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
         self.__current_screen = self.__board_screen
         self.set_message_to_title("Jogo Local")
@@ -213,6 +216,7 @@ class Application(window.Window):
             return self.__current_screen.set_popup_message("Infelizmente, não foi possível conectar.", "Por favor, verique a sua conexão.")
 
         self.__current_screen.set_popup_message(None)
+        self.__home_screen.set_defeat_theme(False)
         
         self.__board_screen.set_new_game(
             self.__chess_game, self.__board_screen.ONLINE_MODE,
@@ -257,15 +261,21 @@ class Application(window.Window):
         """
         return self.__sound_player
 
-    def go_back(self, *error_message: str):
+    def go_back(self, *error_message: str, **kwargs):
         """
         Volta uma tela para trás.
         """
         self.set_caption(self.__title)
 
         # Interrompe a reprodução de qualquer som ativo da partida finalizada.
-        if self.__current_screen is self.__board_screen:
+        if self.__current_screen is self.__board_screen and self.__connection:
             self.__sound_player.stop_sound()
+
+        # Define um tema de derrota, caso o jogador tenha perdido.
+        if self.__current_screen is self.__board_screen:
+            settings.defeated = kwargs.get("defeat", settings.defeated)
+            
+        self.__home_screen.set_defeat_theme(settings.defeated)
 
         # Encerra a conexão com o outro jogador, caso exista.
         if self.__connection:

@@ -33,10 +33,12 @@ class SoundPlayer(object):
                 "movement": self.__load_sounds("effects", "movement"),
                 "victory": self.__load_sounds("effects", "victory")
             },
-            "music": self.__load_sounds("music")
+            "music": self.__load_sounds("music"),
+            "defeat_music": self.__load_sounds("music", "defeat")
         }
 
         self.__played_musics = []
+        self.__played_defeat_musics = []
 
     def __load_sounds(self, *path: str) -> list[media.Source]:
         """
@@ -113,6 +115,28 @@ class SoundPlayer(object):
         """
         sounds = self.__loaded_sounds["effects"]["attacking"]
         self.__play_random_sound(sounds)
+        
+    def play_defeat_music(self):
+        """
+        Reproduz uma música de derrota.
+        """
+        if not self.__loaded_sounds["defeat_music"] and not self.__played_defeat_musics: return
+        
+        # Verifica se todas as músicas já foram reproduzidas. Se sim,
+        # todas as músicas ficarão disponíveis novamente.
+        if len(self.__loaded_sounds["defeat_music"]) == 0:
+            self.__loaded_sounds["defeat_music"] = self.__played_defeat_musics
+            self.__played_defeat_musics = []
+            
+        sound = random.choice(self.__loaded_sounds["defeat_music"])
+
+        # Remove a música temporariamente da lista, para evitar
+        # que a mesma seja reproduzida novamente.
+        self.__played_defeat_musics.append(sound)
+        self.__loaded_sounds["defeat_music"].remove(sound)
+        
+        self.__play_sound(sound)
+
 
     def play_defeat_sound(self):
         """

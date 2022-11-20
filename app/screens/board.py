@@ -414,14 +414,16 @@ class BoardScreen(Screen):
             filename = self.get_application().paths.get_replay_image("{}.png".format(self.__game.id))
         )
 
+        # Indica que houve uma derrota, no modo online.
+        self.__online_defeat = self.__mode == self.ONLINE_MODE and color.value != self.__player
+
         # Conquista de usuário.
         if self.__mode == self.ONLINE_MODE:
             if color.value == self.__player: self.get_application().add_achievement("Vida longa ao rei!", "Ganhou uma partida no modo online.")
-            else: self.get_application().add_achievement("Dias frios e chuvosos...", "Perdeu uma partida no modo online.")
+            else: self.get_application().add_achievement("Dias frios e sombrios...", "Perdeu uma partida no modo online.")
 
         # Reproduz um som de vitória ou derrota.
-        if self.__mode == self.ONLINE_MODE and color.value != self.__player:
-            self.sound_player.play_defeat_sound()
+        if self.__online_defeat: self.sound_player.play_defeat_sound()
         else: self.sound_player.play_victory_sound()
 
         # Define uma mensagem para ser mostrado ao jogador.
@@ -827,6 +829,7 @@ class BoardScreen(Screen):
         self.__promotion_available = False
         
         self.__player = int(not is_first_player) # WHITE = 0; BLACK = 1
+        self.__online_defeat = False
 
         self.__request_interval = self.get_application().get_fps() * 0.2
         self.__request_frame_counter = 0
@@ -927,7 +930,7 @@ class BoardScreen(Screen):
         # Sai da tela do tabuleiro se o mesmo tiver sido finalizado.
         if self.__finished:
             self.__popup.delete_message()
-            return self.get_application().go_back()
+            return self.get_application().go_back(defeat = self.__online_defeat)
 
         # Qualquer ação será realizada somente se não houver mensagem sendo mostrada na tela.
         if self.__confirmation_popup.has_message(): return
@@ -999,7 +1002,7 @@ class BoardScreen(Screen):
         # Sai da tela do tabuleiro se o mesmo tiver sido finalizado.
         if self.__finished:
             self.__popup.delete_message()
-            return self.get_application().go_back()
+            return self.get_application().go_back(defeat = self.__online_defeat)
 
         x, y, mouse_button = super().on_mouse_release(*args)[0: 3]
         if mouse_button != mouse.LEFT: return

@@ -1,4 +1,4 @@
-from .util import Achievement
+from .util import Achievement, Snow
 from abc import ABC, abstractmethod
 from pyglet import image
 from pyglet import gl
@@ -20,6 +20,7 @@ class Screen(ABC):
 
     _images = dict()
     _achievement_widget = None
+    _defeat_theme = False
     
     def __init__(self, application):
         self.__application = application
@@ -29,9 +30,11 @@ class Screen(ABC):
         """
         Cria todas as imagens e objetos gráficos
         necessários para desenhar a tela.
-        """
+        """ 
         application = self.get_application()
         achievement_filename = application.paths.get_image("general", "trophy.png")
+
+        Screen._snow_widget = Snow(self)
         
         Screen._achievement_widget = Achievement(
             self, (application.width * 0.4, application.height * 0.13),
@@ -186,6 +189,12 @@ class Screen(ABC):
         if by_scheduler: Screen._achievement_widget.next()
         
         self.on_draw_screen(by_scheduler)
+
+        # Desenha uma nevasca na tela caso solicitado um tema de derrota.
+        if Screen._defeat_theme:
+            Screen._snow_widget.next()
+            Screen._snow_widget.draw()
+        
         Screen._achievement_widget.draw()
 
     @abstractmethod
@@ -264,3 +273,9 @@ class Screen(ABC):
         Mostra uma conquista obtida na tela.
         """
         Screen._achievement_widget.set_achievement(title)
+
+    def set_defeat_theme(self, boolean: bool):
+        """
+        Define um tema de derrota.
+        """
+        Screen._defeat_theme = boolean          
