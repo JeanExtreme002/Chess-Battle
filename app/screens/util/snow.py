@@ -5,12 +5,15 @@ class Snow(HighlightedWidget):
     """
     Classe para criar neve na tela.
     """
-    def __init__(self, screen, particles = 300, max_size = 2, widget_group = None):
+    def __init__(self, screen, image, particles = 300, max_size = 2, widget_group = None):
         super().__init__(
             screen, 0, 0, (screen.width, screen.height),
             color = (80, 80, 80), opacity = 150,
             widget_group = widget_group
         )
+
+        self.__image = image
+        
         self.__max_particles = particles
         self.__particles = []
         self.__velocity = (1, 4)
@@ -22,6 +25,20 @@ class Snow(HighlightedWidget):
 
         self.__interval = screen.get_application().get_fps() * 0.05
         self.__frame_counter = 0
+
+        self.__build()
+
+    def __build(self):
+        """
+        Cria todas as imagens e objetos gráficos
+        necessários para desenhar o widget.
+        """
+        self.__loaded_image = self.screen.load_image(self.__image, (self.width, self.height))
+        
+        self.__sprite = self.screen.create_sprite(
+            self.__loaded_image, x = self.x, y = self.y
+        )
+        self.__sprite.opacity = self.get_opacity()
 
     def __create_particle(self):
         """
@@ -58,6 +75,7 @@ class Snow(HighlightedWidget):
         Desenha o widget na tela.
         """
         super().draw()
+        self.__sprite.draw()
 
         for particle in self.__particles:
             particle.draw()
@@ -78,6 +96,13 @@ class Snow(HighlightedWidget):
 
         # Move as partículas.
         self.__move_particles()
+
+    def set_opacity(self, value: int):
+        """
+        Define a opacidade do widget.
+        """
+        super().set_opacity(value)
+        self.__sprite.opacity = value
 
     def set_particles(self, value: int):
         """

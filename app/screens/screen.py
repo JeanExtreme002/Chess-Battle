@@ -32,9 +32,14 @@ class Screen(ABC):
         necessários para desenhar a tela.
         """ 
         application = self.get_application()
-        achievement_filename = application.paths.get_image("general", "trophy.png")
 
-        Screen._snow_widget = Snow(self)
+        # Cria widget para mostrar animação de neve.
+        frost_filename = application.paths.get_image("general", "frost.png")
+
+        Screen._snow_widget = Snow(self, frost_filename)
+
+        # Cria widget para mostrar conquistas.
+        achievement_filename = application.paths.get_image("general", "trophy.png")
         
         Screen._achievement_widget = Achievement(
             self, (application.width * 0.4, application.height * 0.13),
