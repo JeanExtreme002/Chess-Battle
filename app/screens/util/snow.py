@@ -5,17 +5,20 @@ class Snow(HighlightedWidget):
     """
     Classe para criar neve na tela.
     """
-    def __init__(self, screen, max_particles = 300, particle_size = 2, widget_group = None):
+    def __init__(self, screen, max_particles = 300, max_size = 2, widget_group = None):
         super().__init__(
             screen, 0, 0, (screen.width, screen.height),
-            color = (80, 80, 80), opacity = 150, widget_group = widget_group
+            color = (80, 80, 80), opacity = 150,
+            widget_group = widget_group
         )
-        self.__particle_size = particle_size
-        self.__particles = []
-        self.__velocity = 1
-        
-        self.__vertical_proportion = screen.height / screen.width * 5
         self.__max_particles = max_particles
+        self.__particles = []
+        self.__velocity = (1, 4)
+
+        angle = 0.4
+        
+        self.__vertical_proportion = screen.height / (screen.width * angle)
+        self.__max_particle_size = max_size
 
         self.__interval = screen.get_application().get_fps() * 0.05
         self.__frame_counter = 0
@@ -24,13 +27,12 @@ class Snow(HighlightedWidget):
         """
         Cria uma partícula de neve na tela.
         """
-        x = random.randint(int(-self.width * 0.3), int(self.width * 0.8))
+        x = random.randint(int(-self.width * 0.3), int(self.width * 0.9))
         y = random.randint(int(-self.height), 0)
+
+        size = random.randint(1, self.__max_particle_size)
         
-        particle = self.screen.create_rectangle(
-            x, y, self.__particle_size, self.__particle_size,
-            color = (230, 230, 230)
-        )        
+        particle = self.screen.create_rectangle(x, y, size, size, color = (230, 230, 230))        
         self.__particles.append(particle)
 
     def __move_particles(self):
@@ -38,8 +40,8 @@ class Snow(HighlightedWidget):
         Move todas as partículas criadas.
         """
         for particle in self.__particles:
-            particle.x += self.__velocity
-            particle.y -= self.__velocity * self.__vertical_proportion
+            particle.x += self.__velocity[0]
+            particle.y -= self.__velocity[1] * self.__vertical_proportion
 
             # Remove a partícula caso ela tenha saído da tela.
             if particle.x > self.width or particle.y < 0:
@@ -77,7 +79,7 @@ class Snow(HighlightedWidget):
         # Move as partículas.
         self.__move_particles()
 
-    def set_velocity(self, velocity: int):
+    def set_velocity(self, velocity: list[int, int]):
         """
         Define a velocidade da neve.
         """
