@@ -32,3 +32,15 @@ class HighlightedWidget(Widget):
         Desenha o widget na tela.
         """
         self._highlight.draw()
+
+    def get_opacity(self) -> int:
+        """
+        Retorna a opacidade do widget.
+        """
+        return self._highlight.opacity
+
+    def set_opacity(self, value: int):
+        """
+        Define a opacidade do widget.
+        """
+        self._highlight.opacity = value

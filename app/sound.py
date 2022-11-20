@@ -14,7 +14,6 @@ class SoundPlayer(object):
 
         self.__loaded_sounds = {
             "effects": {
-                "starting": self.__load_sounds("effects", "starting"),
                 "attacking": self.__load_sounds("effects", "attacking"),
                 "defeat": self.__load_sounds("effects", "defeat"),
                 "dropping_bishop": self.__load_sounds("effects", "dropping_bishop"),
@@ -31,6 +30,8 @@ class SoundPlayer(object):
                 "getting_rook": self.__load_sounds("effects", "getting_rook"),
                 "invalid_movement": self.__load_sounds("effects", "invalid_movement"),
                 "movement": self.__load_sounds("effects", "movement"),
+                "starting": self.__load_sounds("effects", "starting"),
+                "starting_after_defeat": self.__load_sounds("effects", "starting_after_defeat"),
                 "victory": self.__load_sounds("effects", "victory")
             },
             "music": self.__load_sounds("music"),
@@ -269,6 +270,13 @@ class SoundPlayer(object):
         Reproduz som de início de jogo.
         """
         sounds = self.__loaded_sounds["effects"]["starting"]
+        self.__play_random_sound(sounds)
+
+    def play_start_after_defeat_sound(self):
+        """
+        Reproduz som de início de jogo, após uma derrota.
+        """
+        sounds = self.__loaded_sounds["effects"]["starting_after_defeat"]
         self.__play_random_sound(sounds)
     
     def play_victory_sound(self):

@@ -5,13 +5,13 @@ class Snow(HighlightedWidget):
     """
     Classe para criar neve na tela.
     """
-    def __init__(self, screen, max_particles = 300, max_size = 2, widget_group = None):
+    def __init__(self, screen, particles = 300, max_size = 2, widget_group = None):
         super().__init__(
             screen, 0, 0, (screen.width, screen.height),
             color = (80, 80, 80), opacity = 150,
             widget_group = widget_group
         )
-        self.__max_particles = max_particles
+        self.__max_particles = particles
         self.__particles = []
         self.__velocity = (1, 4)
 
@@ -78,6 +78,12 @@ class Snow(HighlightedWidget):
 
         # Move as partículas.
         self.__move_particles()
+
+    def set_particles(self, value: int):
+        """
+        Define uma quantidade de partículas.
+        """
+        self.__max_particles = value
 
     def set_velocity(self, velocity: list[int, int]):
         """

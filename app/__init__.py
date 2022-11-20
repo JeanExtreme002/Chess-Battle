@@ -19,6 +19,15 @@ class Application(window.Window):
     
     __FRAMES_PER_SECOND = 60
     
+    __snow_config = {
+        "current_particles": 200,
+        "min_particles": 50,
+        "max_particles": 200,
+        "current_opacity": 150,
+        "min_opacity": 30,
+        "max_opacity": 150,
+    }
+    
     def __init__(self, title: str, chess_game: ChessGame):
         super().__init__(
             caption = title,
@@ -65,6 +74,31 @@ class Application(window.Window):
         if localtime.tm_mday == 20 and localtime.tm_mon == 7:
             self.add_achievement("É dia de xadrez!!", "Iniciou o jogo no dia internacional do xadrez.") 
 
+    def __decrease_snowing_animation(self, *args):
+        """
+        Diminui gradualmente as partículas de neve.
+        """
+        changed = False
+        
+        if self.__snow_config["current_particles"] > self.__snow_config["min_particles"]:
+            interval = self.__snow_config["max_particles"] - self.__snow_config["min_particles"]
+            self.__snow_config["current_particles"] -= interval * 0.01
+            changed = True
+
+        if self.__snow_config["current_opacity"] > self.__snow_config["min_opacity"]:
+            interval = self.__snow_config["max_opacity"] - self.__snow_config["min_opacity"]
+            self.__snow_config["current_opacity"] -= interval * 0.01
+            changed = True
+            
+        if not changed: return
+
+        self.__home_screen.set_defeat_theme(
+            settings.defeated,
+            self.__snow_config["current_particles"],
+            self.__snow_config["current_opacity"]
+        )
+        clock.schedule_once(self.__decrease_snowing_animation, 0.1)
+        
     def __destroy_screens(self):
         """
         Destrói as telas criadas, liberando o espaço em memória.
@@ -100,7 +134,12 @@ class Application(window.Window):
         self.__home_screen.set_settings_function(self.__show_settings_screen)
         self.__home_screen.set_history_function(self.__show_history_screen)
         self.__home_screen.set_achievement_function(self.__show_achievement_screen)
-        self.__home_screen.set_defeat_theme(settings.defeated)
+        
+        self.__home_screen.set_defeat_theme(
+            settings.defeated,
+            self.__snow_config["max_particles"],
+            self.__snow_config["max_opacity"]
+        )
         
         self.__board_screen = BoardScreen(self)
         self.__board_screen.set_board_coordinates(True)
@@ -201,7 +240,8 @@ class Application(window.Window):
         """
         Inicia o jogo no modo local.
         """
-        self.__home_screen.set_defeat_theme(False)
+        self.__home_screen.set_defeat_theme(self.is_defeated())
+        self.__decrease_snowing_animation()
         
         self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
         self.__current_screen = self.__board_screen
@@ -216,8 +256,11 @@ class Application(window.Window):
             return self.__current_screen.set_popup_message("Infelizmente, não foi possível conectar.", "Por favor, verique a sua conexão.")
 
         self.__current_screen.set_popup_message(None)
-        self.__home_screen.set_defeat_theme(False)
         
+        self.__home_screen.set_defeat_theme(self.is_defeated())
+        self.__decrease_snowing_animation()
+
+        # Inicia o jogo online.
         self.__board_screen.set_new_game(
             self.__chess_game, self.__board_screen.ONLINE_MODE,
             self.__send_movement, self.__get_movement, selection == 2
@@ -273,9 +316,15 @@ class Application(window.Window):
 
         # Define um tema de derrota, caso o jogador tenha perdido.
         if self.__current_screen is self.__board_screen:
-            settings.defeated = kwargs.get("defeat", settings.defeated)
+            settings.defeated = kwargs.get("defeat", self.is_defeated())
             
-        self.__home_screen.set_defeat_theme(settings.defeated)
+        self.__home_screen.set_defeat_theme(
+            self.is_defeated(),
+            self.__snow_config["max_particles"],
+            self.__snow_config["max_opacity"],
+        )
+        self.__snow_config["current_particles"] = self.__snow_config["max_particles"]
+        self.__snow_config["current_opacity"] = self.__snow_config["max_opacity"]
 
         # Encerra a conexão com o outro jogador, caso exista.
         if self.__connection:
@@ -288,6 +337,12 @@ class Application(window.Window):
         # Retorna para a tela de menu, mostrando uma mensagem de erro, caso haja.
         if error_message: self.__home_screen.set_popup_message(*error_message)
         self.__current_screen = self.__home_screen
+
+    def is_defeated(self) -> bool:
+        """
+        Verifica se o jogador foi derrotado.
+        """
+        return settings.defeated
     
     def on_close(self):
         """

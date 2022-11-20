@@ -817,7 +817,9 @@ class BoardScreen(Screen):
         """
         Define um novo jogo.
         """
-        self.sound_player.play_start_sound()
+        if self.get_application().is_defeated():
+            self.sound_player.play_start_after_defeat_sound()
+        else: self.sound_player.play_start_sound()
 
         self.__finished = False
         

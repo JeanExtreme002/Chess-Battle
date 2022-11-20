@@ -274,8 +274,11 @@ class Screen(ABC):
         """
         Screen._achievement_widget.set_achievement(title)
 
-    def set_defeat_theme(self, boolean: bool):
+    def set_defeat_theme(self, boolean: bool, particles: int = None, opacity: int = None):
         """
         Define um tema de derrota.
         """
-        Screen._defeat_theme = boolean          
+        Screen._defeat_theme = boolean
+        
+        if particles: Screen._snow_widget.set_particles(particles)
+        if opacity: Screen._snow_widget.set_opacity(opacity)

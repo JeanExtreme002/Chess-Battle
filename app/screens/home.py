@@ -319,9 +319,9 @@ class HomeScreen(Screen):
         elif history: self.__history_function()
         elif achievement: self.__achievement_function()
 
-    def set_defeat_theme(self, boolean: bool):
+    def set_defeat_theme(self, boolean: bool, *args, **kwargs):
         """
         Define um tema de derrota.
         """
-        super().set_defeat_theme(boolean)
+        super().set_defeat_theme(boolean, *args, **kwargs)
         self.__defeat_theme = boolean   
