@@ -30,7 +30,7 @@ class Application(window.Window):
 
     __decreasing_snowing = False
     
-    def __init__(self, title: str, chess_game: ChessGame):
+    def __init__(self, title: str, chess_game: ChessGame, winter_theme = False):
         super().__init__(
             caption = title,
             width = settings.size[0],
@@ -40,6 +40,9 @@ class Application(window.Window):
         self.__center_window()
 
         self.__title = title
+
+        if winter_theme:
+            settings.defeated = True
         
         icon_filename = paths.get_image("icon.png")
         icon_image = image.load(icon_filename)

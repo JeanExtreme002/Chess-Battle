@@ -817,10 +817,6 @@ class BoardScreen(Screen):
         """
         Define um novo jogo.
         """
-        if self.get_application().is_defeated():
-            self.sound_player.play_start_after_defeat_sound()
-        else: self.sound_player.play_start_sound()
-
         self.__finished = False
         
         self.__game = game
@@ -839,6 +835,11 @@ class BoardScreen(Screen):
         self.__replay_velocity = 0
         self.__replay_frame_counter = 0
         self.__replay_error = False
+
+        # Reproduz som de início de jogo.
+        if self.get_application().is_defeated():
+            self.sound_player.play_start_after_defeat_sound()
+        else: self.sound_player.play_start_sound()
 
         # Define a reprodução automática ao iniciar o jogo no modo replay.
         if not self.__replay_controller.is_playing():
