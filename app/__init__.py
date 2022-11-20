@@ -27,6 +27,8 @@ class Application(window.Window):
         "min_opacity": 30,
         "max_opacity": 150,
     }
+
+    __decreasing_snowing = False
     
     def __init__(self, title: str, chess_game: ChessGame):
         super().__init__(
@@ -74,30 +76,36 @@ class Application(window.Window):
         if localtime.tm_mday == 20 and localtime.tm_mon == 7:
             self.add_achievement("É dia de xadrez!!", "Iniciou o jogo no dia internacional do xadrez.") 
 
-    def __decrease_snowing_animation(self, *args):
+    def __decrease_snowing_animation(self, first_exec = True):
         """
         Diminui gradualmente as partículas de neve.
         """
-        changed = False
+        if first_exec: self.__decreasing_snowing = True
+        if not self.__decreasing_snowing: return
         
+        changed = False
+
+        # Diminui a quantidade de partículas.
         if self.__snow_config["current_particles"] > self.__snow_config["min_particles"]:
             interval = self.__snow_config["max_particles"] - self.__snow_config["min_particles"]
             self.__snow_config["current_particles"] -= interval * 0.01
             changed = True
 
+        # Diminui a opacidade.
         if self.__snow_config["current_opacity"] > self.__snow_config["min_opacity"]:
             interval = self.__snow_config["max_opacity"] - self.__snow_config["min_opacity"]
             self.__snow_config["current_opacity"] -= interval * 0.01
             changed = True
-            
-        if not changed: return
 
+        # Define as novas configurações.
+        if not changed: return
+        
         self.__home_screen.set_defeat_theme(
             settings.defeated,
             self.__snow_config["current_particles"],
             self.__snow_config["current_opacity"]
         )
-        clock.schedule_once(self.__decrease_snowing_animation, 0.1)
+        clock.schedule_once(lambda interval: self.__decrease_snowing_animation(False), 0.1)
         
     def __destroy_screens(self):
         """
@@ -317,7 +325,9 @@ class Application(window.Window):
         # Define um tema de derrota, caso o jogador tenha perdido.
         if self.__current_screen is self.__board_screen:
             settings.defeated = kwargs.get("defeat", self.is_defeated())
-            
+
+        self.__decreasing_snowing = False
+        
         self.__home_screen.set_defeat_theme(
             self.is_defeated(),
             self.__snow_config["max_particles"],
