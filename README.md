@@ -25,6 +25,8 @@ Para jogar online, abra a tela de configurações e altere, se necessário, o se
 É necessário que um dos jogadores seja o host da partida. Supondo que você seja o host, envie o seu endereço IP e número PORT ao outro jogador. Após 
 isso, clique no botão "Play as Host". Posteriormente, o outro jogador deverá clicar no botão "Play as Client". Dessa forma, a conexão estará estabelecida e a partida iniciará automaticamente.
 
+**Temática de Derrota:** Ao ser derrotado em uma partida online, o tema do jogo muda, voltando ao normal somente depois que conseguir uma vitória.
+
 ## Modo Replay:
 Todas as partidas, modo local ou online, são salvas automaticamente após o término do jogo, isto é: se não houver abandono durante o jogo. Para conferir 
 o replay de uma partida, acesse a tela de histórico e navegue pela lista, buscando o jogo que deseja. Após isso, inicie o replay.
