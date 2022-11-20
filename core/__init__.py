@@ -6,7 +6,7 @@ from .Data import GameData
 from copy import deepcopy
 
 # Se verdadeiro, habilita o sistema de xeque
-CHECK_ENGINE_ENABLED = False
+CHECK_ENGINE_ENABLED = True
 
 def check_locker(func):
     def wrap(*args, **kwargs):
@@ -90,6 +90,10 @@ class ChessGame:
     def replay_on_end(self) -> bool:
         return self.__game_data.replay_ended
     
+    @property
+    def check_all_legal_moves(self):
+        return self.__check_legal_moves
+        
     def close(self):
         """
         Encerra o jogo.
@@ -247,7 +251,7 @@ class ChessGame:
         self.__current_player =  self.__white_player or self.__black_player
 
     @check_locker
-    def __gen_defense_board(self, player: Player, board = None) -> list[[]]:
+    def __gen_defense_board(self, player:Player, board = None) -> list[[]]:
         if not board:
             board = self.__board.pecas
 
@@ -308,7 +312,7 @@ class ChessGame:
         adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
 
         xi, yi = from_
-        xf, yf = to
+        yf, xf = to
         kx, ky = self.__current_player.king.coords
         if (xi, yi) == (kx, ky):
             kx, ky = xf, yf
@@ -402,8 +406,10 @@ class ChessGame:
 
         if self.__status == "xeque":
             try:
-                print(piece.coords[::-1], to)
-                print(self.__check_legal_moves)
+                # print(piece.coords[::-1], to)
+                # print("Movimentos do rei:", self.__current_player.king.legal_moves(self.__board.pecas))
+                # z = dict(map(lambda i: (i[0][::-1], i[1]), self.__check_legal_moves.items()))
+                # print("Movimentos legais:", z)
                 mov = self.__check_legal_moves[piece.coords]
                 if not (to in mov):
                     raise KeyError
@@ -415,6 +421,7 @@ class ChessGame:
                 print(f"Tire o rei {cor_msg} do xeque!")
                 return False
 
+        #print(piece, piece.coords[::-1], to)
         # Obtém o alvo.
         target_piece = self.__board.pecas[to[0]][to[1]]
 
