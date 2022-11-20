@@ -11,7 +11,6 @@ class HomeScreen(Screen):
     
     def __init__(self, application):
         super().__init__(application)
-        self.__defeat_theme = False
         
         self.__message = None
         self.__key_buffer = []
@@ -240,8 +239,8 @@ class HomeScreen(Screen):
         if by_scheduler: self.__background.next()
 
         # Toca sempre uma música enquanto o usuário estiver na tela.
-        if not self.sound_player.is_playing():
-            if self.__defeat_theme: self.sound_player.play_defeat_music()
+        if not self.sound_player.is_playing(any_ = True):
+            if self.get_application().is_defeated(): self.sound_player.play_defeat_music()
             else: self.sound_player.play_music()
         
         self.__sidebar_image.blit(0, 0)
@@ -317,11 +316,4 @@ class HomeScreen(Screen):
         elif play_button_3: self.__play_function(3)
         elif settings: self.__settings_function()
         elif history: self.__history_function()
-        elif achievement: self.__achievement_function()
-
-    def set_defeat_theme(self, boolean: bool, *args, **kwargs):
-        """
-        Define um tema de derrota.
-        """
-        super().set_defeat_theme(boolean, *args, **kwargs)
-        self.__defeat_theme = boolean   
+        elif achievement: self.__achievement_function() 

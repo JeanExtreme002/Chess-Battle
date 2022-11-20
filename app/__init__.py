@@ -253,6 +253,8 @@ class Application(window.Window):
         """
         self.__home_screen.set_defeat_theme(self.is_defeated())
         self.__decrease_snowing_animation()
+
+        self.__sound_player.stop_sound(all_ = True)
         
         self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.LOCAL_MODE)
         self.__current_screen = self.__board_screen
@@ -267,6 +269,7 @@ class Application(window.Window):
             return self.__current_screen.set_popup_message("Infelizmente, não foi possível conectar.", "Por favor, verique a sua conexão.")
 
         self.__current_screen.set_popup_message(None)
+        self.__sound_player.stop_sound(all_ = True)
         
         self.__home_screen.set_defeat_theme(self.is_defeated())
         self.__decrease_snowing_animation()
@@ -282,9 +285,11 @@ class Application(window.Window):
     def __start_replay(self, game_id: str):
         """
         Inicia o jogo no modo replay.
-        """
+        """       
         try: self.__chess_game.start_replay(game_id)
         except: return self.go_back("ERRO AO CARREGAR O REPLAY", "Parece que o arquivo está corrompido.")
+
+        self.__sound_player.stop_sound(all_ = True)
         
         self.__board_screen.set_new_game(self.__chess_game, self.__board_screen.REPLAY_MODE)
         self.__current_screen = self.__board_screen
@@ -322,8 +327,8 @@ class Application(window.Window):
         self.set_caption(self.__title)
 
         # Interrompe a reprodução de qualquer som ativo da partida finalizada.
-        if self.__current_screen is self.__board_screen and self.__connection:
-            self.__sound_player.stop_sound()
+        if self.__current_screen is self.__board_screen:
+            self.__sound_player.stop_sound(all_ = True)
 
         # Define um tema de derrota, caso o jogador tenha perdido.
         if self.__current_screen is self.__board_screen:

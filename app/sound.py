@@ -7,8 +7,10 @@ class SoundPlayer(object):
     Classe para reproduzir sons.
     """
     
-    def __init__(self, volume: int = 100, mute: bool = False):
-        self.__player = media.Player()
+    def __init__(self, volume: list[int, int] = [100, 100], mute: list[bool, bool] = [False, False]):
+        self.__effect_player = media.Player()
+        self.__music_player = media.Player()
+        
         self.set_volume(volume)
         self.set_mute(mute)
 
@@ -52,63 +54,45 @@ class SoundPlayer(object):
             except: print("Failed loading", filename)
         return sounds
 
-    def __play_random_sound(self, sound_list: list[media.Source]):
+    def __play_random_sound(self, sound_list: list[media.Source], music: bool = False):
         """
         Reproduz um som aleatório de uma lista de sons.
         """
         if not sound_list: return
 
         sound = random.choice(sound_list)
-        self.__play_sound(sound)
+        self.__play_sound(sound, music = music)
         
-    def __play_sound(self, sound: media.Source):
+    def __play_sound(self, sound: media.Source, music: bool = False):
         """
         Reproduz um determinado som.
         """
-        self.stop_sound()
-        self.__player.queue(sound)
-        self.__player.play()
+        self.stop_sound(music = music)
+        
+        player = self.__music_player if music else self.__effect_player
+        
+        player.queue(sound)
+        player.play()
 
-    def is_muted(self) -> bool:
+    def is_muted(self) -> list[bool, bool]:
         """
-        Verifica se o reprodutor está ativado ou não.
+        Verifica se os reprodutores estão ativados ou não.
         """
         return self.__muted
 
-    def is_playing(self) -> bool:
+    def is_playing(self, music = False, all_ = False, any_ = False) -> bool:
         """
         Verifica se algum som está sendo reproduzido.
         """
-        return self.__player.playing
+        if all_: return self.__music_player.playing and self.__effect_player.playing
+        if any_: return self.__music_player.playing or self.__effect_player.playing
+        return self.__music_player.playing if music else self.__effect_player.playing
 
-    def get_volume(self) -> int:
+    def get_volume(self) -> list[int, int]:
         """
-        Retorna o volume do reprodutor.
+        Retorna o volume dos reprodutores de efeito e música.
         """
         return self.__volume
-
-    def set_mute(self, boolean: bool):
-        """
-        Ativa ou desativa o reprodutor.
-        """
-        self.__muted = boolean
-        
-        if boolean: self.__player.volume = 0
-        else: self.__player.volume = self.__volume / 100
-        
-    def set_volume(self, value: int):
-        """
-        Define um volume para o reprodutor.
-        """
-        self.__volume = value
-        self.__player.volume = self.__volume / 100
-        
-    def stop_sound(self):
-        """
-        Interrompe a reprodução de um som.
-        """
-        while self.is_playing():
-            self.__player.next_source()
 
     def play_attacking_sound(self):
         """
@@ -136,8 +120,7 @@ class SoundPlayer(object):
         self.__played_defeat_musics.append(sound)
         self.__loaded_sounds["defeat_music"].remove(sound)
         
-        self.__play_sound(sound)
-
+        self.__play_sound(sound, music = True)
 
     def play_defeat_sound(self):
         """
@@ -263,7 +246,7 @@ class SoundPlayer(object):
         self.__played_musics.append(sound)
         self.__loaded_sounds["music"].remove(sound)
         
-        self.__play_sound(sound)
+        self.__play_sound(sound, music = True)
 
     def play_start_sound(self):
         """
@@ -285,4 +268,35 @@ class SoundPlayer(object):
         """
         sounds = self.__loaded_sounds["effects"]["victory"]
         self.__play_random_sound(sounds)
+
+    def set_mute(self, boolean: list[bool, bool]):
+        """
+        Ativa ou desativa os reprodutores de efeito e música.
+        """
+        self.__muted = boolean
         
+        if boolean[0]: self.__effect_player.volume = 0
+        else: self.__effect_player.volume = self.__volume[0] / 100
+        
+        if boolean[1]: self.__music_player.volume = 0
+        else: self.__music_player.volume = self.__volume[1] / 100
+        
+    def set_volume(self, value: list[int, int]):
+        """
+        Define um volume para os reprodutores de efeito e música.
+        """
+        self.__volume = value
+        
+        self.__effect_player.volume = self.__volume[0] / 100
+        self.__music_player.volume = self.__volume[1] / 100
+        
+    def stop_sound(self, music = False, all_ = False):
+        """
+        Interrompe a reprodução de um som.
+        """
+        while (not music or all_) and self.is_playing(music = False):
+            self.__effect_player.next_source()
+
+        while (music or all_) and self.is_playing(music = True):
+            self.__music_player.next_source()
+

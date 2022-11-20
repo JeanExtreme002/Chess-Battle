@@ -133,6 +133,12 @@ class Screen(ABC):
         """
         return self.height - y - height
 
+    def is_defeat_theme(self):
+        """
+        Verifica se o tema de derrota está definido.
+        """
+        return Screen._defeat_theme
+
     def load_image(self, filename: str, size: tuple[int, int] = "original", save: bool = True) -> image.TextureRegion:
         """
         Carrega uma imagem.

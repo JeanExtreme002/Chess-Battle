@@ -37,31 +37,35 @@ class SettingsScreen(Screen):
         label_width = self.width * 0.25
         label_height = label_width * 0.41
         label_x = self.width / 2 - label_width / 2
-        first_label_y = self.height * 0.1
+        first_label_y = self.height * 0.05
 
         # Obtém o tamanho e a posição do botão de ativar/desativar sons.
         sound_button_height = label_height * 0.5
         sound_button_width = sound_button_height
-        sound_button_x = label_x + label_width * 1.1
-        sound_button_y = first_label_y + (label_height + label_height * 0.2) + sound_button_height * 0.5
+
+        effect_sound_button_x = label_x + label_width * 1.1
+        effect_sound_button_y = first_label_y + (label_height + label_height * 0.1) + sound_button_height * 0.68
+
+        music_sound_button_x = label_x + label_width * 1.1
+        music_sound_button_y = first_label_y + (label_height + label_height * 0.1) * 2 + sound_button_height * 0.68
   
         # Obtém o tamanho e a posição da caixa de texto de endereço IP.
         ip_entry_width = self.width * 0.14
         ip_entry_height = ip_entry_width * 0.20
         ip_entry_x = self.width / 2 - (self.width * (0.14 + 0.06) + ip_entry_width * 0.08) / 2
-        ip_entry_y = self.height * 0.6 - ip_entry_height
+        ip_entry_y = self.height * 0.72 - ip_entry_height
 
         # Obtém o tamanho e a posição da caixa de texto de número PORT.
         port_entry_width = self.width * 0.06
         port_entry_height = ip_entry_height
         port_entry_x = ip_entry_x + ip_entry_width * 1.08
-        port_entry_y = self.height * 0.6 - port_entry_height
+        port_entry_y = ip_entry_y
 
         # Obtém o tamanho e a posição do botão de aplicar alterações.
         apply_button_width = self.width * 0.2
         apply_button_height = apply_button_width * 0.39
         apply_button_x = self.width / 2 - apply_button_width / 2
-        apply_button_y = self.height * 0.8 - apply_button_height
+        apply_button_y = self.height * 0.9 - apply_button_height
         
         # Obtém o tamanho e a posição do popup.
         popup_width = self.width * 0.45
@@ -79,7 +83,7 @@ class SettingsScreen(Screen):
 
         self.__labels = []
 
-        for index in range(2):
+        for index in range(3):
             label = Button(
                 self, label_x, first_label_y + (label_height + label_height * 0.1) * index,
                 (label_width, label_height), (label_filename, activated_label_filename),
@@ -100,8 +104,14 @@ class SettingsScreen(Screen):
         self.__dismute_button_filename = application.paths.get_image("settings", "buttons", "dismute.png")
         self.__activated_dismute_button_filename = application.paths.get_image("settings", "buttons", "activated_dismute.png")
         
-        self.__sound_button = Button(
-            self, sound_button_x, sound_button_y, (sound_button_width, sound_button_height),
+        self.__effect_sound_button = Button(
+            self, effect_sound_button_x, effect_sound_button_y, (sound_button_width, sound_button_height),
+            (self.__mute_button_filename, self.__activated_mute_button_filename),
+            widget_group = self.__widget_group
+        )
+
+        self.__music_sound_button = Button(
+            self, music_sound_button_x, music_sound_button_y, (sound_button_width, sound_button_height),
             (self.__mute_button_filename, self.__activated_mute_button_filename),
             widget_group = self.__widget_group
         )
@@ -180,29 +190,29 @@ class SettingsScreen(Screen):
         elif entry.add_char(chr(symbol)):
             self.__changed = True
 
-    def __change_resolution(self):
+    def __change_resolution(self, direction: int = 1):
         """
         Altera a resolução da tela.
         """
-        self.__resolution_index += 1
+        self.__resolution_index += 1 * direction
         self.__resolution_index %= len(self.__resolutions)
         self.__changed = True
         self.__update_labels()
 
-    def __change_sound_status(self):
+    def __change_sound_status(self, index: int):
         """
         Ativa ou desativa o som.
         """
-        self.__muted = not self.__muted
+        self.__muted[index] = not self.__muted[index]
         self.__changed = True
         self.__update_labels()
 
-    def __change_sound_volume(self):
+    def __change_sound_volume(self, index: int, step: int = 5):
         """
         Altera o volume do som.
         """
-        self.__volume += 10
-        self.__volume %= 110
+        self.__volume[index] += step 
+        self.__volume[index] %= (100 + abs(step))
         self.__changed = True
         self.__update_labels()
 
@@ -252,12 +262,20 @@ class SettingsScreen(Screen):
         Método para atulizar os estados das labels e botões na tela.
         """
         self.__labels[0][1].text = "{}x{}".format(*self.__resolutions[self.__resolution_index])
-        self.__labels[1][1].text = "Volume: {}%".format(int(self.__volume))
+        self.__labels[1][1].text = "Efeitos: {}%".format(int(self.__volume[0]))
+        self.__labels[2][1].text = "Música: {}%".format(int(self.__volume[1]))
 
-        if self.__muted: images = [self.__dismute_button_filename, self.__activated_dismute_button_filename]
+        # Troca a imagem do botão de mutar e desmutar efeitos sonoros.
+        if self.__muted[0]: images = [self.__dismute_button_filename, self.__activated_dismute_button_filename]
         else: images = [self.__mute_button_filename, self.__activated_mute_button_filename]
         
-        self.__sound_button.change_image(images)
+        self.__effect_sound_button.change_image(images)
+
+        # Troca a imagem do botão de mutar e desmutar músicas.
+        if self.__muted[1]: images = [self.__dismute_button_filename, self.__activated_dismute_button_filename]
+        else: images = [self.__mute_button_filename, self.__activated_mute_button_filename]
+        
+        self.__music_sound_button.change_image(images)
 
     def on_draw_screen(self, by_scheduler: bool = False):
         """
@@ -305,7 +323,8 @@ class SettingsScreen(Screen):
             self.__confirmation_popup.check(x, y)
 
         self.__apply_button.check(x, y)
-        self.__sound_button.check(x, y)
+        self.__effect_sound_button.check(x, y)
+        self.__music_sound_button.check(x, y)
         
         self.__ip_entry.check(x, y)
         self.__port_entry.check(x, y)
@@ -346,15 +365,41 @@ class SettingsScreen(Screen):
         if self.__labels[0][0].check(x, y):
             self.__change_resolution()
 
-        # Verifica se o usuário deseja alterar o volume do som.
+        # Verifica se o usuário deseja alterar o volume dos efeitos sonoros.
         elif self.__labels[1][0].check(x, y):
-            self.__change_sound_volume()
+            self.__change_sound_volume(index = 0)
 
-        # Verifica se o usuário deseja ativar ou desativar o som.
-        elif self.__sound_button.check(x, y):
-            self.__change_sound_status()
+        # Verifica se o usuário deseja alterar o volume da música.
+        elif self.__labels[2][0].check(x, y):
+            self.__change_sound_volume(index = 1)
+
+        # Verifica se o usuário deseja ativar ou desativar os efeitos sonoros.
+        elif self.__effect_sound_button.check(x, y):
+            self.__change_sound_status(index = 0)
+
+        # Verifica se o usuário deseja ativar ou desativar a música.
+        elif self.__music_sound_button.check(x, y):
+            self.__change_sound_status(index = 1)
 
         # Aplica as alterações e sai da tela.
         elif self.__apply_button.check(x, y):
             self.__apply_changes()
             self.get_application().go_back()
+
+    def on_mouse_scroll(self, *args):
+        """
+        Evento de scroll do mouse.
+        """
+        x, y, scroll_y = super().on_mouse_scroll(*args)[0: 3]
+
+        # Verifica se o usuário deseja alterar a resolução.
+        if self.__labels[0][0].check(x, y):
+            self.__change_resolution(direction = scroll_y)
+        
+        # Verifica se o usuário deseja alterar o volume dos efeitos sonoros.
+        if self.__labels[1][0].check(x, y):
+            self.__change_sound_volume(index = 0, step = 2 * scroll_y)
+
+        # Verifica se o usuário deseja alterar o volume da música.
+        elif self.__labels[2][0].check(x, y):
+            self.__change_sound_volume(index = 1, step = 2 * scroll_y)

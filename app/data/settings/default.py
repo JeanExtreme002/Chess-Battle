@@ -24,8 +24,8 @@ def get_ip_address(remote_server: str = "8.8.8.8") -> str:
 
 default_settings = {
     "size": (1280, 720),
-    "volume": 100,
-    "muted": False,
+    "volume": [100, 40],
+    "muted": [False, False],
     "address": [get_ip_address(), 5000],
     "defeated": False
 }

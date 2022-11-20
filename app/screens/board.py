@@ -423,6 +423,8 @@ class BoardScreen(Screen):
             else: self.get_application().add_achievement("Dias frios e sombrios...", "Perdeu uma partida no modo online.")
 
         # Reproduz um som de vitória ou derrota.
+        self.sound_player.stop_sound(all_ = True)
+        
         if self.__online_defeat: self.sound_player.play_defeat_sound()
         else: self.sound_player.play_victory_sound()
 
@@ -837,6 +839,8 @@ class BoardScreen(Screen):
         self.__replay_error = False
 
         # Reproduz som de início de jogo.
+        self.sound_player.stop_sound(all_ = True)
+        
         if self.get_application().is_defeated():
             self.sound_player.play_start_after_defeat_sound()
         else: self.sound_player.play_start_sound()
@@ -890,6 +894,14 @@ class BoardScreen(Screen):
 
         self.__request_frame_counter += 1
         self.__request_frame_counter %= self.__request_interval
+
+        # Toca sempre uma música enquanto o usuário estiver na tela.
+        if not self.sound_player.is_playing(any_ = True) and not self.__finished:
+
+            # Verifica se o reprodutor está ativo.
+            if not self.sound_player.is_muted()[1] and self.sound_player.get_volume()[1] > 0:
+                if self.get_application().is_defeated(): self.sound_player.play_defeat_music()
+                else: self.sound_player.play_music()
 
         # Atualiza o tabuleiro se estiver em modo replay.
         if self.__mode == self.REPLAY_MODE:
