@@ -25,7 +25,7 @@ class HighlightedWidget(Widget):
         self._highlight = self.screen.create_rectangle(
             x, y, width, height, color = self.__color
         )
-        self._highlight.opacity = self.__opacity
+        self._highlight.opacity = int(self.__opacity)
 
     def draw(self):
         """
@@ -43,4 +43,4 @@ class HighlightedWidget(Widget):
         """
         Define a opacidade do widget.
         """
-        self._highlight.opacity = value
+        self._highlight.opacity = int(value)
