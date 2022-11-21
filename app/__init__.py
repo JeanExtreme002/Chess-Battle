@@ -91,13 +91,13 @@ class Application(window.Window):
         # Diminui a quantidade de partículas.
         if self.__snow_config["current_particles"] > self.__snow_config["min_particles"]:
             interval = self.__snow_config["max_particles"] - self.__snow_config["min_particles"]
-            self.__snow_config["current_particles"] -= interval * 0.01
+            self.__snow_config["current_particles"] -= interval * 0.005
             changed = True
 
         # Diminui a opacidade.
         if self.__snow_config["current_opacity"] > self.__snow_config["min_opacity"]:
             interval = self.__snow_config["max_opacity"] - self.__snow_config["min_opacity"]
-            self.__snow_config["current_opacity"] -= interval * 0.01
+            self.__snow_config["current_opacity"] -= interval * 0.005
             changed = True
 
         # Define as novas configurações.

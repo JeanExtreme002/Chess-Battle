@@ -92,7 +92,7 @@ class SoundPlayer(object):
         """
         Retorna o volume dos reprodutores de efeito e música.
         """
-        return self.__volume
+        return self.__volume.copy()
 
     def play_attacking_sound(self):
         """

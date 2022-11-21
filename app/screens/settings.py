@@ -196,6 +196,7 @@ class SettingsScreen(Screen):
         """
         self.__resolution_index += 1 * direction
         self.__resolution_index %= len(self.__resolutions)
+        
         self.__changed = True
         self.__update_labels()
 
@@ -213,6 +214,7 @@ class SettingsScreen(Screen):
         """
         self.__volume[index] += step 
         self.__volume[index] %= (100 + abs(step))
+        
         self.__changed = True
         self.__update_labels()
 
@@ -231,7 +233,7 @@ class SettingsScreen(Screen):
 
         self.__volume = self.sound_player.get_volume()
         self.__muted = self.sound_player.is_muted()
-
+        
         self.__ip_entry.clear()
         self.__port_entry.clear()
 
@@ -261,7 +263,7 @@ class SettingsScreen(Screen):
         """
         Método para atulizar os estados das labels e botões na tela.
         """
-        self.__labels[0][1].text = "{}x{}".format(*self.__resolutions[self.__resolution_index])
+        self.__labels[0][1].text = "{}x{}".format(*self.__resolutions[int(self.__resolution_index)])
         self.__labels[1][1].text = "Efeitos: {}%".format(int(self.__volume[0]))
         self.__labels[2][1].text = "Música: {}%".format(int(self.__volume[1]))
 
@@ -353,6 +355,7 @@ class SettingsScreen(Screen):
             if confirm:
                 self.__load_current_settings()
                 self.get_application().go_back()
+            return
 
         # Verifica se uma das caixas de texto foi selecionada.
         self.__selected_ip_entry = self.__ip_entry.check(x, y)
@@ -392,6 +395,9 @@ class SettingsScreen(Screen):
         """
         x, y, scroll_y = super().on_mouse_scroll(*args)[0: 3]
 
+        # Qualquer ação será realizada somente se não houver mensagem sendo mostrada na tela.
+        if self.__confirmation_popup.has_message(): return
+        
         # Verifica se o usuário deseja alterar a resolução.
         if self.__labels[0][0].check(x, y):
             self.__change_resolution(direction = scroll_y)
