@@ -5,7 +5,7 @@ class Player:
     """
     Classe do jogador.
     """
-    def __init__(self, color):
+    def __init__(self, color:Color):
         if not color in (Color.Black, Color.White):
             raise ValueError("O atributo \"color\" deve ser um objeto do tipo \"core.Color.Color\".")
 
@@ -14,7 +14,7 @@ class Player:
         self.__defense = [[False for _ in range(8)] for _ in range(8)]
         self.__king = None
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return self.__played
         
     @property
@@ -22,7 +22,7 @@ class Player:
         return self.__played
 
     @played.setter
-    def played(self, value: bool):
+    def played(self, value:bool):
         if not isinstance(value, bool):
             raise ValueError("O atributo \"played\" deve ser um bool.")
 
@@ -33,7 +33,7 @@ class Player:
         return self.__defense
 
     @defense.setter
-    def defense(self, table):
+    def defense(self, table) -> list[[]]:
         self.__defense = table
 
     @property
@@ -41,7 +41,7 @@ class Player:
         return self.__king
     
     @king.setter
-    def king(self, k: King):
+    def king(self, k:King):
         if not isinstance(k, King):
             raise ValueError("O atributo \"king\" deve ser um objeto do tipo \"core.King.King\".")
 
@@ -49,6 +49,3 @@ class Player:
             raise AttributeError("A cor do rei deve ser a mesma do jogador!")
 
         self.__king = k
-
-    def set_defended_pos(self, x: int, y: int):
-        self.__defense[x][y] = True

@@ -52,13 +52,13 @@ class Board():
         for p in (wr0, wr1, br0, br1, wn0, wn1, bn0, bn1, wb0, wb1, bb0, bb1, bq, wq, bk, wk):
             self.add_piece(p)
 
-    def add_piece(self, piece):
+    def add_piece(self, piece:Piece):
         """
         Insere uma peça no tabuleiro, através de suas próprias coordenadas.
         """
         self.pecas[piece.y][piece.x] = piece
 
-    def check_promotion(self):
+    def check_promotion(self) -> Piece:
         """
         Percorre as extremidades do tabuleiro, verificando
         se há promoções. Se sim, a peça será retornada.
@@ -71,7 +71,7 @@ class Board():
                 if piece and piece.name == "pawn" and piece.promotion:
                     return piece
 
-    def set_promotion(self, piece_name):
+    def set_promotion(self, piece_name:str):
         """
         Promove um peão, dado um novo tipo de peça
         em que o mesmo será transformado.

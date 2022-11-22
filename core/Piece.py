@@ -4,7 +4,7 @@ from .Pieces_type import Piece_type
 
 
 class Piece(ABC):
-    def __init__(self, color: Color, x: int, y: int):
+    def __init__(self, color:Color, x:int, y:int):
         self._color = color
         self._color_complex = None
         self.x = x
@@ -16,7 +16,7 @@ class Piece(ABC):
         self.__id = Piece_type[piece].value + color.value
 
     @property
-    def r_id(self):
+    def r_id(self) -> int:
         return self.__id
 
     @property
@@ -67,7 +67,7 @@ class Piece(ABC):
         return situation
 
     @staticmethod
-    def is_defended(target: list[int, int], situation: list[[]]) -> bool:
+    def is_defended(target:list[int, int], situation:list[[]]) -> bool:
         """Checks if the square is defended by a piece"""
         try:
             for row in range(8):

@@ -6,6 +6,7 @@ from .King import King
 from .Pawn import Pawn
 from .Rook import Rook
 from .Color import Color
+from typing import Optional
 import io, os, time
 
 class GameData():
@@ -15,7 +16,7 @@ class GameData():
     
     __PIECE_NAMES = ["pawn", "king", "knight", "queen", "bishop", "rook"]
     
-    def __init__(self, directory):
+    def __init__(self, directory:str):
         self.__directory = directory
         
         self.__file = None
@@ -23,11 +24,11 @@ class GameData():
         self.__game_id = None
 
     @property
-    def id(self):
+    def id(self) -> str:
         return self.__game_id
 
     @property
-    def replay_ended(self):
+    def replay_ended(self) -> bool:
         return self.__finished
 
     def __get_game_id(self) -> str:
@@ -40,14 +41,15 @@ class GameData():
         """
         Retorna o ID da peça, mesmo se não houver uma peça.
         """
-        if not piece: return chr(97)
+        if not piece:
+            return chr(97)
 
         piece_id = (self.__PIECE_NAMES.index(piece.name) + 1) * 2
         piece_id += piece.color.value
         
         return chr(piece_id + 97)
 
-    def __get_piece_by_id(self, piece_id: str, x: int, y: int) -> Piece:
+    def __get_piece_by_id(self, piece_id:str, x:int, y:int) -> Piece:
         """
         Retorna a peça através do seu ID.
         """
@@ -77,14 +79,15 @@ class GameData():
         }[piece_name]
         return PieceType(color, x, y)
 
-    def close(self, winner: Color = None):
+    def close(self, winner:Optional[Color]=None):
         """
         Fecha o arquivo. Caso tenha sido aberto em modo escrita,
         o jogo, antes salvo em um arquivo temporário, será salvo
         em um arquivo apropriado, com a cor do vencedor, passada
         como parâmetro, sendo registrada.
         """
-        if self.__closed: return
+        if self.__closed:
+            return
         
         self.__file.close()
         
@@ -131,7 +134,7 @@ class GameData():
         games.sort(key = lambda game: game[-1], reverse = True)
         return games
 
-    def open(self, game_id = None, game_name = "game"):
+    def open(self, game_id:str=None, game_name:str="game"):
         """
         Abre um arquivo, para leitura ou escrita. Em caso de leitura,
         deve ser informado o ID do jogo em questão.
@@ -151,7 +154,8 @@ class GameData():
                 if filename.endswith(".replay") and "_{}".format(game_id) in filename:
                     filename = os.path.join(self.__directory, filename)
                     break
-            else: raise FileNotFoundError("The game could not be found by ID {}".format(game_id))
+            else:
+                raise FileNotFoundError("The game could not be found by ID {}".format(game_id))
 
         # Se solicitado o modo de escrita, um arquivo temporário será criado para salvar o jogo continuamente.
         else:
@@ -182,7 +186,8 @@ class GameData():
             self.back()
             self.__finished = True
             string = self.__file.read(8 * 8 + 1).rstrip("\n")
-        else: self.__finished = False
+        else:
+            self.__finished = False
 
         # Volta o ponteiro do arquivo para a linha lida.
         self.__file.seek(self.__lines)
@@ -214,7 +219,7 @@ class GameData():
         self.__lines += 8 * 8 + 2
         self.__file.seek(self.__lines)
     
-    def save(self, board: list[[]]):
+    def save(self, board:list[[]]):
         """
         Salva um estado do tabuleiro. (somente no modo escrita)
         """
