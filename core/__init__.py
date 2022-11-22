@@ -226,6 +226,7 @@ class ChessGame:
         # Cria um novo tabuleiro.
         self.__board = Board()
         self.__status = "normal"
+        self.__check = False
 
         # Salva o estado inicial do tabuleiro.
         self.__game_data.open(game_name = name)
@@ -380,6 +381,14 @@ class ChessGame:
             raise GameModeError("Você não pode usar esse método no modo replay")
         return self.__winner
 
+    def is_check(self) -> bool:
+        """
+        Verifica se o rei está em cheque.
+        """
+        if self.__replaying:
+            raise GameModeError("Você não pode usar esse método no modo replay")
+        return self.__check
+
     def play(self, piece: Piece, to: tuple[int, int]) -> bool:
         """
         Realiza uma jogada, dado uma peça e uma posição de
@@ -404,6 +413,8 @@ class ChessGame:
         if not (to in piece.legal_moves(self.__board.pecas)):
             return False
 
+        self.__check = False
+
         if self.__status == "xeque":
             try:
                 # print(piece.coords[::-1], to)
@@ -418,7 +429,7 @@ class ChessGame:
 
             except KeyError:
                 cor_msg = 'branco' if self.__current_player.color == Color.White else "preto"
-                print(f"Tire o rei {cor_msg} do xeque!")
+                self.__check = True
                 return False
 
         #print(piece, piece.coords[::-1], to)
