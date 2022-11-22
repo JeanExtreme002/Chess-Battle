@@ -4,6 +4,7 @@ from .Board import Board
 from .Color import Color
 from .Data import GameData
 from copy import deepcopy
+from typing import Optional, Union
 
 # Se verdadeiro, habilita o sistema de xeque
 CHECK_ENGINE_ENABLED = True
@@ -38,7 +39,7 @@ class ChessGame:
     Classe principal do jogo.
     """
     
-    def __init__(self, replay_path: str):
+    def __init__(self, replay_path:str):
         # Cria um objeto para salvar e reproduzir replays de jogos.
         self.__game_data = GameData(replay_path)
 
@@ -46,7 +47,6 @@ class ChessGame:
         self.__white_player = Player(Color.White)
         self.__black_player = Player(Color.Black)
         
-        self.__status = "normal"
         self.__check_legal_moves = {}
         
         self.__replaying = False
@@ -91,7 +91,7 @@ class ChessGame:
         return self.__game_data.replay_ended
     
     @property
-    def check_all_legal_moves(self):
+    def check_all_legal_moves(self) -> dict[tuple:list[[int, int]]]:
         return self.__check_legal_moves
         
     def close(self):
@@ -200,7 +200,7 @@ class ChessGame:
         self.__update_destroyed_pieces(new_board)
         self.__board.pecas = new_board
 
-    def start_replay(self, game_id: str):
+    def start_replay(self, game_id:str):
         """
         Inicia o modo replay de um determinado jogo pelo seu ID.
         """
@@ -212,7 +212,7 @@ class ChessGame:
         self.__game_data.open(game_id)
         self.__board.pecas = self.__game_data.read()
 
-    def new_game(self, name = "Game"):
+    def new_game(self, name:str="Game"):
         """
         Inicia um novo jogo.
         """
@@ -225,7 +225,6 @@ class ChessGame:
 
         # Cria um novo tabuleiro.
         self.__board = Board()
-        self.__status = "normal"
         self.__check = False
 
         # Salva o estado inicial do tabuleiro.
@@ -252,7 +251,7 @@ class ChessGame:
         self.__current_player =  self.__white_player or self.__black_player
 
     @check_locker
-    def __gen_defense_board(self, player:Player, board = None) -> list[[]]:
+    def __gen_defense_board(self, player:Player, board:Optional[list[list]]=None) -> list[[]]:
         if not board:
             board = self.__board.pecas
 
@@ -299,17 +298,15 @@ class ChessGame:
 
         if adv_player.defense[king_pos[1]][king_pos[0]]:
             self.__check_legal_moves_update()
-            if not self.__check_legal_moves:
-                self.__status = "xeque-mate"
-                self.__winner = adv_player.color
-            else:
-                self.__status = "xeque"
+            self.__check = True
 
+            if not self.__check_legal_moves:
+                self.__winner = adv_player.color
         else:
-            self.__status = "normal"
+            self.__check = False
 
     @check_locker
-    def __simule_check_out(self, from_, to) -> bool:
+    def __simule_check_out(self, from_:Union[tuple, list], to:Union[tuple, list]) -> bool:
         adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
 
         xi, yi = from_
@@ -333,7 +330,7 @@ class ChessGame:
             raise GameModeError("Você não pode usar esse método no modo replay")
         return bool(self.__board.check_promotion()) and not self.get_winner()
 
-    def set_promotion(self, piece_name: str):
+    def set_promotion(self, piece_name:str):
         """
         Define um tipo de peça para promover o peão. (não disponível no modo replay)
         """
@@ -350,10 +347,6 @@ class ChessGame:
 
         # Libera o próximo jogador para jogar.
         self.__change_player()
-
-    @property
-    def status(self):
-        return self.__status
     
     def get_player(self) -> Player:
         """
@@ -361,17 +354,21 @@ class ChessGame:
         """
         if self.__replaying:
             raise GameModeError("Você não pode usar esse método no modo replay")
+
         return self.__current_player
 
-    def get_piece(self, x: int, y: int, board: list[[]] = None) -> Piece:
+    def get_piece(self, x: int, y: int, board:Optional[list[list[Optional[Piece]]]]=None) -> Optional[Piece]:
         """
         Retorna a peça em uma dada posição XY (coluna, linha) do tabuleiro, de 0 à 7.
         """
         if not board:
             board = self.__board.pecas
 
-        try: return board[x][y]
-        except KeyError: return None
+        try:
+            return board[x][y]
+
+        except KeyError:
+            return None
 
     def get_winner(self) -> Color:
         """
@@ -379,6 +376,7 @@ class ChessGame:
         """
         if self.__replaying:
             raise GameModeError("Você não pode usar esse método no modo replay")
+
         return self.__winner
 
     def is_check(self) -> bool:
@@ -389,7 +387,7 @@ class ChessGame:
             raise GameModeError("Você não pode usar esse método no modo replay")
         return self.__check
 
-    def play(self, piece: Piece, to: tuple[int, int]) -> bool:
+    def play(self, piece:Piece, to:Union[tuple[int, int], list[int, int]]) -> bool:
         """
         Realiza uma jogada, dado uma peça e uma posição de
         destino XY (coluna, linha) no tabuleiro.
@@ -413,26 +411,23 @@ class ChessGame:
         if not (to in piece.legal_moves(self.__board.pecas)):
             return False
 
-        self.__check = False
-
-        if self.__status == "xeque":
+        #Verifica se o jogador está em xeque e o movimento sai do xeque
+        if self.__check:
             try:
-                # print(piece.coords[::-1], to)
-                # print("Movimentos do rei:", self.__current_player.king.legal_moves(self.__board.pecas))
-                # z = dict(map(lambda i: (i[0][::-1], i[1]), self.__check_legal_moves.items()))
-                # print("Movimentos legais:", z)
                 mov = self.__check_legal_moves[piece.coords]
                 if not (to in mov):
                     raise KeyError
 
-                self.__status = "normal"
+                self.__check = False
 
             except KeyError:
-                cor_msg = 'branco' if self.__current_player.color == Color.White else "preto"
                 self.__check = True
                 return False
 
-        #print(piece, piece.coords[::-1], to)
+        #Verifica se a jogada coloca o próprio rei em perigo
+        if not self.__simule_check_out(piece.coords, to):
+            return False
+
         # Obtém o alvo.
         target_piece = self.__board.pecas[to[0]][to[1]]
 
@@ -445,7 +440,8 @@ class ChessGame:
             if target_piece.name == "king":
                 self.__winner = piece.color
             
-        else: self.__attacked = False
+        else:
+            self.__attacked = False
 
         # Realiza o movimento da peça e salva o novo estado do tabuleiro.
         self.__board.pecas = piece.move(list(to), self.__board.pecas)
