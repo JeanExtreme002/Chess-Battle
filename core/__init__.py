@@ -96,7 +96,7 @@ class ChessGame:
         return self.__all_legal_moves
     
     @property
-    def stalemated(self):
+    def stalemated(self) -> bool:
         return self.__stalemated
 
     def close(self):
