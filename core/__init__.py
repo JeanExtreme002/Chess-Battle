@@ -7,14 +7,14 @@ from copy import deepcopy
 from typing import Optional, Union
 
 # Se verdadeiro, habilita o sistema de xeque
-CHECK_ENGINE_ENABLED = True
+# CHECK_ENGINE_ENABLED = True
 
-def check_locker(func):
-    def wrap(*args, **kwargs):
-        if CHECK_ENGINE_ENABLED:
-            return func(*args, **kwargs)
+# def check_locker(func):
+#     def wrap(*args, **kwargs):
+#         if CHECK_ENGINE_ENABLED:
+#             return func(*args, **kwargs)
 
-    return wrap
+#     return wrap
 
 class FinishedGameError(Exception):
     """
@@ -47,12 +47,13 @@ class ChessGame:
         self.__white_player = Player(Color.White)
         self.__black_player = Player(Color.Black)
         
-        self.__check_legal_moves = {}
+        self.__all_legal_moves = {}
         
         self.__replaying = False
 
         self.__destroyed_pieces = []
         self.__attacked = False
+        self.__stalemated = False
 
     @property
     def white_player(self) -> Player:
@@ -91,9 +92,13 @@ class ChessGame:
         return self.__game_data.replay_ended
     
     @property
-    def check_all_legal_moves(self) -> dict[tuple:list[[int, int]]]:
-        return self.__check_legal_moves
-        
+    def all_legal_moves(self) -> dict[tuple:list[[int, int]]]:
+        return self.__all_legal_moves
+    
+    @property
+    def stalemated(self):
+        return self.__stalemated
+
     def close(self):
         """
         Encerra o jogo.
@@ -226,6 +231,7 @@ class ChessGame:
         # Cria um novo tabuleiro.
         self.__board = Board()
         self.__check = False
+        self.__stalemated = False
 
         # Salva o estado inicial do tabuleiro.
         self.__game_data.open(game_name = name)
@@ -234,6 +240,8 @@ class ChessGame:
         # Define o rei de cada jogador.
         self.__white_player.king = self.__board.pecas[0][3]
         self.__black_player.king = self.__board.pecas[7][3] 
+
+        self.__all_legal_moves_update()
 
     def get_history(self) -> list[[]]:
         """
@@ -250,7 +258,7 @@ class ChessGame:
 
         self.__current_player =  self.__white_player or self.__black_player
 
-    @check_locker
+    #@check_locker
     def __gen_defense_board(self, player:Player, board:Optional[list[list]]=None) -> list[[]]:
         if not board:
             board = self.__board.pecas
@@ -268,13 +276,13 @@ class ChessGame:
 
         return new_defense_board
 
-    @check_locker
+    #@check_locker
     def __defense_update(self):
         for p in (self.__white_player, self.__black_player):
             p.defense = self.__gen_defense_board(p)
 
-    @check_locker
-    def __check_legal_moves_update(self):
+    #@check_locker
+    def __all_legal_moves_update(self):
         play_color = self.__current_player.color
         new_clm = {}
 
@@ -289,23 +297,22 @@ class ChessGame:
                     if self.__simule_check_out(peca.coords, mov):
                         new_clm[peca.coords] = new_clm.get(peca.coords, []) + [mov]
 
-        self.__check_legal_moves = new_clm
+        self.__all_legal_moves = new_clm
 
-    @check_locker
+    #@check_locker
     def __check_verify(self):
         adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
         king_pos = self.__current_player.king.coords
 
         if adv_player.defense[king_pos[1]][king_pos[0]]:
-            self.__check_legal_moves_update()
             self.__check = True
 
-            if not self.__check_legal_moves:
+            if not self.__all_legal_moves:
                 self.__winner = adv_player.color
         else:
             self.__check = False
 
-    @check_locker
+    #@check_locker
     def __simule_check_out(self, from_:Union[tuple, list], to:Union[tuple, list]) -> bool:
         adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
 
@@ -392,6 +399,10 @@ class ChessGame:
         Realiza uma jogada, dado uma peça e uma posição de
         destino XY (coluna, linha) no tabuleiro.
         """
+
+        if self.__stalemated:
+            raise FinishedGameError("A partida já encerrou, pois está empatada")
+
         if self.__replaying:
             raise GameModeError("Você não pode usar esse método no modo replay")
 
@@ -408,25 +419,10 @@ class ChessGame:
             raise NoPromotionError("Promova o peão antes de jogar")
 
         # Verifica se o movimento solicitado é válido, com base nas regras da peça.
-        if not (to in piece.legal_moves(self.__board.pecas)):
+        if not (to in self.__all_legal_moves.get(piece.coords, [])):
             return False
 
-        #Verifica se o jogador está em xeque e o movimento sai do xeque
-        if self.__check:
-            try:
-                mov = self.__check_legal_moves[piece.coords]
-                if not (to in mov):
-                    raise KeyError
-
-                self.__check = False
-
-            except KeyError:
-                self.__check = True
-                return False
-
-        #Verifica se a jogada coloca o próprio rei em perigo
-        if not self.__simule_check_out(piece.coords, to):
-            return False
+        self.__check = False
 
         # Obtém o alvo.
         target_piece = self.__board.pecas[to[0]][to[1]]
@@ -456,6 +452,10 @@ class ChessGame:
             self.__game_data.close(self.__winner)
 
         self.__defense_update()
+        self.__all_legal_moves_update()
         self.__check_verify()
+
+        if (not self.__check) and (not self.__all_legal_moves):
+            self.__stalemated = True
 
         return True
