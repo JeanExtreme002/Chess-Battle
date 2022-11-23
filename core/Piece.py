@@ -6,10 +6,9 @@ from .Pieces_type import Piece_type
 class Piece(ABC):
     def __init__(self, color:Color, x:int, y:int):
         self._color = color
-        self._color_complex = None
         self.x = x
         self.y = y
-        self._list_moves = []
+        self._list_moves:list[list[int, int]] = []
         self._has_moved = False
         piece = type(self).__name__.upper()
         self.name = piece.lower()
@@ -36,15 +35,6 @@ class Piece(ABC):
     @property
     def color(self) -> Color:
         return self._color
-
-    @property
-    def color_complex(self) -> Color:
-        """Returns the color of the square"""
-        if self.x + self.y in Color.Dark.value:
-            self._color_complex = Color.Dark
-        else:
-            self._color_complex = Color.Light
-        return self._color_complex
 
     @property
     def has_moved(self) -> bool:
