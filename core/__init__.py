@@ -354,6 +354,11 @@ class ChessGame:
 
         # Libera o próximo jogador para jogar.
         self.__change_player()
+
+        # Atualiza os movimentos legais
+        self.__defense_update()
+        self.__all_legal_moves_update()
+        self.__check_verify()
     
     def get_player(self) -> Player:
         """
@@ -443,17 +448,16 @@ class ChessGame:
         self.__board.pecas = piece.move(list(to), self.__board.pecas)
         self.__game_data.save(self.__board.pecas)
 
-        # Se não houver promoções, o turno do jogador será alterado.
+        # Se não houver promoções, o turno do jogador será alterado e os movimentos legais atualizados
         if not self.has_promotion():
             self.__change_player()
+            self.__defense_update()
+            self.__all_legal_moves_update()
+            self.__check_verify()
 
         # Se houver vencedor, o arquivo de replay será fechado, informando quem foi o vencedor.
         if self.__winner:
             self.__game_data.close(self.__winner)
-
-        self.__defense_update()
-        self.__all_legal_moves_update()
-        self.__check_verify()
 
         if (not self.__check) and (not self.__all_legal_moves):
             self.__stalemated = True
