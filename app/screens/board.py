@@ -418,7 +418,7 @@ class BoardScreen(Screen):
         self.__online_defeat = self.__mode == self.ONLINE_MODE and color.value != self.__player
 
         # Conquista de usuário.
-        if self.__mode == self.ONLINE_MODE:
+        if (self.__mode == self.ONLINE_MODE) and (not isinstance(color, bool)):
             if color.value == self.__player: self.get_application().add_achievement("Vida longa ao rei!", "Ganhou uma partida no modo online.")
             else: self.get_application().add_achievement("Dias frios e sombrios...", "Perdeu uma partida no modo online.")
 
@@ -432,6 +432,10 @@ class BoardScreen(Screen):
         if self.__mode == self.ONLINE_MODE:
             message_type = self.__VICTORY_MESSAGES if color.value == self.__player else self.__DEFEAT_MESSAGES
             message = random.choice(message_type)
+
+        elif isinstance(color, bool):
+            message = "Empate por afogamento"
+
         else:
             message = "As peças {} ganharam o jogo!"
             message = message.format("brancas" if color.value == 0 else "pretas")
@@ -881,6 +885,7 @@ class BoardScreen(Screen):
 
         # Obtém o vencedor da partida, caso haja.
         winner = self.__game.get_winner() if self.__mode != self.REPLAY_MODE else None
+        stalemated = self.__game.stalemated if self.__mode != self.REPLAY_MODE else False
         
         # Verifica se houve alguma jogada realizada pelo outro jogador.
         if not winner and self.__mode == self.ONLINE_MODE and self.__request_frame_counter == 0:
@@ -930,8 +935,8 @@ class BoardScreen(Screen):
             else: self.__promotion_available = False
 
         # Verifica se a partida finalizou.
-        if not self.__finished and winner:
-            self.__finish_game(winner)
+        if not self.__finished and (winner or stalemated):
+            self.__finish_game(winner or stalemated)
          
         self.__confirmation_popup.draw()
         self.__popup.draw()
