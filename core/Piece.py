@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from .Color import Color
 from .Pieces_type import Piece_type
+from typing import Optional, List
 
 
 class Piece(ABC):
@@ -8,7 +9,7 @@ class Piece(ABC):
         self._color = color
         self.x = x
         self.y = y
-        self._list_moves:list[list[int, int]] = []
+        self._list_moves:list[list[int]] = []
         self._has_moved = False
         piece = type(self).__name__.upper()
         self.name = piece.lower()
@@ -44,12 +45,12 @@ class Piece(ABC):
     def coords(self) -> tuple:
         return self.x, self.y
 
-    def _update_position(self, target: list[int, int]) -> None:
+    def _update_position(self, target: list[int]):
         """Moves a piece to a target"""
         self.x = target[1]
         self.y = target[0]
 
-    def update_situation(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+    def update_situation(self, target: list[int], situation: list[list]) -> list[list]:
         """Updates the board situation after a move"""
         situation[self.y][self.x] = None
         self._update_position(target)
@@ -57,7 +58,7 @@ class Piece(ABC):
         return situation
 
     @staticmethod
-    def is_defended(target:list[int, int], situation:list[[]]) -> bool:
+    def is_defended(target:list[int], situation:list[list]) -> bool:
         """Checks if the square is defended by a piece"""
         try:
             for row in range(8):
@@ -68,6 +69,7 @@ class Piece(ABC):
             return False
         except IndexError as e:
             print("Ops!", e, "Occurred")
+            return False
 
     @property
     @abstractmethod
@@ -76,14 +78,14 @@ class Piece(ABC):
         return
 
     @abstractmethod
-    def legal_moves(self, situation: list[[]]):
+    def legal_moves(self, situation: list[list]):
         """Restricts the list of movements to only legal moves.
         Receives the situation of the board, a matrix with all the instances in the game right now.
         Returns the legal moves"""
         return
 
     @abstractmethod
-    def move(self, target: list[int, int], situation: list[[]]):
+    def move(self, target: list[int], situation: list[list]):
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.

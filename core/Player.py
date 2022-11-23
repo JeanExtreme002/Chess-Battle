@@ -1,5 +1,6 @@
 from .Color import Color
 from .King import King
+from typing import Optional
 
 class Player:
     """
@@ -12,7 +13,7 @@ class Player:
         self.color = color
         self.__played = False
         self.__defense = [[False for _ in range(8)] for _ in range(8)]
-        self.__king = None
+        self.__king:Optional[King] = None
 
     def __bool__(self) -> bool:
         return self.__played
@@ -29,15 +30,15 @@ class Player:
         self.__played = value
 
     @property
-    def defense(self):
+    def defense(self) -> list[list[bool]]:
         return self.__defense
 
     @defense.setter
-    def defense(self, table) -> list[[]]:
+    def defense(self, table):
         self.__defense = table
 
     @property
-    def king(self) -> King:
+    def king(self) -> Optional[King]:
         return self.__king
     
     @king.setter

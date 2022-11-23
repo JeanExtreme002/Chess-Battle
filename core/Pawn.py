@@ -7,14 +7,14 @@ class Pawn(Piece):
         super(Pawn, self).__init__(color, x, y)
         self._has_moved2 = False
         self._en_passant_enable = False
-        self._captures = []
+        self._captures:list[list[int]] = []
 
     @property
     def has_moved2(self) -> bool:
         return self._has_moved2
 
     @property
-    def movement(self) -> list:
+    def movement(self) -> list[list[int]]:
         """Returns the lists of potential moves in any given position"""
         self._list_moves.clear()
         if self.in_row_boundary:
@@ -30,7 +30,7 @@ class Pawn(Piece):
         return self._list_moves.copy()
 
     @property
-    def captures(self) -> list:
+    def captures(self) -> list[list[int]]:
         """Returns the lists of potential captures in any given position"""
         self._captures.clear()
         if self.in_row_boundary:
@@ -45,7 +45,7 @@ class Pawn(Piece):
                     self._captures.append([self.y - 1, square])
         return self._captures.copy()
 
-    def legal_moves(self, situation: list[[]]) -> list:
+    def legal_moves(self, situation: list[list]) -> list[list[int]]:
         """Restricts the list of movements to only legal moves.
         Receives the situation of the board, a matrix with all the instances in the game right now.
         Returns the legal moves"""
@@ -85,7 +85,7 @@ class Pawn(Piece):
             return True
         return False
 
-    def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+    def move(self, target: list[int], situation: list[list]) -> list[list]:
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.

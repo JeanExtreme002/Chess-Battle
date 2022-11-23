@@ -9,7 +9,7 @@ class Queen(Piece):
         self.__id = Piece_type.QUEEN.value + color.value
 
     @property
-    def movement(self) -> list:
+    def movement(self) -> list[list[int]]:
         """Returns the lists of potential moves in any given position"""
         self._list_moves.clear()
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
@@ -26,7 +26,7 @@ class Queen(Piece):
                     self._list_moves.append([y, x])
         return self._list_moves.copy()
 
-    def legal_moves(self, situation: list[[]]) -> list:
+    def legal_moves(self, situation: list[list]) -> list[list[int]]:
         """Restricts the list of movements to only legal moves.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
@@ -55,7 +55,7 @@ class Queen(Piece):
         finally:
             return psb_moves
 
-    def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+    def move(self, target: list[int], situation: list[list]) -> list[list]:
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.

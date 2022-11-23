@@ -12,7 +12,7 @@ class King(Piece):
         self.__id = Piece_type.KING.value + color.value
 
     @property
-    def movement(self) -> list:
+    def movement(self) -> list[list[int]]:
         """Returns the lists of potential moves in any given position"""
         self._list_moves.clear()
         for square in range(self.x - 1, self.x + 2):
@@ -25,7 +25,7 @@ class King(Piece):
                     self._list_moves.append([self.y - 1, square])
         return self._list_moves.copy()
 
-    def _free_spaces(self, situation: list[[]], rook: Rook) -> bool:
+    def _free_spaces(self, situation: list[list], rook: Rook) -> bool:
         """Private auxiliary method to check if the squares between the king and rook are free"""
         free = True
         if rook.x == 7:
@@ -40,7 +40,7 @@ class King(Piece):
                     break
         return free
 
-    def castle(self, situation: list[[]], rook: Rook) -> bool:
+    def castle(self, situation: list[list], rook: Rook) -> bool:
         """Checks if castle is possible"""
         if rook.color != self.color:
             return False
@@ -48,7 +48,9 @@ class King(Piece):
         if not self.has_moved and not rook.has_moved and not self.is_checked:
             return self._free_spaces(situation, rook)
 
-    def legal_moves(self, situation: list[[]]) -> list:
+        return False
+
+    def legal_moves(self, situation: list[list]) -> list[list[int]]:
         """Restricts the list of movements to only legal moves.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
@@ -78,7 +80,7 @@ class King(Piece):
         finally:
             return lgl_moves
 
-    def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+    def move(self, target: list[int], situation: list[list]) -> list[list]:
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.

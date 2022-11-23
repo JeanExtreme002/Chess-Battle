@@ -6,16 +6,6 @@ from .Data import GameData
 from copy import deepcopy
 from typing import Optional, Union
 
-# Se verdadeiro, habilita o sistema de xeque
-# CHECK_ENGINE_ENABLED = True
-
-# def check_locker(func):
-#     def wrap(*args, **kwargs):
-#         if CHECK_ENGINE_ENABLED:
-#             return func(*args, **kwargs)
-
-#     return wrap
-
 class FinishedGameError(Exception):
     """
     Exceção relacionada ào fato do jogo ter encerrado.
@@ -47,11 +37,11 @@ class ChessGame:
         self.__white_player = Player(Color.White)
         self.__black_player = Player(Color.Black)
         
-        self.__all_legal_moves = {}
+        self.__all_legal_moves:dict[tuple, list[list]] = {}
         
         self.__replaying = False
 
-        self.__destroyed_pieces = []
+        self.__destroyed_pieces:list[Optional[Piece]] = []
         self.__attacked = False
         self.__stalemated = False
 
@@ -72,7 +62,7 @@ class ChessGame:
         return self.__board
 
     @property
-    def id(self) -> str:
+    def id(self) -> Optional[str]:
         return self.__game_data.id
 
     @property
@@ -92,7 +82,7 @@ class ChessGame:
         return self.__game_data.replay_ended
     
     @property
-    def all_legal_moves(self) -> dict[tuple:list[[int, int]]]:
+    def all_legal_moves(self) -> dict[tuple, list[list[int]]]:
         return self.__all_legal_moves
     
     @property
@@ -122,7 +112,7 @@ class ChessGame:
             if not type(list_1[index]) is type(list_2[index]): return list_1[index]
         return list_1[-1]
 
-    def __update_destroyed_pieces(self, new_board: list[[]]):
+    def __update_destroyed_pieces(self, new_board: list[list]):
         """
         Método para o sistema de replay, para atualizar a lista
         de peças destruídas, dado um nome tabuleiro.
@@ -243,7 +233,7 @@ class ChessGame:
 
         self.__all_legal_moves_update()
 
-    def get_history(self) -> list[[]]:
+    def get_history(self) -> list[list]:
         """
         Retorna uma lista com o histórico dos jogos realizados.
         """
@@ -258,8 +248,7 @@ class ChessGame:
 
         self.__current_player =  self.__white_player or self.__black_player
 
-    #@check_locker
-    def __gen_defense_board(self, player:Player, board:Optional[list[list]]=None) -> list[[]]:
+    def __gen_defense_board(self, player:Player, board:Optional[list[list]]=None) -> list[list]:
         if not board:
             board = self.__board.pecas
 
@@ -276,12 +265,10 @@ class ChessGame:
 
         return new_defense_board
 
-    #@check_locker
     def __defense_update(self):
         for p in (self.__white_player, self.__black_player):
             p.defense = self.__gen_defense_board(p)
 
-    #@check_locker
     def __all_legal_moves_update(self):
         play_color = self.__current_player.color
         new_clm = {}
@@ -299,7 +286,6 @@ class ChessGame:
 
         self.__all_legal_moves = new_clm
 
-    #@check_locker
     def __check_verify(self):
         adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
         king_pos = self.__current_player.king.coords
@@ -312,7 +298,6 @@ class ChessGame:
         else:
             self.__check = False
 
-    #@check_locker
     def __simule_check_out(self, from_:Union[tuple, list], to:Union[tuple, list]) -> bool:
         adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
 

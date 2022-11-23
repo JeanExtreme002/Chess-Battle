@@ -6,7 +6,7 @@ from .King import King
 from .Pawn import Pawn
 from .Rook import Rook
 from .Color import Color
-from typing import Optional
+from typing import Optional, Union, Type, Callable
 import io, os, time
 
 class GameData():
@@ -19,12 +19,12 @@ class GameData():
     def __init__(self, directory:str):
         self.__directory = directory
         
-        self.__file = None
+        self.__file:Optional[io.TextIOWrapper] = None
         self.__closed = True
-        self.__game_id = None
+        self.__game_id:Optional[str] = None
 
     @property
-    def id(self) -> str:
+    def id(self) -> Optional[str]:
         return self.__game_id
 
     @property
@@ -49,13 +49,14 @@ class GameData():
         
         return chr(piece_id + 97)
 
-    def __get_piece_by_id(self, piece_id:str, x:int, y:int) -> Piece:
+    def __get_piece_by_id(self, piece_id_:str, x:int, y:int) -> Optional[Piece]:
         """
         Retorna a peça através do seu ID.
         """
-        piece_id = ord(piece_id) - 97
+        piece_id = ord(piece_id_) - 97
 
-        if piece_id == 0: return
+        if piece_id == 0:
+            return None
 
         # Verifica se a peça é branca ou preta observando
         # se o ID é par ou ímpar. Após isso, obtém-se o
@@ -77,6 +78,7 @@ class GameData():
             "king": King,
             "pawn": Pawn,
         }[piece_name]
+
         return PieceType(color, x, y)
 
     def close(self, winner:Optional[Color]=None):
@@ -107,7 +109,7 @@ class GameData():
         if not self.__read_mode and winner is None:
             os.remove(self.__filename)
 
-    def get_game_list(self) -> list[[]]:
+    def get_game_list(self) -> list[list]:
         """
         Retorna uma lista com todos os jogos salvos e suas informações gerais.
         """
@@ -134,7 +136,7 @@ class GameData():
         games.sort(key = lambda game: game[-1], reverse = True)
         return games
 
-    def open(self, game_id:str=None, game_name:str="game"):
+    def open(self, game_id:Optional[str]=None, game_name:str="game"):
         """
         Abre um arquivo, para leitura ou escrita. Em caso de leitura,
         deve ser informado o ID do jogo em questão.
@@ -176,7 +178,7 @@ class GameData():
         """
         if not self.__read_mode or self.__closed: raise io.UnsupportedOperation("not readable")
         
-        board = [list() for i in range(8)]
+        board:list[list] = [list() for i in range(8)]
 
         # Faz a leitura da linha completa.
         string = self.__file.read(8 * 8 + 1).rstrip("\n")
@@ -219,7 +221,7 @@ class GameData():
         self.__lines += 8 * 8 + 2
         self.__file.seek(self.__lines)
     
-    def save(self, board:list[[]]):
+    def save(self, board:list[list]):
         """
         Salva um estado do tabuleiro. (somente no modo escrita)
         """

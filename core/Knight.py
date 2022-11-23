@@ -7,7 +7,7 @@ class Knight(Piece):
         super(Knight, self).__init__(color, x, y)
 
     @property
-    def movement(self) -> list:
+    def movement(self) -> list[list[int]]:
         """Returns the lists of potential moves in any given position"""
         self._list_moves.clear()
         directions = [(-2, -1), (2, -1), (-2, 1), (2, 1), (-1, -2), (1, -2), (-1, 2), (1, 2)]
@@ -21,7 +21,7 @@ class Knight(Piece):
                 self._list_moves.append([y, x])
         return self._list_moves.copy()
 
-    def legal_moves(self, situation: list[[]]) -> list:
+    def legal_moves(self, situation: list[list]) -> list[list[int]]:
         """Restricts the list of movements to only legal moves.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
@@ -37,7 +37,7 @@ class Knight(Piece):
         finally:
             return psb_moves
 
-    def move(self, target: list[int, int], situation: list[[]]) -> list[[]]:
+    def move(self, target: list[int], situation: list[list]) -> list[list]:
         """Executes the move of the piece.
         Receives the target square and the situation of the board,
         a matrix with all the instances in the game right now.
