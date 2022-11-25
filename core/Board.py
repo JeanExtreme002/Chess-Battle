@@ -7,7 +7,7 @@ from .Pawn import Pawn
 from .Rook import Rook
 from .Color import Color
 from enum import Enum
-from typing import Optional
+from typing import Optional, Type
 
 class Board():
     """
@@ -79,8 +79,11 @@ class Board():
         Promove um peão, dado um novo tipo de peça
         em que o mesmo será transformado.
         """
-        ChosenPiece = {"bishop": Bishop, "knight": Knight, "rook": Rook, "queen": Queen}.get(piece_name)
-        if not ChosenPiece: raise ValueError("peça inválida para promoção")
+        cp:dict[str, Type[Piece]] = {"bishop": Bishop, "knight": Knight, "rook": Rook, "queen": Queen}
+        ChosenPiece = cp.get(piece_name)
+        
+        if not ChosenPiece:
+            raise ValueError("peça inválida para promoção")
         
         piece = self.check_promotion()
         if not (piece is None):

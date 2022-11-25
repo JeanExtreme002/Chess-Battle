@@ -6,8 +6,10 @@ from .King import King
 from .Pawn import Pawn
 from .Rook import Rook
 from .Color import Color
-from typing import Optional, Union, Type, Callable
+
+from typing import Callable, Optional, Type, Union
 import io, os, time
+
 
 class GameData():
     """
@@ -70,14 +72,15 @@ class GameData():
             color = Color.Black
 
         # Obtém o tipo da peça e retorna o seu objeto.
-        PieceType = {
+        pt:dict[str, Type[Piece]] = {
             "bishop": Bishop,
             "knight": Knight,
             "rook": Rook,
             "queen": Queen,
             "king": King,
             "pawn": Pawn,
-        }[piece_name]
+        }
+        PieceType = pt[piece_name]
 
         return PieceType(color, x, y)
 
@@ -88,13 +91,12 @@ class GameData():
         em um arquivo apropriado, com a cor do vencedor, passada
         como parâmetro, sendo registrada.
         """
-        if self.__file is None:
-            raise TypeError("self.__file must be a 'io.TextIOWrapper', not 'NoneType'")
 
         if self.__closed:
             return
         
-        self.__file.close()
+        if not (self.__file is None):
+            self.__file.close()
         
         self.__file = None
         self.__closed = True
