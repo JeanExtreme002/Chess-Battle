@@ -216,7 +216,7 @@ class ChessGame:
         # Define como primeiro jogador o que possui as peças brancas.
         self.__current_player = self.__white_player
         self.__white_player.played = True
-        self.__winner = None
+        self.__winner:Optional[Color] = None
 
         # Cria um novo tabuleiro.
         self.__board = Board()
@@ -249,7 +249,7 @@ class ChessGame:
         self.__current_player =  self.__white_player or self.__black_player
 
     def __gen_defense_board(self, player:Player, board:Optional[list[list]]=None) -> list[list]:
-        if not board:
+        if board is None:
             board = self.__board.pecas
 
         new_defense_board = [[False for _ in range(8)] for _ in range(8)]
@@ -257,7 +257,7 @@ class ChessGame:
         for x in range(8):
             for y in range(8):
                 peca = self.get_piece(x, y, board)
-                if peca == None or peca.color != player.color:
+                if (peca is None) or peca.color != player.color:
                     continue
 
                 for m in peca.legal_moves(board):
@@ -299,6 +299,9 @@ class ChessGame:
             self.__check = False
 
     def __simule_check_out(self, from_:Union[tuple, list], to:Union[tuple, list]) -> bool:
+        if self.__current_player.king is None:
+            raise TypeError("self.__current_player.king must be a 'core.King.King', not 'NoneType'")
+
         adv_player = self.__white_player if self.__current_player == self.__black_player else self.__black_player
 
         xi, yi = from_
@@ -358,7 +361,7 @@ class ChessGame:
         """
         Retorna a peça em uma dada posição XY (coluna, linha) do tabuleiro, de 0 à 7.
         """
-        if not board:
+        if board is None:
             board = self.__board.pecas
 
         try:
@@ -367,7 +370,7 @@ class ChessGame:
         except KeyError:
             return None
 
-    def get_winner(self) -> Color:
+    def get_winner(self) -> Optional[Color]:
         """
         Retorna o vencedor do jogo se houver. (não disponível no modo replay)
         """
@@ -384,7 +387,7 @@ class ChessGame:
             raise GameModeError("Você não pode usar esse método no modo replay")
         return self.__check
 
-    def play(self, piece:Piece, to:Union[tuple[int, int], list[int, int]]) -> bool:
+    def play(self, piece:Piece, to:Union[tuple[int, int], list[int]]) -> bool:
         """
         Realiza uma jogada, dado uma peça e uma posição de
         destino XY (coluna, linha) no tabuleiro.

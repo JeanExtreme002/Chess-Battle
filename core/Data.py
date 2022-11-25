@@ -88,6 +88,9 @@ class GameData():
         em um arquivo apropriado, com a cor do vencedor, passada
         como parâmetro, sendo registrada.
         """
+        if self.__file is None:
+            raise TypeError("self.__file must be a 'io.TextIOWrapper', not 'NoneType'")
+
         if self.__closed:
             return
         
@@ -133,7 +136,8 @@ class GameData():
                 games.append([name, winner, score[0], score[1], game_id, fmtdate, date])
 
         # Ordena a lista de jogos pela data de finalização.
-        games.sort(key = lambda game: game[-1], reverse = True)
+        key_sort:Callable[[list], float] = lambda game: game[-1]
+        games.sort(key=key_sort, reverse=True)
         return games
 
     def open(self, game_id:Optional[str]=None, game_name:str="game"):
@@ -161,7 +165,7 @@ class GameData():
 
         # Se solicitado o modo de escrita, um arquivo temporário será criado para salvar o jogo continuamente.
         else:
-            filename = os.path.join(self.__directory, str(os.getpid()) + ".temp".format(game_id))
+            filename = os.path.join(self.__directory, str(os.getpid()) + "{}.temp".format(game_id))
             game_id = self.__get_game_id()
 
         self.__game_id = game_id
@@ -176,7 +180,11 @@ class GameData():
         """
         Retorna uma matriz que é o estado do tabuleiro no momento atual. (somente no modo leitura)
         """
-        if not self.__read_mode or self.__closed: raise io.UnsupportedOperation("not readable")
+        if self.__file is None:
+            raise TypeError("self.__file must be a 'io.TextIOWrapper', not 'NoneType'")
+
+        if not self.__read_mode or self.__closed:
+            raise io.UnsupportedOperation("not readable")
         
         board:list[list] = [list() for i in range(8)]
 
@@ -225,7 +233,11 @@ class GameData():
         """
         Salva um estado do tabuleiro. (somente no modo escrita)
         """
-        if self.__read_mode or self.__closed: raise io.UnsupportedOperation("not writable")
+        if self.__file is None:
+            raise TypeError("self.__file must be a 'io.TextIOWrapper', not 'NoneType'")
+
+        if self.__read_mode or self.__closed:
+            raise io.UnsupportedOperation("not writable")
 
         self.__score = [0, 0]
 

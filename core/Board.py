@@ -7,6 +7,7 @@ from .Pawn import Pawn
 from .Rook import Rook
 from .Color import Color
 from enum import Enum
+from typing import Optional
 
 class Board():
     """
@@ -58,7 +59,7 @@ class Board():
         """
         self.pecas[piece.y][piece.x] = piece
 
-    def check_promotion(self) -> Piece:
+    def check_promotion(self) -> Optional[Piece]:
         """
         Percorre as extremidades do tabuleiro, verificando
         se há promoções. Se sim, a peça será retornada.
@@ -71,6 +72,8 @@ class Board():
                 if piece and piece.name == "pawn" and piece.promotion:
                     return piece
 
+        return None
+
     def set_promotion(self, piece_name:str):
         """
         Promove um peão, dado um novo tipo de peça
@@ -80,4 +83,5 @@ class Board():
         if not ChosenPiece: raise ValueError("peça inválida para promoção")
         
         piece = self.check_promotion()
-        self.pecas[piece.y][piece.x] = ChosenPiece(piece.color, piece.x, piece.y)
+        if not (piece is None):
+            self.pecas[piece.y][piece.x] = ChosenPiece(piece.color, piece.x, piece.y)
