@@ -290,7 +290,7 @@ class SoundPlayer(object):
         self.__effect_player.volume = self.__volume[0] / 100
         self.__music_player.volume = self.__volume[1] / 100
         
-    def stop_sound(self, music = False, all_ = False):
+    def stop_sound(self, music: bool = False, all_: bool = False):
         """
         Interrompe a reprodução de um som.
         """

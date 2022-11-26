@@ -1,11 +1,12 @@
 from .highlighted_widget import HighlightedWidget
+from .widget_group import WidgetGroup
 
 class Achievement(HighlightedWidget):
     """
     Classe para criar um popup com uma mensagem na tela.
     """
   
-    def __init__(self, screen, size, image, font_size, widget_group = None):
+    def __init__(self, screen, size: list[int, int], image: str, font_size: int, widget_group: WidgetGroup = None):
         super().__init__(
             screen, screen.width - size[0], screen.height + size[1], size,
             fill = 0, opacity = 200, widget_group = widget_group

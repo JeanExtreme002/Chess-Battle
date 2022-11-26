@@ -79,7 +79,7 @@ class Application(window.Window):
         if localtime.tm_mday == 20 and localtime.tm_mon == 7:
             self.add_achievement("É dia de xadrez!!", "Iniciou o jogo no dia internacional do xadrez.") 
 
-    def __decrease_snowing_animation(self, first_exec = True):
+    def __decrease_snowing_animation(self, first_exec: bool = True):
         """
         Diminui gradualmente as partículas de neve.
         """
@@ -368,7 +368,7 @@ class Application(window.Window):
         """
         self.__current_screen.on_close()
 
-    def on_draw(self, interval = None):
+    def on_draw(self, interval: Union[float, None] = None):
         """
         Evento para desenhar a tela.
         """
@@ -446,7 +446,7 @@ class Application(window.Window):
         self.__address[0] = address
         self.__address[1] = int(port)
 
-    def set_message_to_title(self, message):
+    def set_message_to_title(self, message: str):
         """
         Define uma mensagem ao lado do título do jogo.
         """

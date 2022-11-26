@@ -6,7 +6,7 @@ class MediaController(HighlightedWidget):
     """
     Classe para criar um popup com uma mensagem na tela.
     """
-    def __init__(self, screen, x, y, width, images, widget_group = None):
+    def __init__(self, screen, x: int, y: int, width: int, images: list[str, str, str, str, str], widget_group: WidgetGroup = None):
         super().__init__(
             screen, x, y, (width, width * 0.08),
             opacity = 200,

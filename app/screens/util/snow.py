@@ -1,11 +1,12 @@
 from .highlighted_widget import HighlightedWidget
+from .widget_group import WidgetGroup
 import random
 
 class Snow(HighlightedWidget):
     """
     Classe para criar neve na tela.
     """
-    def __init__(self, screen, image, particles = 300, max_size = 2, widget_group = None):
+    def __init__(self, screen, image: str, particles: bool = 300, max_size: bool = 2, widget_group: WidgetGroup = None):
         super().__init__(
             screen, 0, 0, (screen.width, screen.height),
             color = (80, 80, 80), opacity = 150,

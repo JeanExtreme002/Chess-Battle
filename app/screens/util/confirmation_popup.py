@@ -1,11 +1,12 @@
 from .button import Button
 from .popup import Popup
+from .widget_group import WidgetGroup
 
 class ConfirmationPopup(Popup):
     """
     Classe para criar um popup de confirmação na tela.
     """
-    def __init__(self, screen, x, y, size, image, button_images, widget_group = None):
+    def __init__(self, screen, x: int, y: int, size: list[int, int], image: str, button_images: list[list[str, str]], widget_group: WidgetGroup = None):
         super().__init__(screen, x, y, size, image, widget_group = widget_group)
 
         self.__button_images = button_images

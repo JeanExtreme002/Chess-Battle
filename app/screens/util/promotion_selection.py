@@ -1,12 +1,13 @@
 from .button import Button
 from .highlighted_widget import HighlightedWidget
+from .widget_group import WidgetGroup
 from typing import Tuple
 
 class PromotionSelection(HighlightedWidget):
     """
     Classe para criar um popup de seleção para promoções.
     """
-    def __init__(self, screen, x, y, size, images, widget_group = None):
+    def __init__(self, screen, x: int, y: int, size: list[int, int], images: list[str, str, str, str], widget_group: WidgetGroup = None):
         super().__init__(screen, x, y, size, widget_group = widget_group)
         
         self.__images = images

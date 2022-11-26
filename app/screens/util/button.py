@@ -1,11 +1,12 @@
 from .widget import Widget
+from .widget_group import WidgetGroup
 from typing import Tuple
 
 class Button(Widget):
     """
     Classe para criar botões na tela.
     """
-    def __init__(self, screen, x, y, size, images, widget_group = None):
+    def __init__(self, screen, x: int, y: int, size: list[int, int], images: list[str, str], widget_group: WidgetGroup = None):
         super().__init__(screen, x, y, size, widget_group = widget_group)
         
         self.__activated = False
