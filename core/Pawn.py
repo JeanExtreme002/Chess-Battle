@@ -73,3 +73,10 @@ class Pawn(Piece):
         # updating attributes
         self._has_moved = True
         return self.update_situation(target, situation)
+
+    @property
+    def promotion(self) -> bool:
+        """Checks if it is a case for promotion"""
+        if self.y == 7 or self.y == 0:
+            return True
+        return False
