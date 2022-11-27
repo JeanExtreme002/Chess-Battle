@@ -1,12 +1,12 @@
 from .widget import Widget
 from .widget_group import WidgetGroup
-from typing import Tuple
+from typing import Optional
 
 class Entry(Widget):
     """
     Classe para criar caixas de input.
     """
-    def __init__(self, screen, x: int, y: int, size: list[int, int], border: int = 0, default_text: str = "", widget_group: WidgetGroup = None):
+    def __init__(self, screen, x: int, y: int, size: list[int], border: int = 0, default_text: str = "", widget_group: Optional[WidgetGroup] = None):
         super().__init__(screen, x, y, size, widget_group = widget_group)
         self.__border_size = border
         self.__default_text = default_text
@@ -55,7 +55,7 @@ class Entry(Widget):
         self.update_text()
         return True
 
-    def check(self, *cursor_pos: Tuple[int, int]):
+    def check(self, *cursor_pos: int):
         """
         Verifica se o cursor se encontra na posição da caixa de texto.
         """

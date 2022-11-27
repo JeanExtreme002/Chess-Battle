@@ -1,17 +1,18 @@
 from .widget import Widget
 from .widget_group import WidgetGroup
+from typing import Optional
 
 class Scrollbar(Widget):
     """
     Classe para criar botões na tela.
     """
-    def __init__(self, screen, x: int, y: int, size: list[int, int], bar_height: int, widget_group: WidgetGroup = None):
+    def __init__(self, screen, x: int, y: int, size: list[int], bar_height: int, widget_group: Optional[WidgetGroup] = None):
         super().__init__(screen, x, y, size, widget_group = widget_group)
 
         self.__bar_height = bar_height
         
-        self.__max_value = 0
-        self.__value = 0
+        self.__max_value: float = 0
+        self.__value: float = 0
         
         self.__build()
 

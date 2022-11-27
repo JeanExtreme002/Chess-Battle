@@ -1,13 +1,13 @@
 from .button import Button
 from .highlighted_widget import HighlightedWidget
 from .widget_group import WidgetGroup
-from typing import Tuple
+from typing import Optional
 
 class PromotionSelection(HighlightedWidget):
     """
     Classe para criar um popup de seleção para promoções.
     """
-    def __init__(self, screen, x: int, y: int, size: list[int, int], images: list[str, str, str, str], widget_group: WidgetGroup = None):
+    def __init__(self, screen, x: int, y: int, size: list[int], images: list[str], widget_group: Optional[WidgetGroup] = None):
         super().__init__(screen, x, y, size, widget_group = widget_group)
         
         self.__images = images
@@ -61,7 +61,7 @@ class PromotionSelection(HighlightedWidget):
             (self.__images[3], self.__images[3])
         )
 
-    def check(self, *cursor_pos: Tuple[int, int]) -> list[bool]:
+    def check(self, *cursor_pos: int) -> tuple[bool, bool, bool, bool]:
         """
         Verifica se o cursor se encontra na posição de um dos botões.
         """

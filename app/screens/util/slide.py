@@ -1,11 +1,12 @@
 from .widget import Widget
 from .widget_group import WidgetGroup
+from typing import Optional
 
 class Slide(Widget):
     """
     Classe para criar slides na tela.
     """
-    def __init__(self, screen, x: int, y: int, size: list[int, int], images: str, widget_group: WidgetGroup = None):
+    def __init__(self, screen, x: int, y: int, size: list[int], images: str, widget_group: Optional[WidgetGroup] = None):
         super().__init__(screen, x, y, size, widget_group = widget_group)
 
         self.__max_opacity = 255

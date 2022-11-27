@@ -1,12 +1,12 @@
 from .widget import Widget
 from .widget_group import WidgetGroup
-from typing import Union
+from typing import Optional, Union
 
 class HighlightedWidget(Widget):
     """
     Classe para criar caixas de input.
     """
-    def __init__(self, screen, x: int, y: int, size: list[int, int], color: tuple[int, int, int] = (0, 0, 0), opacity: int = 150, fill: Union[int, str] = "expand", widget_group: WidgetGroup = None):
+    def __init__(self, screen, x: int, y: int, size: list[int], color: tuple[int, int, int] = (0, 0, 0), opacity: int = 150, fill: Union[int, str] = "expand", widget_group: Optional[WidgetGroup] = None):
         super().__init__(screen, x, y, size, widget_group = widget_group)
         self.__color = color
         self.__opacity = opacity

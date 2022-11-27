@@ -1,12 +1,13 @@
 from .button import Button
 from .popup import Popup
 from .widget_group import WidgetGroup
+from typing import Optional
 
 class ConfirmationPopup(Popup):
     """
     Classe para criar um popup de confirmação na tela.
     """
-    def __init__(self, screen, x: int, y: int, size: list[int, int], image: str, button_images: list[list[str, str]], widget_group: WidgetGroup = None):
+    def __init__(self, screen, x: int, y: int, size: list[int], image: str, button_images: list[list], widget_group: Optional[WidgetGroup] = None):
         super().__init__(screen, x, y, size, image, widget_group = widget_group)
 
         self.__button_images = button_images
@@ -36,7 +37,7 @@ class ConfirmationPopup(Popup):
             (self.__button_images[1][0], self.__button_images[1][1])
         )
 
-    def check(self, x: int, y: int) -> list[bool]:
+    def check(self, x: int, y: int) -> tuple[bool, bool]:
         """
         Verifica se o cursor do mouse se
         encontra na posição dos botões.

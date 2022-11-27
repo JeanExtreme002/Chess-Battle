@@ -1,12 +1,13 @@
 from .highlighted_widget import HighlightedWidget
 from .widget_group import WidgetGroup
+from typing import Optional
 
 class Achievement(HighlightedWidget):
     """
     Classe para criar um popup com uma mensagem na tela.
     """
   
-    def __init__(self, screen, size: list[int, int], image: str, font_size: int, widget_group: WidgetGroup = None):
+    def __init__(self, screen, size: list[int], image: str, font_size: int, widget_group: Optional[WidgetGroup] = None):
         super().__init__(
             screen, screen.width - size[0], screen.height + size[1], size,
             fill = 0, opacity = 200, widget_group = widget_group
@@ -34,7 +35,7 @@ class Achievement(HighlightedWidget):
         
         image = self.screen.load_image(self.__image, (image_size, image_size))
         
-        self.__image = self.screen.create_sprite(
+        self.__sprite = self.screen.create_sprite(
             image, x = self.x + (self.height - image_size) * 0.5,
             y = self.y + self.height * 0.5 - image_size * 0.5
         )
@@ -61,7 +62,7 @@ class Achievement(HighlightedWidget):
         """
         self.__frame_counter -= self.__velocity
 
-        self.__image.y += self.__velocity * direction * 2
+        self.__sprite.y += self.__velocity * direction * 2
         self.__title.y += self.__velocity * direction * 2
         self._highlight.y += self.__velocity * direction * 2
 
@@ -83,7 +84,7 @@ class Achievement(HighlightedWidget):
         """
         self.__status, self.__frame_counter = 0, 0
 
-        self.__image.x, self.__image.y = self.__old_image_pos
+        self.__sprite.x, self.__sprite.y = self.__old_image_pos
         self.__title.x, self.__title.y = self.__old_title_pos
         
         self._highlight.x, self._highlight.y = self.__old_highlight_pos
@@ -96,7 +97,7 @@ class Achievement(HighlightedWidget):
         if self.__status == 0: return
         
         super().draw()
-        self.__image.draw()
+        self.__sprite.draw()
         self.__title.draw()
 
     def next(self):
@@ -113,7 +114,7 @@ class Achievement(HighlightedWidget):
 
         if self.__running: self.__reset()
         
-        self.__old_image_pos = (self.__image.x, self.__image.y)
+        self.__old_image_pos = (self.__sprite.x, self.__sprite.y)
         self.__old_title_pos = (self.__title.x, self.__title.y)
         
         self.__old_highlight_pos = (self._highlight.x, self._highlight.y)

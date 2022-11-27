@@ -1,11 +1,12 @@
 from .widget_group import WidgetGroup
 from abc import ABC, abstractmethod
+from typing import Optional
 
 class Widget(ABC):
     """
     Classe abstrata para criar widgets na tela.
     """
-    def __init__(self, screen, x: int, y: int, size: list[int, int], widget_group: WidgetGroup = None):
+    def __init__(self, screen, x: int, y: int, size: list[int], widget_group: Optional[WidgetGroup] = None):
         self.__screen = screen
         
         self.__position = (x, y)
@@ -30,9 +31,9 @@ class Widget(ABC):
         return self.__position[1]
 
     @property
-    def width(self) -> float:
+    def width(self) -> int:
         return self.__size[0]
 
     @property
-    def height(self) -> float:
+    def height(self) -> int:
         return self.__size[1]

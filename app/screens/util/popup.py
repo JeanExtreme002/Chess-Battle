@@ -1,14 +1,15 @@
 from .highlighted_widget import HighlightedWidget
 from .widget_group import WidgetGroup
+from typing import Optional
 
 class Popup(HighlightedWidget):
     """
     Classe para criar um popup com uma mensagem na tela.
     """
-    def __init__(self, screen, x: int, y: int, size: list[int, int], image: str, widget_group: WidgetGroup = None):
+    def __init__(self, screen, x: int, y: int, size: list[int], image: str, widget_group: Optional[WidgetGroup] = None):
         super().__init__(screen, x, y, size, widget_group = widget_group)
 
-        self.__texts = []
+        self.__texts: list = []
         
         self.__image = image
         self.__build()
@@ -52,7 +53,7 @@ class Popup(HighlightedWidget):
         """
         return len(self.__texts) > 0
 
-    def set_message(self, x: int, y: int, *lines: str, color: tuple[int] = (0, 0, 0, 255), font_size: int = 16, anchor: tuple[str] = ("center", "center"), line_spacing: int = 1):
+    def set_message(self, x: int, y: int, *lines: str, color: tuple[int, int, int, int] = (0, 0, 0, 255), font_size: int = 16, anchor: tuple[str, str] = ("center", "center"), line_spacing: int = 1):
         """
         Define uma mensagem a ser exibida.
         """

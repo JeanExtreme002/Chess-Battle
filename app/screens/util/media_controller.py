@@ -1,16 +1,17 @@
 from .button import Button
 from .highlighted_widget import HighlightedWidget
 from .widget_group import WidgetGroup
+from typing import Optional
 
 class MediaController(HighlightedWidget):
     """
     Classe para criar um popup com uma mensagem na tela.
     """
-    def __init__(self, screen, x: int, y: int, width: int, images: list[str, str, str, str, str], widget_group: WidgetGroup = None):
+    def __init__(self, screen, x: int, y: int, width: int, images: list[str], widget_group: Optional[WidgetGroup] = None):
         super().__init__(
-            screen, x, y, (width, width * 0.08),
+            screen, x, y, [width, int(width * 0.08)],
             opacity = 200,
-            fill = width * 0.08 * 0.2,
+            fill = int(width * 0.08 * 0.2),
             widget_group = widget_group
         )
         
@@ -51,7 +52,7 @@ class MediaController(HighlightedWidget):
             images = self.__images[5], widget_group = self.__widget_group
         )
 
-    def check(self, x: int, y: int) -> list[bool]:
+    def check(self, x: int, y: int) -> tuple[bool, bool, bool, bool, bool]:
         """
         Verifica se o cursor se encontra na posição de um dos botões.
         """

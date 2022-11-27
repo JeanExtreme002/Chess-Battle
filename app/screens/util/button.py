@@ -1,12 +1,12 @@
 from .widget import Widget
 from .widget_group import WidgetGroup
-from typing import Tuple
+from typing import Optional
 
 class Button(Widget):
     """
     Classe para criar botões na tela.
     """
-    def __init__(self, screen, x: int, y: int, size: list[int, int], images: list[str, str], widget_group: WidgetGroup = None):
+    def __init__(self, screen, x: int, y: int, size: list[int], images: list[str], widget_group: Optional[WidgetGroup] = None):
         super().__init__(screen, x, y, size, widget_group = widget_group)
         
         self.__activated = False
@@ -47,7 +47,7 @@ class Button(Widget):
         """
         if self.__sprite is not None: self.__sprite.delete()
 
-    def change_image(self, images: list[str, str]):
+    def change_image(self, images: list[str]):
         """
         Troca as imagens do botão.
         """
@@ -56,7 +56,7 @@ class Button(Widget):
         self.__delete_sprite()
         self.__create_sprite()
 
-    def check(self, *cursor_pos: Tuple[int, int]) -> bool:
+    def check(self, *cursor_pos: int) -> bool:
         """
         Verifica se o cursor se encontra na posição do botão.
         """

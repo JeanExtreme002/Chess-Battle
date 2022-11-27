@@ -1,14 +1,15 @@
 from .highlighted_widget import HighlightedWidget
 from .widget_group import WidgetGroup
+from typing import Optional
 import random
 
 class Snow(HighlightedWidget):
     """
     Classe para criar neve na tela.
     """
-    def __init__(self, screen, image: str, particles: bool = 300, max_size: bool = 2, widget_group: WidgetGroup = None):
+    def __init__(self, screen, image: str, particles: int = 300, max_size: int = 2, widget_group: Optional[WidgetGroup] = None):
         super().__init__(
-            screen, 0, 0, (screen.width, screen.height),
+            screen, 0, 0, [screen.width, screen.height],
             color = (80, 80, 80), opacity = 150,
             widget_group = widget_group
         )
@@ -16,7 +17,7 @@ class Snow(HighlightedWidget):
         self.__image = image
         
         self.__max_particles = particles
-        self.__particles = []
+        self.__particles: list = []
         self.__velocity = (1, 4)
 
         angle = 0.4
@@ -111,7 +112,7 @@ class Snow(HighlightedWidget):
         """
         self.__max_particles = value
 
-    def set_velocity(self, velocity: list[int, int]):
+    def set_velocity(self, velocity: tuple[int, int]):
         """
         Define a velocidade da neve.
         """
