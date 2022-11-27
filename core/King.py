@@ -70,9 +70,6 @@ class King(Piece):
                 lgl_moves.append([self.y, self.x + 2])
             # checking if the square is defended
             for move in psb_moves:
-                # if self.is_defended(move, situation) or (situation[move[0]][move[1]] is not None and
-                #                                          situation[move[0]][move[1]].color == self.color):
-                #     psb_moves.remove(move)
                 if situation[move[0]][move[1]] is None or situation[move[0]][move[1]].color != self.color:
                     lgl_moves.append(move)
         except IndexError as e:
@@ -101,4 +98,5 @@ class King(Piece):
             new_situation = self.update_situation(target, aux_situation)
         else:
             new_situation = self.update_situation(target, situation)
+        self._has_moved = True
         return new_situation

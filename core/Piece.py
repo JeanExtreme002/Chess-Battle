@@ -25,14 +25,7 @@ class Piece(ABC):
         if self.y == 7 or self.y == 0:
             return True
         return False
-
-    @property
-    def in_column_boundary(self) -> bool:
-        """Checks if the piece is on the left or right edge of the board"""
-        if self.x == 7 or self.x == 0:
-            return True
-        return False
-
+    
     @property
     def color(self) -> Color:
         return self._color
@@ -56,20 +49,6 @@ class Piece(ABC):
         self._update_position(target)
         situation[self.y][self.x] = self
         return situation
-
-    @staticmethod
-    def is_defended(target:list[int], situation:list[list]) -> bool:
-        """Checks if the square is defended by a piece"""
-        try:
-            for row in range(8):
-                for piece in situation[row]:
-                    if piece is not None and\
-                            target in piece.legal_moves(situation):
-                        return True
-            return False
-        except IndexError as e:
-            print("Ops!", e, "Occurred")
-            return False
 
     @property
     @abstractmethod

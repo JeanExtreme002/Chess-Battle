@@ -5,13 +5,7 @@ from .Color import Color
 class Pawn(Piece):
     def __init__(self, color: Color, x: int, y: int):
         super(Pawn, self).__init__(color, x, y)
-        self._has_moved2 = False
-        self._en_passant_enable = False
         self._captures:list[list[int]] = []
-
-    @property
-    def has_moved2(self) -> bool:
-        return self._has_moved2
 
     @property
     def movement(self) -> list[list[int]]:
@@ -60,30 +54,12 @@ class Pawn(Piece):
                     lgl_moves.append(move)
             # checking if there is something to be capture
             for move in psb_captures:
-                if (situation[move[0]][move[1]] is not None and situation[move[0]][move[1]].color != self.color) \
-                        or (situation[move[0]][move[1]] is None and self.en_passant):
+                if situation[move[0]][move[1]] is not None and situation[move[0]][move[1]].color != self.color:
                     lgl_captures.append(move)
         except IndexError as e:
             print("Ops!", e, "Occurred")
         finally:
             return lgl_moves + lgl_captures
-
-    @property
-    def en_passant(self) -> bool:
-        """Checks if the pawn is capable of performing en passant"""
-        if (self.color == Color.White and self.y == 4) or \
-                (self.color == Color.Black and self.y == 3):
-            self._en_passant_enable = True
-        else:
-            self._en_passant_enable = False
-        return self._en_passant_enable
-
-    @property
-    def promotion(self) -> bool:
-        """Checks if it is a case for promotion"""
-        if self.y == 7 or self.y == 0:
-            return True
-        return False
 
     def move(self, target: list[int], situation: list[list]) -> list[list]:
         """Executes the move of the piece.
@@ -95,7 +71,5 @@ class Pawn(Piece):
         if target not in psb_moves:
             return situation
         # updating attributes
-        self._has_moved2 = True if target[1] == self.y + 2 or target[1] == self.y - 2 else False
         self._has_moved = True
-
         return self.update_situation(target, situation)

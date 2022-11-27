@@ -63,4 +63,5 @@ class Bishop(Piece):
         if target not in psb_moves:
             return situation
         new_situation = self.update_situation(target, situation)
+        self._has_moved = True
         return new_situation
