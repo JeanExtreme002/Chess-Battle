@@ -37,7 +37,7 @@ class Connection(object):
         connection = self.__get_connection()
         
         if connection: connection.send(string.encode())
-        else raise ConnectionError("no connection")
+        else: raise ConnectionError("no connection")
         
         return True
 
