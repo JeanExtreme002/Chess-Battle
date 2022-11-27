@@ -9,7 +9,7 @@ from pyglet import canvas
 from pyglet import clock
 from pyglet import image
 from pyglet import window
-from typing import Union
+from typing import Optional, Union
 import os, time
 
 class Application(window.Window):
@@ -20,10 +20,10 @@ class Application(window.Window):
     __FRAMES_PER_SECOND = 60
     
     __snow_config = {
-        "current_particles": 200,
+        "current_particles": 200.0,
         "min_particles": 50,
         "max_particles": 200,
-        "current_opacity": 150,
+        "current_opacity": 150.0,
         "min_opacity": 30,
         "max_opacity": 150,
     }
@@ -51,7 +51,7 @@ class Application(window.Window):
         self.paths = paths
 
         self.__address = settings.address
-        self.__connection = None
+        self.__connection: Optional[Connection] = None
 
         self.__chess_game = chess_game
         self.__initialize()
@@ -177,7 +177,7 @@ class Application(window.Window):
 
         return False
 
-    def __get_movement(self) -> Union[list, bool]:
+    def __get_movement(self) -> Union[tuple[tuple, tuple, int], bool]:
         """
         Retorna a jogada realizada pelo outro jogador, se houver.
         """
@@ -186,7 +186,7 @@ class Application(window.Window):
 
         return self.__finish_online_match_by_error()
 
-    def __send_movement(self, origin: list[int, int], dest: list[int, int], promotion: int = 0) -> bool:
+    def __send_movement(self, origin: list[int], dest: list[int], promotion: int = 0) -> bool:
         """
         Envia a jogada realizada para o outro jogador.
         """
@@ -308,7 +308,7 @@ class Application(window.Window):
         """
         return self.__FRAMES_PER_SECOND
 
-    def get_ip_address(self) -> list[str, int]:
+    def get_ip_address(self) -> tuple[str, int]:
         """
         Retorna o endereço IP do usuário.
         """

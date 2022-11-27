@@ -1,6 +1,6 @@
 from .connection_crypter import ConnectionCrypter
 from socket import socket, timeout, AF_INET, SOCK_STREAM 
-from typing import Optional, Union
+from typing import Optional
 
 class Connection(object):
     """
@@ -41,7 +41,7 @@ class Connection(object):
         
         return True
 
-    def __string_to_coordinates(self, string: str) -> Optional[Union[tuple, tuple, int]]:
+    def __string_to_coordinates(self, string: str) -> Optional[tuple[tuple, tuple, int]]:
         """
         Recebe uma string e retorna duas tuplas XY, indicando
         origem e destino, e uma peça de promoção, caso haja.
@@ -63,7 +63,7 @@ class Connection(object):
         self.__connection = None
         self.__socket = None
 
-    def connect(self, timeout_in_seconds: int = 5, attempts: int = 1):
+    def connect(self, timeout_in_seconds: float = 5, attempts: int = 1):
         """
         Estabelece uma conexão.
         """
@@ -124,7 +124,7 @@ class Connection(object):
         """
         return self.__hosting
 
-    def recv(self) -> Optional[Union[tuple, tuple, int]]:
+    def recv(self) -> Optional[tuple[tuple, tuple, int]]:
         """
         Retorna as coordenadas de origem e destino.
         """
