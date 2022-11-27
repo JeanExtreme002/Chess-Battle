@@ -122,7 +122,7 @@ class Connection(object):
         """
         return self.__hosting
 
-    def recv(self) -> Tuple[list[int, int], int]:
+    def recv(self) -> tuple[list[int, int], int]:
         """
         Retorna as coordenadas de origem e destino.
         """
