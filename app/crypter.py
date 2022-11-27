@@ -2,13 +2,14 @@ from abc import ABC, abstractmethod
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
+from typing import Any
 import base64
 
 class Crypter(ABC):
     """
     Classe para criptografar e descriptografar strings.
     """
-    def __init__(self, password: str = str()):
+    def __init__(self, password: Any = str()):
         generated_key = self.generate_key(password)
         key = self.__get_key(generated_key)
         
@@ -40,7 +41,7 @@ class Crypter(ABC):
         data = bytes(string, encoding = "UTF-8")
         return self.__fernet.encrypt(data).decode()
 
-    def generate_key(self, password: str) -> str:
+    def generate_key(self, password: Any) -> str:
         """
         Recebe uma senha e retorna uma chave parcial.
         """

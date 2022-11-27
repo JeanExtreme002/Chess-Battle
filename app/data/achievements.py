@@ -1,5 +1,5 @@
 from ..crypter import Crypter
-from typing import Tuple
+from typing import Generator
 import json, time
 
 __all__ = ("UserAchievements",)
@@ -14,7 +14,7 @@ class UserAchievements(object):
         self.__filename = filename
         self.__crypter = crypter
 
-        self.__achievements = {}
+        self.__achievements: dict = {}
         self.__load_achievements()
 
     def __load_achievements(self) -> list[list]:
@@ -52,7 +52,7 @@ class UserAchievements(object):
         self.__save_achievements()
         return True
 
-    def get_achievements(self) -> Tuple[str, str, str]:
+    def get_achievements(self) -> Generator:
         """
         Retorna a lista de todas as conquistas ordenada por data e hora.
         """

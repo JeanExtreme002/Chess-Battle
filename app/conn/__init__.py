@@ -1,6 +1,6 @@
 from .connection_crypter import ConnectionCrypter
 from socket import socket, timeout, AF_INET, SOCK_STREAM 
-from typing import Tuple
+from typing import Optional
 
 class Connection(object):
     """
@@ -8,21 +8,21 @@ class Connection(object):
     """
     __checking_string = "Check"
     
-    def __init__(self, address: list[str, int], host: bool = False):
+    def __init__(self, address: list, host: bool = False):
         self.__socket = None
-        self.__connection = None
+        self.__connection: Optional[socket] = None
         
         self.__address = tuple(address)
         self.__hosting = host
 
-    def __coordinates_to_string(self, origin: list[int, int], dest: list[int, int], promotion: int = 0) -> str:
+    def __coordinates_to_string(self, origin: list[int], dest: list[int], promotion: int = 0) -> str:
         """
         Recebe duas tuplas XY, indicando origem e destino,
         e retorna uma string dessas coordenadas.
         """
         return "{}{}{}{}{}".format(*origin, *dest, promotion)
 
-    def __get_connection(self) -> socket:
+    def __get_connection(self) -> Optional[socket]:
         """
         Retorna o objeto de conexão.
         """
@@ -34,10 +34,14 @@ class Connection(object):
         """
         if encrypt: string = self.__crypter.encrypt(string)
         
-        self.__get_connection().send(string.encode())
+        connection = self.__get_connection()
+        
+        if connection: connection.send(string.encode())
+        else raise ConnectionError("no connection")
+        
         return True
 
-    def __string_to_coordinates(self, string: str) -> Tuple[list[int, int], int]:
+    def __string_to_coordinates(self, string: str) -> tuple[list[int], int]:
         """
         Recebe uma string e retorna duas tuplas XY, indicando
         origem e destino, e uma peça de promoção, caso haja.
