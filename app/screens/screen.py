@@ -7,6 +7,7 @@ from pyglet import shapes
 from pyglet import sprite
 from pyglet import text
 from pyglet import window
+from typing import Optional, Union
 
 # Configuração para habilitar o redimensionamento de imagens.
 gl.glEnable(gl.GL_TEXTURE_2D)
@@ -18,8 +19,8 @@ class Screen(ABC):
     Classe abstrata para criar telas.
     """
 
-    _images = dict()
-    _achievement_widget = None
+    _images: dict = dict()
+    _achievement_widget: Optional[Achievement] = None
     _defeat_theme = False
     
     def __init__(self, application):
@@ -139,7 +140,7 @@ class Screen(ABC):
         """
         return Screen._defeat_theme
 
-    def load_image(self, filename: str, size: tuple[int, int] = "original", save: bool = True) -> image.TextureRegion:
+    def load_image(self, filename: str, size: Union[tuple[int, int], str] = "original", save: bool = True) -> image.TextureRegion:
         """
         Carrega uma imagem.
         """
@@ -252,7 +253,7 @@ class Screen(ABC):
         """
         return x, self.get_true_y_position(y), scroll_y
 
-    def print_screen(self, region: tuple[int, int, int, int] = None, filename: str = None):
+    def print_screen(self, region: Optional[tuple[int, int, int, int]] = None, filename: Optional[str] = None):
         """
         Tira um print da tela do jogo e salva em imagem.
         """
@@ -285,7 +286,7 @@ class Screen(ABC):
         """
         Screen._achievement_widget.set_achievement(title)
 
-    def set_defeat_theme(self, boolean: bool, particles: int = None, opacity: int = None):
+    def set_defeat_theme(self, boolean: bool, particles: Optional[int] = None, opacity: Optional[int] = None):
         """
         Define um tema de derrota.
         """
