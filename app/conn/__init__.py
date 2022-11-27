@@ -1,6 +1,6 @@
 from .connection_crypter import ConnectionCrypter
 from socket import socket, timeout, AF_INET, SOCK_STREAM 
-from typing import Optional
+from typing import Optional, Union
 
 class Connection(object):
     """
@@ -9,7 +9,7 @@ class Connection(object):
     __checking_string = "Check"
     
     def __init__(self, address: list, host: bool = False):
-        self.__socket = None
+        self.__socket: Optional[socket] = None
         self.__connection: Optional[socket] = None
         
         self.__address = tuple(address)
@@ -41,7 +41,7 @@ class Connection(object):
         
         return True
 
-    def __string_to_coordinates(self, string: str) -> tuple[list[int], int]:
+    def __string_to_coordinates(self, string: str) -> Optional[Union[tuple, tuple, int]]:
         """
         Recebe uma string e retorna duas tuplas XY, indicando
         origem e destino, e uma peça de promoção, caso haja.
@@ -50,6 +50,8 @@ class Connection(object):
             origin = (int(string[0]), int(string[1]))
             dest = (int(string[2]), int(string[3]))
             return origin, dest, int(string[4])
+        
+        return None
 
     def close(self):
         """
@@ -83,7 +85,7 @@ class Connection(object):
 
             # Cria objeto para criptografar os dados.
             self.__crypter = ConnectionCrypter(
-                self.__address, self.__get_connection()
+                self.__address, self.__get_connection() # type: ignore
             )
 
         # Caso o tempo para conectar tenha excedido, uma nova
@@ -122,11 +124,12 @@ class Connection(object):
         """
         return self.__hosting
 
-    def recv(self) -> tuple[list[int, int], int]:
+    def recv(self) -> Optional[Union[tuple, tuple, int]]:
         """
         Retorna as coordenadas de origem e destino.
         """
-        getter = self.__connection if self.is_host() else self.__socket
+        getter = self.__get_connection()
+        if not getter: raise ConnectionError("no connection")
 
         try:
             string = getter.recv(256).decode()
@@ -135,11 +138,11 @@ class Connection(object):
             return self.__string_to_coordinates(string)
             
         except (ConnectionAbortedError, ConnectionResetError):
-            self.close()
+            return self.close()
             
-        except timeout: pass
+        except timeout: return None
 
-    def send(self, origin: list[int, int], dest: list[int, int], promotion: int = 0) -> bool:
+    def send(self, origin: list[int], dest: list[int], promotion: int = 0) -> bool:
         """
         Envia as coordenadas de origem e destino.
         """

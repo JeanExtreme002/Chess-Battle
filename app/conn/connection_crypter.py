@@ -6,11 +6,11 @@ class ConnectionCrypter(Crypter):
     Classe para encriptografar e descriptografar
     os dados trafegados pela conexão.
     """
-    def __init__(self, address: list, connection: socket.socket):
+    def __init__(self, address: tuple, connection: socket.socket):
         self.__connection = connection
         super().__init__(address)
 
-    def generate_key(self, address: list) -> str:
+    def generate_key(self, address: tuple) -> str:
         """
         Recebe uma senha e retorna uma chave parcial.
         """
