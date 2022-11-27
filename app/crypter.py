@@ -9,8 +9,8 @@ class Crypter(ABC):
     Classe para criptografar e descriptografar strings.
     """
     def __init__(self, password: str = str()):
-        key = self.generate_key(password)
-        key = self.__get_key(key)
+        generated_key = self.generate_key(password)
+        key = self.__get_key(generated_key)
         
         self.__fernet = Fernet(key)
 

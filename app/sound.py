@@ -7,7 +7,7 @@ class SoundPlayer(object):
     Classe para reproduzir sons.
     """
     
-    def __init__(self, volume: list[int, int] = [100, 100], mute: list[bool, bool] = [False, False]):
+    def __init__(self, volume: list[int] = [100, 100], mute: list[bool] = [False, False]):
         self.__effect_player = media.Player()
         self.__music_player = media.Player()
         
@@ -40,8 +40,8 @@ class SoundPlayer(object):
             "defeat_music": self.__load_sounds("music", "defeat")
         }
 
-        self.__played_musics = []
-        self.__played_defeat_musics = []
+        self.__played_musics: list = []
+        self.__played_defeat_musics: list = []
 
     def __load_sounds(self, *path: str) -> list[media.Source]:
         """
@@ -74,7 +74,7 @@ class SoundPlayer(object):
         player.queue(sound)
         player.play()
 
-    def is_muted(self) -> list[bool, bool]:
+    def is_muted(self) -> list[bool]:
         """
         Verifica se os reprodutores estão ativados ou não.
         """
@@ -88,7 +88,7 @@ class SoundPlayer(object):
         if any_: return self.__music_player.playing or self.__effect_player.playing
         return self.__music_player.playing if music else self.__effect_player.playing
 
-    def get_volume(self) -> list[int, int]:
+    def get_volume(self) -> list[int]:
         """
         Retorna o volume dos reprodutores de efeito e música.
         """
@@ -269,7 +269,7 @@ class SoundPlayer(object):
         sounds = self.__loaded_sounds["effects"]["victory"]
         self.__play_random_sound(sounds)
 
-    def set_mute(self, boolean: list[bool, bool]):
+    def set_mute(self, boolean: list[bool]):
         """
         Ativa ou desativa os reprodutores de efeito e música.
         """
@@ -281,7 +281,7 @@ class SoundPlayer(object):
         if boolean[1]: self.__music_player.volume = 0
         else: self.__music_player.volume = self.__volume[1] / 100
         
-    def set_volume(self, value: list[int, int]):
+    def set_volume(self, value: list[int]):
         """
         Define um volume para os reprodutores de efeito e música.
         """
