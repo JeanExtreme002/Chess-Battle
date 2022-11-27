@@ -1,7 +1,7 @@
 from .screen import Screen
 from .util import ConfirmationPopup, MediaController, Popup, PromotionSelection
 from pyglet.window import mouse, key
-from typing import Callable, Union
+from typing import Callable, Optional, Union
 import random
 
 class BoardScreen(Screen):
@@ -376,7 +376,7 @@ class BoardScreen(Screen):
         """
 
         if actions[0]:
-            self.__replay_velocity = 0
+            self.__replay_velocity: float = 0
             
             if self.__replay_controller.is_playing():
                 self.__replay_controller.switch_play_button()
@@ -442,12 +442,12 @@ class BoardScreen(Screen):
         
         self.__set_dialog_box_message(self.__popup, title, message)
             
-    def __get_coord_on_board(self, x: int, y: int) -> Union[int, int]:
+    def __get_coord_on_board(self, x: int, y: int) -> Optional[tuple[int, int]]:
         """
         Retorna a posição da casa do tabuleiro
         em que o cursor se encontra no momento.
         """
-        if not self.__is_mouse_on_board(x, y): return
+        if not self.__is_mouse_on_board(x, y): return None
         
         step = self.__square_size
 
@@ -459,8 +459,9 @@ class BoardScreen(Screen):
                 # Verifica se o cursor está dentro dos limites da casa do tabuleiro em questão.
                 if pos_x <= x <= pos_x + step and pos_y <= y <= pos_y + step:
                     return index_y, index_x
+        return None
 
-    def __get_piece_image_pos(self, x: int, y: int) -> Union[int, int]:
+    def __get_piece_image_pos(self, x: int, y: int) -> tuple[int, int]:
         """
         Retorna a posição na tela da imagem de peça, dadas
         as coordenadas da mesma no tabuleiro.
@@ -515,7 +516,7 @@ class BoardScreen(Screen):
 
         piece_names = ["king", "queen", "bishop", "knight", "pawn", "rook"]
         
-        self.__piece_images = {
+        self.__piece_images: dict = {
             "black": dict(),
             "white": dict()
         }
@@ -819,7 +820,7 @@ class BoardScreen(Screen):
         self.__delete_board_coordinates()
         if boolean: self.__create_board_coordinates()
 
-    def set_new_game(self, game, mode, sender_func: Callable = None, receiver_func: Callable = None, is_first_player: bool = False):
+    def set_new_game(self, game, mode: int, sender_func: Optional[Callable] = None, receiver_func: Optional[Callable] = None, is_first_player: Optional[bool] = False):
         """
         Define um novo jogo.
         """
