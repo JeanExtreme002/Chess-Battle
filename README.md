@@ -54,8 +54,8 @@ O jogo atualmente conta com algumas opções do configurações, descritas abaix
 - Volume de Músicas
 - Endereço IP e Número PORT
 
-## Detecção de Cheque:
-Quando o seu rei está em cheque, somente jogadas que o farão sair do cheque estarão liberadas.
+## Detecção de Xeque:
+Quando o seu rei está em xeque, somente jogadas que o farão sair do xeque estarão liberadas.
 
 ## Riqueza no SFX:
 Demmos atenção ao detalhe de cada peça e ação durante o jogo possuir seu próprio efeito sonoro.
