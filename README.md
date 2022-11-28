@@ -34,12 +34,6 @@ o replay de uma partida, acesse a tela de histórico e navegue pela lista, busca
 Através do controlador, localizado abaixo do placar do jogo, você poderá retroceder, avançar, pausar ou prosseguir com o jogo. No modo replay, não é possível
 alterar as jogadas dinamicamente.
 
-## Riqueza no SFX:
-Demmos atenção ao detalhe de cada peça e ação durante o jogo possuir seu próprio efeito sonoro.
-
-## Detecção de Cheque:
-Quando o seu rei está em cheque, somente jogadas que o farão sair do cheque estarão liberadas.
-
 ## Conquistas e Easter Eggs:
 O jogo conta com um sistema de conquistas, no qual existem determinados eventos, espalhados pelo programa, que liberam conquistas para o jogador. Essas
 conquistas podem ser visualizadas novamente na tela de conquistas. Além disso, o jogo também conta com Easter Eggs. Em outras palavras, boa caçada!!
@@ -52,3 +46,9 @@ informa o índice do jogo em questão e quantos jogos foram registrados.
 Com o objetivo de proteger a integridade do jogo, o tráfego dos dados, tal como o arquivo de configurações, é protegido utilizando o pacote 
 [crpytography](https://pypi.org/project/cryptography/). Talvez essa não seja a melhor solução para a proteção de dados, mas é suficiente para proteger 
 o jogo de cheats :)
+
+## Detecção de Cheque:
+Quando o seu rei está em cheque, somente jogadas que o farão sair do cheque estarão liberadas.
+
+## Riqueza no SFX:
+Demmos atenção ao detalhe de cada peça e ação durante o jogo possuir seu próprio efeito sonoro.
