@@ -46,3 +46,16 @@ informa o índice do jogo em questão e quantos jogos foram registrados.
 Com o objetivo de proteger a integridade do jogo, o tráfego dos dados, tal como o arquivo de configurações, é protegido utilizando o pacote 
 [crpytography](https://pypi.org/project/cryptography/). Talvez essa não seja a melhor solução para a proteção de dados, mas é suficiente para proteger 
 o jogo de cheats :)
+
+## Configurações:
+O jogo atualmente conta com algumas opções do configurações, descritas abaixo:
+- Resolução de Tela
+- Volume de Efeitos Sonoros
+- Volume de Músicas
+- Endereço IP e Número PORT
+
+## Detecção de Xeque:
+Quando o seu rei está em xeque, somente jogadas que o farão sair do xeque estarão liberadas.
+
+## Riqueza no SFX:
+Demmos atenção ao detalhe de cada peça e ação durante o jogo possuir seu próprio efeito sonoro.
