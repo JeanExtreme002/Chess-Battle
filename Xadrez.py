@@ -42,6 +42,6 @@ try:
     generate_info_file("info.txt")
     main()
 except Exception:
-    print("It looks like the game has crashed due to an error. Check it in the log file.")
+    input("It looks like the game has crashed due to an error. Check it in the log file.")
     save_errors_to_file(filename = "log.txt")
 
