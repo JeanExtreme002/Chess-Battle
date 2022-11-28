@@ -32,6 +32,7 @@ class SoundPlayer(object):
                 "getting_rook": self.__load_sounds("effects", "getting_rook"),
                 "invalid_movement": self.__load_sounds("effects", "invalid_movement"),
                 "movement": self.__load_sounds("effects", "movement"),
+                "promotion": self.__load_sounds("effects", "promotion"),
                 "starting": self.__load_sounds("effects", "starting"),
                 "starting_after_defeat": self.__load_sounds("effects", "starting_after_defeat"),
                 "victory": self.__load_sounds("effects", "victory")
@@ -247,6 +248,13 @@ class SoundPlayer(object):
         self.__loaded_sounds["music"].remove(sound)
         
         self.__play_sound(sound, music = True)
+
+    def play_promotion_sound(self):
+        """
+        Reproduz som de promoção.
+        """
+        sounds = self.__loaded_sounds["effects"]["promotion"]
+        self.__play_random_sound(sounds)
 
     def play_start_sound(self):
         """

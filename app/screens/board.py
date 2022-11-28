@@ -713,6 +713,8 @@ class BoardScreen(Screen):
         """
         Define uma promoção para o peão.
         """
+        self.sound_player.play_promotion_sound()
+        
         piece_name = self.__PROMOTION_PIECES[index]
         self.__game.set_promotion(piece_name)
         self.__update_piece_sprites()
@@ -929,8 +931,8 @@ class BoardScreen(Screen):
         # Verifica se é necessário selecionar uma peça para promover um peão.
         if self.__mode != self.REPLAY_MODE:
             player_turn = self.__mode == self.LOCAL_MODE or self.__game.get_player().color.value == self.__player
-        
-            if self.__game.has_promotion() and player_turn:
+
+            if self.__game.has_promotion() and player_turn:    
                 self.__promotion_selection.draw()
                 self.__promotion_available = True
             else: self.__promotion_available = False
