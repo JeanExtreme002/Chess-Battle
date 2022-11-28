@@ -47,7 +47,7 @@ Com o objetivo de proteger a integridade do jogo, o tráfego dos dados, tal como
 [crpytography](https://pypi.org/project/cryptography/). Talvez essa não seja a melhor solução para a proteção de dados, mas é suficiente para proteger 
 o jogo de cheats :)
 
-# Configurações:
+## Configurações:
 O jogo atualmente conta com algumas opções do configurações, descritas abaixo:
 - Resolução de Tela
 - Volume de Efeitos Sonoros
