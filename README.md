@@ -34,7 +34,7 @@ o replay de uma partida, acesse a tela de histórico e navegue pela lista, busca
 Através do controlador, localizado abaixo do placar do jogo, você poderá retroceder, avançar, pausar ou prosseguir com o jogo. No modo replay, não é possível
 alterar as jogadas dinamicamente.
 
-# Riqueza no SFX:
+## Riqueza no SFX:
 Demmos atenção ao detalhe de cada peça e ação durante o jogo possuir seu próprio efeito sonoro.
 
 ## Detecção de Cheque:
